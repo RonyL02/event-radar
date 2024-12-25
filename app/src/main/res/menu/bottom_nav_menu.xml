@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_list"
+        android:title="@string/title_home_screen"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_earth"
+        android:title="@string/title_map_screen"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_comments"
+        android:icon="@drawable/ic_comments"
+        android:title="@string/title_comments_screen"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_settings_screen"
+        app:showAsAction="ifRoom" />
+</menu>
