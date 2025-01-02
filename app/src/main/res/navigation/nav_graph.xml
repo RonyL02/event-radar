@@ -6,7 +6,7 @@
     app:startDestination="@id/eventCardFragmentList">
     <fragment
         android:id="@+id/eventCardFragmentList"
-        android:name="com.col.eventradar.EventCardFragment"
+        android:name="com.col.eventradar.events.views.EventCardListFragment"
         android:label="fragment_event_card_list"
         tools:layout="@layout/fragment_event_card_list" />
 </navigation>
