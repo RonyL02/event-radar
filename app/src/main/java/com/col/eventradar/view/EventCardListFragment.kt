@@ -1,4 +1,4 @@
-package com.col.eventradar.events.views
+package com.col.eventradar.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
-import com.col.eventradar.events.model.EventsMockData
+import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
+import com.col.eventradar.model.EventsMockData
 
 /**
  * A fragment representing a list of Items.

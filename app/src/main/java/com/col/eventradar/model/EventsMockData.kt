@@ -1,4 +1,4 @@
-package com.col.eventradar.events.model
+package com.col.eventradar.model
 
 /**
  * Helper class for providing sample content for user interfaces created by
