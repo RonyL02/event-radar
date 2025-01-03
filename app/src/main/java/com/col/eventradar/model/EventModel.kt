@@ -6,7 +6,7 @@ package com.col.eventradar.model
  *
  * TODO: Replace all uses of this class before publishing your app.
  */
-object EventsMockData {
+object EventModel {
     /**
      * An array of sample (placeholder) items.
      */

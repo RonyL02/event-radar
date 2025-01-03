@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
-import com.col.eventradar.model.EventsMockData
+import com.col.eventradar.model.EventModel
 
 /**
  * A fragment representing a list of Items.
@@ -41,7 +41,7 @@ class EventCardListFragment : Fragment() {
                         columnCount <= 1 -> LinearLayoutManager(context)
                         else -> GridLayoutManager(context, columnCount)
                     }
-                adapter = EventCardRecyclerViewAdapter(EventsMockData.EVENTS_DATA)
+                adapter = EventCardRecyclerViewAdapter(EventModel.EVENTS_DATA)
             }
         }
         return view
