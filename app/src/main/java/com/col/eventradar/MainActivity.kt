@@ -34,5 +34,27 @@ class MainActivity : AppCompatActivity() {
                 it,
             )
         }
+
+        bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_home -> {
+                    navController?.navigate(R.id.eventCardFragmentList)
+                    true
+                }
+                R.id.navigation_map -> {
+                    navController?.navigate(R.id.mapFragment)
+                    true
+                }
+                R.id.navigation_comments -> {
+                    //TODO: navController?.navigate(R.id.commentsFragment)
+                    true
+                }
+                R.id.navigation_settings -> {
+                    //TODO: navController?.navigate(R.id.settingsFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 }

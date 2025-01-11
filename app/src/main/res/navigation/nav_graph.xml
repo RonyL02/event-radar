@@ -9,4 +9,9 @@
         android:name="com.col.eventradar.view.EventCardListFragment"
         android:label="fragment_event_card_list"
         tools:layout="@layout/fragment_event_card_list" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.col.eventradar.view.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
 </navigation>
