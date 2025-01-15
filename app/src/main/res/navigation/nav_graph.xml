@@ -6,9 +6,30 @@
     app:startDestination="@id/eventCardFragmentList">
     <fragment
         android:id="@+id/eventCardFragmentList"
-        android:name="com.col.eventradar.view.EventCardListFragment"
+        android:name="com.col.eventradar.ui.views.EventCardListFragment"
         android:label="fragment_event_card_list"
-        tools:layout="@layout/fragment_event_card_list" />
+        tools:layout="@layout/fragment_event_card_list">
+        <action
+            android:id="@+id/action_eventCardFragmentList_to_commentsFragment"
+            app:destination="@id/commentsFragment" />
+        <action
+            android:id="@+id/action_eventCardFragmentList_to_settingsFragment2"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@id/commentsFragment"
+        android:name="com.col.eventradar.ui.views.CommentsFragment"
+        android:label="Comments"
+        tools:layout="@layout/fragment_comments">
+        <action
+            android:id="@+id/action_commentsFragment_to_settingsFragment2"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@id/settingsFragment"
+        android:name="com.col.eventradar.ui.views.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.col.eventradar.view.MapFragment"

@@ -1,4 +1,4 @@
-package com.col.eventradar.model
+package com.col.eventradar.models
 
 data class Location(
     val lat: Double,

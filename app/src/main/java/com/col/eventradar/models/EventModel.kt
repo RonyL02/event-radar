@@ -1,4 +1,4 @@
-package com.col.eventradar.model
+package com.col.eventradar.models
 
 /**
  * Helper class for providing sample content for user interfaces created by

@@ -4,4 +4,6 @@
     <string name="title_map_screen">Map</string>
     <string name="title_comments_screen">Comments</string>
     <string name="title_settings_screen">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
