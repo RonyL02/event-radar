@@ -32,7 +32,7 @@
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.col.eventradar.view.MapFragment"
+        android:name="com.col.eventradar.ui.views.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
 </navigation>

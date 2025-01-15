@@ -1,4 +1,4 @@
-package com.col.eventradar.view
+package com.col.eventradar.ui.views
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapView
 import com.col.eventradar.R
-import com.col.eventradar.ui.views.SettingsFragment
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
