@@ -10,13 +10,23 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapView
 import com.col.eventradar.R
+import com.col.eventradar.ui.views.SettingsFragment
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
+    private var lat: Double? = null
+    private var lon: Double? = null
+    private var zoom: Double? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapLibre.getInstance(requireContext())
+
+        arguments?.let {
+            lat = it.getDouble(ARG_LAT, DEFAULT_LAT)
+            lon = it.getDouble(ARG_LON, DEFAULT_LON)
+            zoom = it.getDouble(ARG_ZOOM, DEFAULT_ZOOM)
+        }
     }
 
     override fun onCreateView(
@@ -28,10 +38,10 @@ class MapFragment : Fragment() {
         mapView = rootView.findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { map ->
-            map.setStyle("https://demotiles.maplibre.org/style.json")
+            map.setStyle(DEFAULT_MAP_STYLE_URL)
             map.cameraPosition = CameraPosition.Builder()
-                .target(LatLng(32.0, 35.0))
-                .zoom(5.0)
+                .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
+                .zoom(zoom ?: DEFAULT_ZOOM)
                 .build()
         }
 
@@ -66,5 +76,27 @@ class MapFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        private const val ARG_LAT = "lat"
+        private const val ARG_LON = "lon"
+        private const val ARG_ZOOM = "zoom"
+
+        private const val DEFAULT_LAT = 32.0
+        private const val DEFAULT_LON = 35.0
+        private const val DEFAULT_ZOOM = 5.0
+
+        private const val DEFAULT_MAP_STYLE_URL = "https://demotiles.maplibre.org/style.json";
+
+        @JvmStatic
+        fun newInstance(lat: Double, lon: Double, zoom: Double) =
+            MapFragment().apply {
+                arguments = Bundle().apply {
+                    putDouble(ARG_LAT, lat)
+                    putDouble(ARG_LON, lon)
+                    putDouble(ARG_ZOOM, zoom)
+                }
+            }
     }
 }
