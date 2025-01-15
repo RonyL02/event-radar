@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.FragmentEventCardBinding
-import com.col.eventradar.model.Event
+import com.col.eventradar.models.Event
 
 /**
  * [RecyclerView.Adapter] that can display a [Event].

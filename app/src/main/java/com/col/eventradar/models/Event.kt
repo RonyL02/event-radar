@@ -1,4 +1,4 @@
-package com.col.eventradar.model
+package com.col.eventradar.models
 
 /**
  * A placeholder item representing a piece of content.
