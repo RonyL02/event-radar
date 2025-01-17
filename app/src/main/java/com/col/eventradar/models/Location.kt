@@ -1,8 +1,8 @@
 package com.col.eventradar.models
 
 data class Location(
-    val lat: Double,
-    val long: Double,
+    val latitude: Double,
+    val longitude: Double,
 ) {
-    override fun toString(): String = "($lat, $long)"
+    override fun toString(): String = "($latitude, $longitude)"
 }

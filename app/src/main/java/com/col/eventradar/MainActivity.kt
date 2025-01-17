@@ -7,13 +7,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.col.eventradar.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val navController: NavController by lazy {
-        findNavController(R.id.nav_host_container)
-    }
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,38 +20,19 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
         setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
 
-        // NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
+    override fun onStart() {
+        super.onStart()
 
-        binding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.navigation_home -> {
-                    navController.navigate(R.id.eventCardFragmentList)
-                    true
-                }
-
-                R.id.navigation_map -> {
-                    // TODO: navController?.navigate(R.id.mapFragment)
-                    true
-                }
-
-                R.id.navigation_comments -> {
-                    navController.navigate(R.id.commentsFragment)
-                    true
-                }
-
-                R.id.navigation_settings -> {
-                    navController.navigate(R.id.settingsFragment)
-                    true
-                }
-
-                else -> false
-            }
-        }
+        // Setup the bottom navigation view with the navigation controller
+        navController = findNavController(binding.navHostContainer.id)
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 }

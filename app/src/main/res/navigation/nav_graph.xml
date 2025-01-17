@@ -3,31 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/eventCardFragmentList">
+    app:startDestination="@+id/navigation_home">
     <fragment
-        android:id="@+id/eventCardFragmentList"
+        android:id="@+id/navigation_home"
         android:name="com.col.eventradar.ui.views.EventCardListFragment"
-        android:label="fragment_event_card_list"
-        tools:layout="@layout/fragment_event_card_list">
-        <action
-            android:id="@+id/action_eventCardFragmentList_to_commentsFragment"
-            app:destination="@id/commentsFragment" />
-        <action
-            android:id="@+id/action_eventCardFragmentList_to_settingsFragment2"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+        android:label="@string/title_home_screen"
+        tools:layout="@layout/fragment_event_card_list" />
     <fragment
-        android:id="@id/commentsFragment"
+        android:id="@+id/navigation_comments"
         android:name="com.col.eventradar.ui.views.CommentsFragment"
         android:label="Comments"
-        tools:layout="@layout/fragment_comments">
-        <action
-            android:id="@+id/action_commentsFragment_to_settingsFragment2"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+        tools:layout="@string/title_comments_screen" />
     <fragment
-        android:id="@id/settingsFragment"
+        android:id="@+id/navigation_settings"
         android:name="com.col.eventradar.ui.views.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="@string/title_settings_screen"
         tools:layout="@layout/fragment_settings" />
 </navigation>
