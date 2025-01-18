@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
+import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.models.EventModel
 
 /**
@@ -17,6 +16,12 @@ import com.col.eventradar.models.EventModel
  */
 class EventCardListFragment : Fragment() {
     private var columnCount = 1
+    private var bindingInternal: FragmentEventCardListBinding? = null
+
+    /**
+     * This property is only valid between `onCreateView` and `onDestroyView`.
+     */
+    private val binding get() = bindingInternal!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,21 +35,20 @@ class EventCardListFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_event_card_list, container, false)
+    ): View {
+        bindingInternal = FragmentEventCardListBinding.inflate(inflater, container, false)
 
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager =
-                    when {
-                        columnCount <= 1 -> LinearLayoutManager(context)
-                        else -> GridLayoutManager(context, columnCount)
-                    }
-                adapter = EventCardRecyclerViewAdapter(EventModel.EVENTS_DATA)
-            }
+        with(binding.root) {
+            layoutManager =
+                when {
+                    columnCount <= 1 -> LinearLayoutManager(context)
+                    else -> GridLayoutManager(context, columnCount)
+                }
+            adapter = EventCardRecyclerViewAdapter(EventModel.EVENTS_DATA)
         }
-        return view
+
+        return binding.root
     }
 
     companion object {
