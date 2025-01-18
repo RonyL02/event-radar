@@ -20,7 +20,7 @@
         android:label="@string/title_settings_screen"
         tools:layout="@layout/fragment_settings" />
     <fragment
-        android:id="@+id/mapFragment"
+        android:id="@+id/navigation_map"
         android:name="com.col.eventradar.ui.views.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />

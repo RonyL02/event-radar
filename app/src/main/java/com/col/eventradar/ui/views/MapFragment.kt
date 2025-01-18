@@ -8,11 +8,12 @@ import androidx.fragment.app.Fragment
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.maps.MapView
-import com.col.eventradar.R
+import com.col.eventradar.databinding.FragmentMapBinding
 
 class MapFragment : Fragment() {
-    private lateinit var mapView: MapView
+    private var bindingInternal: FragmentMapBinding? = null
+    private val binding get() = bindingInternal!!
+
     private var lat: Double? = null
     private var lon: Double? = null
     private var zoom: Double? = null
@@ -29,14 +30,14 @@ class MapFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
+        binding.mapView.onCreate(savedInstanceState)
 
-        mapView = rootView.findViewById(R.id.mapView)
-        mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync { map ->
+        binding.mapView.getMapAsync { map ->
             map.setStyle(DEFAULT_MAP_STYLE_URL)
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
@@ -44,37 +45,38 @@ class MapFragment : Fragment() {
                 .build()
         }
 
-        return rootView
+        return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        mapView.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
+        binding.mapView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.onPause()
+        binding.mapView.onPause()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mapView.onDestroy()
+        binding.mapView.onDestroy()
+        bindingInternal = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
     }
 
     companion object {
