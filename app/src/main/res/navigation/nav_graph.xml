@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/navigation_home">
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.col.eventradar.ui.views.EventCardListFragment"
+        android:label="@string/title_home_screen"
+        tools:layout="@layout/fragment_event_card_list" />
+    <fragment
+        android:id="@+id/navigation_comments"
+        android:name="com.col.eventradar.ui.views.CommentsFragment"
+        android:label="Comments"
+        tools:layout="@string/title_comments_screen" />
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.col.eventradar.ui.views.SettingsFragment"
+        android:label="@string/title_settings_screen"
+        tools:layout="@layout/fragment_settings" />
+</navigation>
