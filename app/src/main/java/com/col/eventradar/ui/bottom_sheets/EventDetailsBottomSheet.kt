@@ -40,6 +40,10 @@ class EventDetailsBottomSheet(private val eventDetails: EventDetails) :
                 val commentText = commentInput.text
                 //TODO: send commentText to db and image (if exists)
             }
+            commentsTitle.setOnClickListener {
+                val modalBottomSheet = EventCommentsBottomSheet()
+                modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)
+            }
         }
 
         return binding.root
