@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/user_image_card"
@@ -57,15 +57,4 @@
         app:layout_constraintHorizontal_bias="0.268"
         app:layout_constraintStart_toEndOf="@+id/user_image_card"
         app:layout_constraintTop_toBottomOf="@+id/username" />
-
-    <ImageView
-        android:id="@+id/comment_image"
-        android:layout_width="209dp"
-        android:layout_height="157dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.172"
-        app:layout_constraintStart_toEndOf="@+id/user_image_card"
-        app:layout_constraintTop_toBottomOf="@+id/content"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 </androidx.constraintlayout.widget.ConstraintLayout>
