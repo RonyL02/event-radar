@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.ItemSearchResultBinding
-import com.col.eventradar.ui.views.SearchFragment
+import com.col.eventradar.ui.SearchFragment
 
 class SearchResultsAdapter(private val onClick: (SearchFragment.SearchResult) -> Unit) :
     RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
@@ -17,7 +17,8 @@ class SearchResultsAdapter(private val onClick: (SearchFragment.SearchResult) ->
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
-        val binding = ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return SearchResultViewHolder(binding)
     }
 

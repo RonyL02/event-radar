@@ -1,4 +1,4 @@
-package com.col.eventradar.ui.views
+package com.col.eventradar.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -70,7 +70,6 @@ class SearchFragment : Fragment() {
                 searchRunnable?.let {
                     handler.postDelayed(it, 500)
                 }
-
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -92,9 +91,9 @@ class SearchFragment : Fragment() {
     private fun searchLocation(query: String) {
         lifecycleScope.launch {
             val encodedQuery = URLEncoder.encode(query, "UTF-8")
-            val url = "$BOUNDING_BOX_API?q=$encodedQuery&format=json&addressdetails=1&limit=$SEARCH_RESULT_LIMIT"
+            val url =
+                "$BOUNDING_BOX_API?q=$encodedQuery&format=json&addressdetails=1&limit=$SEARCH_RESULT_LIMIT"
             try {
-                // Show ProgressBar and hide Search Icon
                 binding.progressBar.visibility = View.VISIBLE
                 binding.searchIcon.visibility = View.GONE
 
@@ -116,16 +115,17 @@ class SearchFragment : Fragment() {
                     Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error fetching location: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Error fetching location: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } finally {
-                // Hide ProgressBar and show Search Icon
                 binding.progressBar.visibility = View.GONE
                 binding.searchIcon.visibility = View.VISIBLE
             }
         }
     }
-
-
 
     private fun parseNominatimResponse(response: String): List<SearchResult> {
         val resultList = mutableListOf<SearchResult>()
@@ -146,7 +146,23 @@ class SearchFragment : Fragment() {
             val westLon = boundingBox?.getDouble(2) ?: lon
             val eastLon = boundingBox?.getDouble(3) ?: lon
 
-            resultList.add(SearchResult(state +", "+ country, lat, lon, southLat, northLat, westLon, eastLon))
+            val locationName = buildString {
+                append(state?.takeIf { it.isNotEmpty() } ?: "")
+                if (!state.isNullOrEmpty() && !country.isNullOrEmpty()) append(", ")
+                append(country?.takeIf { it.isNotEmpty() } ?: "")
+            }
+
+            resultList.add(
+                SearchResult(
+                    locationName,
+                    lat,
+                    lon,
+                    southLat,
+                    northLat,
+                    westLon,
+                    eastLon
+                )
+            )
         }
         return resultList
     }
@@ -164,7 +180,7 @@ class SearchFragment : Fragment() {
         super.onDestroyView()
         bindingInternal = null
         searchRunnable?.let {
-            handler.removeCallbacks(it) // Clear any pending tasks
+            handler.removeCallbacks(it)
         }
 
     }

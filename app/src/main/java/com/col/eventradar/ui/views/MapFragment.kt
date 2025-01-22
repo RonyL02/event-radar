@@ -10,6 +10,7 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import com.col.eventradar.databinding.FragmentMapBinding
+import com.col.eventradar.ui.SearchFragment
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
 
