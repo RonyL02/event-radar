@@ -90,7 +90,7 @@ class MapFragment : Fragment(), SearchFragment.MapFragmentListener {
             .build()
 
         binding.mapView.getMapAsync { map ->
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50))  // 50px padding
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))  // 50px padding
         }
     }
 
