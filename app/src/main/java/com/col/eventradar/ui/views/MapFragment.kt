@@ -1,6 +1,7 @@
 package com.col.eventradar.ui.views
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,10 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import com.col.eventradar.databinding.FragmentMapBinding
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLngBounds
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), SearchFragment.MapFragmentListener {
     private var bindingInternal: FragmentMapBinding? = null
     private val binding get() = bindingInternal!!
 
@@ -79,10 +82,24 @@ class MapFragment : Fragment() {
         binding.mapView.onSaveInstanceState(outState)
     }
 
+    override fun onLocationSelected(searchResult: SearchFragment.SearchResult) {
+        Log.d(TAG, "onLocationSelected called")
+        val bounds = LatLngBounds.Builder()
+            .include(LatLng(searchResult.southLat, searchResult.westLon))
+            .include(LatLng(searchResult.northLat, searchResult.eastLon))
+            .build()
+
+        binding.mapView.getMapAsync { map ->
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50))  // 50px padding
+        }
+    }
+
     companion object {
         private const val ARG_LAT = "lat"
         private const val ARG_LON = "lon"
         private const val ARG_ZOOM = "zoom"
+
+        val TAG = "Map"
 
         private const val DEFAULT_LAT = 32.0
         private const val DEFAULT_LON = 35.0
