@@ -10,11 +10,12 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.ui.SearchFragment
+import com.col.eventradar.models.LocationSearchResult
+import com.col.eventradar.ui.LocationSearchFragment
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
 
-class MapFragment : Fragment(), SearchFragment.MapFragmentListener {
+class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private var bindingInternal: FragmentMapBinding? = null
     private val binding get() = bindingInternal!!
 
@@ -83,7 +84,7 @@ class MapFragment : Fragment(), SearchFragment.MapFragmentListener {
         binding.mapView.onSaveInstanceState(outState)
     }
 
-    override fun onLocationSelected(searchResult: SearchFragment.SearchResult) {
+    override fun onLocationSelected(searchResult: LocationSearchResult) {
         Log.d(TAG, "onLocationSelected called")
         val bounds = LatLngBounds.Builder()
             .include(LatLng(searchResult.southLat, searchResult.westLon))

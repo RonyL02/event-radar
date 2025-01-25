@@ -20,7 +20,7 @@
         app:maplibre_uiZoomGestures="true" />
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.col.eventradar.ui.SearchFragment"
+        android:name="com.col.eventradar.ui.LocationSearchFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"

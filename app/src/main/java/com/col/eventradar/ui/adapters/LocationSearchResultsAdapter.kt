@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.ItemSearchResultBinding
-import com.col.eventradar.ui.SearchFragment
+import com.col.eventradar.models.LocationSearchResult
 
-class SearchResultsAdapter(private val onClick: (SearchFragment.SearchResult) -> Unit) :
-    RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
+class LocationSearchResultsAdapter(private val onClick: (LocationSearchResult) -> Unit) :
+    RecyclerView.Adapter<LocationSearchResultsAdapter.SearchResultViewHolder>() {
 
-    private var searchResults: List<SearchFragment.SearchResult> = emptyList()
+    private var searchResults: List<LocationSearchResult> = emptyList()
 
-    fun submitList(results: List<SearchFragment.SearchResult>) {
+    fun submitList(results: List<LocationSearchResult>) {
         searchResults = results
         notifyDataSetChanged()
     }
@@ -32,8 +32,8 @@ class SearchResultsAdapter(private val onClick: (SearchFragment.SearchResult) ->
     inner class SearchResultViewHolder(private val binding: ItemSearchResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(result: SearchFragment.SearchResult) {
-            binding.resultName.text = result.name
+        fun bind(result: LocationSearchResult) {
+            binding.resultName.text = result.locationName
             binding.root.setOnClickListener {
                 onClick(result)
             }
