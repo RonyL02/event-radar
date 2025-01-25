@@ -1,7 +1,7 @@
 package com.col.eventradar.models
 
 data class LocationSearchResult(
-    val osmId: Double,
+    val osmId: Long,
     val locationName: String,
     val latitude: Double,
     val longitude: Double,

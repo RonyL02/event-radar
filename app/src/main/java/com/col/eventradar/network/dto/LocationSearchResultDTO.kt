@@ -4,7 +4,7 @@ import com.col.eventradar.models.LocationSearchResult
 import com.google.gson.annotations.SerializedName
 
 data class LocationSearchResultDTO(
-    @SerializedName("osm_id") val osmId: Double,
+    @SerializedName("osm_id") val osmId: Long,
     @SerializedName("lat") val latitude: Double,
     @SerializedName("lon") val longitude: Double,
     @SerializedName("address") val address: Address?,

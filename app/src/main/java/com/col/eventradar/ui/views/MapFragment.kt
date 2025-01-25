@@ -1,19 +1,32 @@
 package com.col.eventradar.ui.views
 
+import android.R
+import android.graphics.BitmapFactory
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
+import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.ui.LocationSearchFragment
+import com.col.eventradar.ui.LocationSearchFragment.Companion
+import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.FeatureCollection
 
 class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private var bindingInternal: FragmentMapBinding? = null
@@ -85,14 +98,44 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     }
 
     override fun onLocationSelected(searchResult: LocationSearchResult) {
-        Log.d(TAG, "onLocationSelected called")
         val bounds = LatLngBounds.Builder()
             .include(LatLng(searchResult.southLat, searchResult.westLon))
             .include(LatLng(searchResult.northLat, searchResult.eastLon))
             .build()
 
+
         binding.mapView.getMapAsync { map ->
+            lifecycleScope.launch {
+                try {
+
+                    val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
+                    val feature = result.toMapLibreFeature()
+                    val geoJsonSource = GeoJsonSource("location-source", FeatureCollection.fromFeature(feature))
+
+                    map.style?.addSource(geoJsonSource)
+
+                    map.style?.addLayer(
+                        FillLayer("location-fill-layer", "location-source")
+                            .withProperties(
+                                // Set the fill color and opacity
+                                PropertyFactory.fillColor("#FF0000"), // Red fill color
+                                PropertyFactory.fillOpacity(0.5f)   // 50% opacity
+                            )
+                    )
+                }  catch (e: retrofit2.HttpException) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    Log.e(LocationSearchFragment.TAG, "Error body: $errorBody")
+                    Toast.makeText(
+                        requireContext(),
+                        "Error fetching location: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (e: Exception) {
+                    Log.e(LocationSearchFragment.TAG, "General error: ${e.message}")
+                }
+            }
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))  // 50px padding
+
         }
     }
 

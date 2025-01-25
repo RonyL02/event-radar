@@ -20,7 +20,6 @@ import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.network.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 
 class LocationSearchFragment : Fragment() {
 
