@@ -4,21 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.col.eventradar.databinding.FragmentEventDetailsBottmSheetBinding
+import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
+import com.col.eventradar.models.EventDetails
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-
-data class EventDetails(
-    val type: Int,
-    val name: String,
-    val locationName: String,
-    val time: String,
-    val description: String,
-    val commentsAmount: Int,
-)
 
 class EventDetailsBottomSheet(private val eventDetails: EventDetails) :
     BottomSheetDialogFragment() {
-    private var bindingInternal: FragmentEventDetailsBottmSheetBinding? = null
+    private var bindingInternal: FragmentEventDetailsBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
 
     override fun onCreateView(
@@ -26,12 +18,13 @@ class EventDetailsBottomSheet(private val eventDetails: EventDetails) :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        bindingInternal = FragmentEventDetailsBottmSheetBinding.inflate(inflater, container, false)
+        bindingInternal = FragmentEventDetailsBottomSheetBinding.inflate(inflater, container, false)
 
         binding.apply {
+            locationName.text = eventDetails.locationName
             eventTitle.text = eventDetails.name
             eventDescription.text = eventDetails.description
-            time.text = eventDetails.time
+            time.text = "${eventDetails.time.hour}:${eventDetails.time.minute}"
             commentsCount.text = eventDetails.commentsAmount.toString()
             closeButton.setOnClickListener {
                 dismiss()

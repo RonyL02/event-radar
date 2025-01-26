@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.databinding.FragmentEventCommentsBottomSheetBinding
-import com.col.eventradar.ui.adapters.Comment
+import com.col.eventradar.models.Comment
 import com.col.eventradar.ui.adapters.EventCommentRecyclerViewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.time.LocalDateTime
+import java.time.Month
 
 class EventCommentsBottomSheet :
     BottomSheetDialogFragment() {
@@ -35,14 +37,23 @@ class EventCommentsBottomSheet :
                         Comment(
                             "sdfsfsfddsfdsfdsfdsd",
                             "sdfsdf",
-                            "0:34"
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
                         ),
-                        Comment("sdfsfsfddsfdsfdsfdsd", "sdfsdf", "0:34"),
-                        Comment("sdfsfsfddsfdsfdsfdsd", "sdfsdf", "0:34"),
-                        Comment("sdfsfsfddsfdsfdsfdsd", "sdfsdf", "0:34")
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "aaaaaaaaa", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        )
                     )
                 )
-            adapter =commentRecyclerAdapter
+            adapter = commentRecyclerAdapter
         }
 
         return binding.root

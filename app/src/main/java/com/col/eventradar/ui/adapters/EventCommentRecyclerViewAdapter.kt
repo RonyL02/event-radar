@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.EventCommentBinding
+import com.col.eventradar.models.Comment
 
-data class Comment(val content: String, val username: String, val time: String)
 
 class EventCommentRecyclerViewAdapter(
-    private val values: List<Comment>
+    private val comments: List<Comment>
 ) :
     RecyclerView.Adapter<EventCommentRecyclerViewAdapter.ViewHolder>() {
 
@@ -23,17 +23,17 @@ class EventCommentRecyclerViewAdapter(
         ),
     )
 
-    override fun getItemCount(): Int = values.size
+    override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(
         holder: EventCommentRecyclerViewAdapter.ViewHolder,
         position: Int
     ) {
-        val item = values[position]
+        val comment = comments[position]
         holder.apply {
-            usernameView.text = item.username
-            contentView.text = item.content
-            timeView.text = item.time
+            usernameView.text = comment.username
+            contentView.text = comment.content
+            timeView.text = "${comment.time.hour}:${comment.time.minute}"
         }
     }
 
