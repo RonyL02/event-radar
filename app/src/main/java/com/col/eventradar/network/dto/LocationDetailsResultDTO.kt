@@ -1,7 +1,9 @@
 package com.col.eventradar.network.dto
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
 import org.maplibre.geojson.Feature
-import org.maplibre.geojson.MultiPolygon
 import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
 
@@ -30,27 +32,44 @@ data class LocationDetailsResultDTO(
     val icon: String
 ) {
         fun toMapLibreFeature(): Feature {
-            // Check the geometry type
             val geometry = this.geometry
             val feature = when (geometry.type) {
                 "Polygon" -> {
-                    // Create a Polygon geometry using the coordinates
-                    val coordinates = geometry.coordinates[0] // Assuming first array is the outer ring
-                    val polygonCoordinates = coordinates.map { point ->
-                        Point.fromLngLat(point[0], point[1]) // Convert to Point using longitude and latitude values
-                    }
-                    val polygon = Polygon.fromLngLats(listOf(polygonCoordinates)) // Wrap in a list of coordinates
+                    val coordinates = Gson().fromJson<List<List<List<Double>>>>(
+                        geometry.coordinates,
+                        object : TypeToken<List<List<List<Double>>>>() {}.type
+                    )
+
+                    val polygonCoordinates = coordinates[0].map { point -> Point.fromLngLat(point[0], point[1]) }
+
+                    val polygon = Polygon.fromLngLats(listOf(polygonCoordinates))
                     Feature.fromGeometry(polygon)
                 }
+
+                "MultiPolygon" -> {
+                    val coordinates = Gson().fromJson<List<List<List<List<Double>>>>>(
+                        geometry.coordinates,
+                        object : TypeToken<List<List<List<List<Double>>>>>() {}.type
+                    )
+
+                    val multiPolygonCoordinates = coordinates.map { polygon ->
+                        polygon.map { ring ->
+                            ring.map { point -> Point.fromLngLat(point[0], point[1]) }
+                        }
+                    }
+
+                    val multiPolygon = org.maplibre.geojson.MultiPolygon.fromLngLats(multiPolygonCoordinates)
+                    Feature.fromGeometry(multiPolygon)
+                }
+
                 else -> {
-                    // Fallback to creating a point if geometry type is neither Polygon nor MultiPolygon
+                    // Fallback to centroid point
                     val centroidCoordinates = this.centroid.coordinates
                     val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
                     Feature.fromGeometry(point)
                 }
             }
 
-            // Add properties to the feature
             feature.apply {
                 addStringProperty("osm_id", osm_id.toString())
                 addStringProperty("localname", localname)
@@ -105,5 +124,7 @@ data class Centroid(
 
 data class Geometry(
     val type: String,
-    val coordinates: List<List<List<Double>>>
+    val coordinates: JsonElement
 )
+
+
