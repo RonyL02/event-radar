@@ -24,15 +24,12 @@ class EventDetailsBottomSheet(private val eventDetails: EventDetails) :
             locationName.text = eventDetails.locationName
             eventTitle.text = eventDetails.name
             eventDescription.text = eventDetails.description
-            time.text = "${eventDetails.time.hour}:${eventDetails.time.minute}"
+            eventTime.text = "${eventDetails.time.hour}:${eventDetails.time.minute}"
             commentsCount.text = eventDetails.commentsAmount.toString()
             closeButton.setOnClickListener {
                 dismiss()
             }
-            addCommentButton.setOnClickListener {
-                val commentText = commentInput.text
-                //TODO: send commentText to db and image (if exists)
-            }
+
             commentsTitle.setOnClickListener {
                 val modalBottomSheet = EventCommentsBottomSheet()
                 modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)

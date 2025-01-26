@@ -3,7 +3,7 @@ package com.col.eventradar.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.col.eventradar.databinding.EventCommentBinding
+import com.col.eventradar.databinding.EventCommentRowBinding
 import com.col.eventradar.models.Comment
 
 
@@ -16,7 +16,7 @@ class EventCommentRecyclerViewAdapter(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder = ViewHolder(
-        EventCommentBinding.inflate(
+        EventCommentRowBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false,
@@ -38,9 +38,9 @@ class EventCommentRecyclerViewAdapter(
     }
 
     inner class ViewHolder(
-        binding: EventCommentBinding,
+        binding: EventCommentRowBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-        val timeView = binding.time
+        val timeView = binding.commentTime
         val usernameView = binding.username
         val contentView = binding.content
     }

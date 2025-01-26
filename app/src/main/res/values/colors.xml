@@ -5,7 +5,7 @@
     <color name="red_600">#9D0C10</color>
     <color name="red_500">#D8362B</color>
     <color name="red_100">#FFE6E6</color>
-    <color name="lightGrey">#A0A0A0</color>
-    <color name="darkGrey">#6D6D6D</color>
+    <color name="grey_light">#A0A0A0</color>
+    <color name="grey_dark">#6D6D6D</color>
     <color name="transparent">#00000000</color>
 </resources>
