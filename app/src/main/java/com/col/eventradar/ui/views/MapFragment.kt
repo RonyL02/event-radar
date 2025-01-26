@@ -1,8 +1,5 @@
 package com.col.eventradar.ui.views
 
-import android.R
-import android.graphics.BitmapFactory
-import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,13 +15,12 @@ import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.ui.LocationSearchFragment
-import com.col.eventradar.ui.LocationSearchFragment.Companion
 import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.PropertyFactory
-import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.FeatureCollection
 
@@ -35,6 +31,8 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private var lat: Double? = null
     private var lon: Double? = null
     private var zoom: Double? = null
+
+    private lateinit var map: MapLibreMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +54,24 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         binding.mapView.onCreate(savedInstanceState)
 
         binding.mapView.getMapAsync { map ->
-            map.setStyle(DEFAULT_MAP_STYLE_URL)
+            this.map = map
+            map.setStyle(DEFAULT_MAP_STYLE_URL) {
+
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
                 .zoom(zoom ?: DEFAULT_ZOOM)
                 .build()
+
+            map.style?.addSource(GeoJsonSource("location-source"))
+
+            val fillLayer = FillLayer("location-fill-layer", "location-source").apply {
+                withProperties(
+                    PropertyFactory.fillColor("#FF0000"), // Red fill color
+                    PropertyFactory.fillOpacity(0.5f)    // 50% opacity
+                )
+            }
+            map.style?.addLayer(fillLayer)
+            }
         }
 
         return binding.root
@@ -103,39 +114,32 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
             .include(LatLng(searchResult.northLat, searchResult.eastLon))
             .build()
 
-
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
                 try {
-
                     val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
                     val feature = result.toMapLibreFeature()
-                    val geoJsonSource = GeoJsonSource("location-source", FeatureCollection.fromFeature(feature))
 
-                    map.style?.addSource(geoJsonSource)
+                    // Update GeoJsonSource once the map style is loaded
+                    map.style?.getSource("location-source")?.let { source ->
+                        if (source is GeoJsonSource) {
+                            source.setGeoJson(FeatureCollection.fromFeature(feature))
+                        }
+                    }
 
-                    map.style?.addLayer(
-                        FillLayer("location-fill-layer", "location-source")
-                            .withProperties(
-                                // Set the fill color and opacity
-                                PropertyFactory.fillColor("#FF0000"), // Red fill color
-                                PropertyFactory.fillOpacity(0.5f)   // 50% opacity
-                            )
-                    )
-                }  catch (e: retrofit2.HttpException) {
+                } catch (e: retrofit2.HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
-                    Log.e(LocationSearchFragment.TAG, "Error body: $errorBody")
+                    Log.e(TAG, "Error body: $errorBody")
                     Toast.makeText(
                         requireContext(),
                         "Error fetching location: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 } catch (e: Exception) {
-                    Log.e(LocationSearchFragment.TAG, "General error: ${e.message}")
+                    Log.e(TAG, "General error: ${e.message}")
                 }
             }
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))  // 50px padding
-
         }
     }
 
