@@ -53,29 +53,43 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
 
-        binding.mapView.getMapAsync { map ->
-            this.map = map
-            map.setStyle(DEFAULT_MAP_STYLE_URL) {
-
-            map.cameraPosition = CameraPosition.Builder()
-                .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
-                .zoom(zoom ?: DEFAULT_ZOOM)
-                .build()
-
-            map.style?.addSource(GeoJsonSource("location-source"))
-
-            val fillLayer = FillLayer("location-fill-layer", "location-source").apply {
-                withProperties(
-                    PropertyFactory.fillColor("#FF0000"), // Red fill color
-                    PropertyFactory.fillOpacity(0.5f)    // 50% opacity
-                )
-            }
-            map.style?.addLayer(fillLayer)
-            }
-        }
+        initMap()
 
         return binding.root
     }
+
+    private fun initMap() {
+        binding.mapView.getMapAsync { map ->
+            this.map = map
+            map.setStyle(DEFAULT_MAP_STYLE_URL) {
+                setupInitialCameraPosition(map)
+                addMapSourcesAndLayers(map)
+            }
+        }
+    }
+
+    private fun setupInitialCameraPosition(map: MapLibreMap) {
+        map.cameraPosition = CameraPosition.Builder()
+            .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
+            .zoom(zoom ?: DEFAULT_ZOOM)
+            .build()
+    }
+
+    private fun addMapSourcesAndLayers(map: MapLibreMap) {
+        val style = map.style ?: return
+
+        style.addSource(GeoJsonSource(SEARCH_RESULT_AREA_SOURCE_NAME))
+        val themeColor = getThemeColor()
+
+        val fillLayer = FillLayer("location-fill-layer", SEARCH_RESULT_AREA_SOURCE_NAME).apply {
+            withProperties(
+                PropertyFactory.fillColor(themeColor),
+                PropertyFactory.fillOpacity(0.3f)
+            )
+        }
+        style.addLayer(fillLayer)
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -120,8 +134,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                     val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
                     val feature = result.toMapLibreFeature()
 
-                    // Update GeoJsonSource once the map style is loaded
-                    map.style?.getSource("location-source")?.let { source ->
+                    map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.let { source ->
                         if (source is GeoJsonSource) {
                             source.setGeoJson(FeatureCollection.fromFeature(feature))
                         }
@@ -139,8 +152,18 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                     Log.e(TAG, "General error: ${e.message}")
                 }
             }
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))  // 50px padding
+            map.easeCamera(
+                CameraUpdateFactory.newLatLngBounds(bounds, 150),
+                500
+            )
         }
+    }
+
+    private fun getThemeColor(): Int {
+        val typedValue = android.util.TypedValue()
+        val theme = requireContext().theme
+        theme.resolveAttribute(android.R.attr.colorAccent, typedValue, true)
+        return typedValue.data
     }
 
     companion object {
@@ -149,6 +172,8 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         private const val ARG_ZOOM = "zoom"
 
         val TAG = "Map"
+
+        val SEARCH_RESULT_AREA_SOURCE_NAME = "seatch-result-area-source"
 
         private const val DEFAULT_LAT = 32.0
         private const val DEFAULT_LON = 35.0
