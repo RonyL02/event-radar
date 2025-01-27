@@ -22,6 +22,7 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 
 class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
@@ -65,7 +66,27 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                 setupInitialCameraPosition(map)
                 addMapSourcesAndLayers(map)
             }
+            map.addOnMapClickListener { point ->
+                handleMapClick(point)
+                true
+            }
         }
+    }
+
+    private fun handleMapClick(point: LatLng) {
+        val features = map.queryRenderedFeatures(map.projection.toScreenLocation(point), SEARCH_RESULT_AREA_LAYER_NAME) //TODO: Handle click only for event layers
+        if (features.isNotEmpty()) {
+            val feature = features.first()
+            showFeatureContextMenu(feature, point)
+        }
+    }
+
+    private fun showFeatureContextMenu(feature: Feature, point: LatLng) {
+        Toast.makeText(requireContext(), "Clicked on: ${feature.getStringProperty("localname")}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleAddFeature(feature: Feature) {
+        // Logic to handle the "Add" button click
     }
 
     private fun setupInitialCameraPosition(map: MapLibreMap) {
@@ -81,7 +102,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         style.addSource(GeoJsonSource(SEARCH_RESULT_AREA_SOURCE_NAME))
         val themeColor = getThemeColor()
 
-        val fillLayer = FillLayer("location-fill-layer", SEARCH_RESULT_AREA_SOURCE_NAME).apply {
+        val fillLayer = FillLayer(SEARCH_RESULT_AREA_LAYER_NAME, SEARCH_RESULT_AREA_SOURCE_NAME).apply {
             withProperties(
                 PropertyFactory.fillColor(themeColor),
                 PropertyFactory.fillOpacity(0.3f)
@@ -140,6 +161,15 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                         }
                     }
 
+
+                    //TODO: Check if user has the location already saved
+                    binding.mapAddLocationButton.visibility = View.VISIBLE
+                    binding.mapAddLocationButton.setOnClickListener {
+                        // TODO: Handle Add Button click
+                        Toast.makeText(requireContext(), "Added ${feature.getStringProperty("localname")} to User", Toast.LENGTH_SHORT).show()
+                        binding.mapAddLocationButton.visibility = View.GONE
+                    }
+
                 } catch (e: retrofit2.HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
                     Log.e(TAG, "Error body: $errorBody")
@@ -174,6 +204,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         val TAG = "Map"
 
         val SEARCH_RESULT_AREA_SOURCE_NAME = "seatch-result-area-source"
+        val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
 
         private const val DEFAULT_LAT = 32.0
         private const val DEFAULT_LON = 35.0
