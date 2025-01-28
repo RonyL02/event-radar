@@ -28,7 +28,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="300dp"
             android:layout_marginTop="70dp">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -90,6 +90,7 @@
                     android:inputType="text"
                     android:padding="2dp"
                     android:text=""
+                    android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/user_image_card"
                     app:layout_constraintStart_toEndOf="@+id/user_image_card"
@@ -102,6 +103,7 @@
                 style="?attr/materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/red_600"
                 app:icon="@drawable/baseline_image_24"
                 app:layout_constraintBottom_toBottomOf="parent"
