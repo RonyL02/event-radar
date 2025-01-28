@@ -33,7 +33,7 @@ class LocationSearchFragment : Fragment() {
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
         isProgrammaticChange = true
-        binding.searchEditText.setText(result.locationName)
+        binding.searchEditText.setText(result.name)
         binding.searchResultsRecyclerView.visibility = View.GONE
         binding.searchEditText.clearFocus()
     }

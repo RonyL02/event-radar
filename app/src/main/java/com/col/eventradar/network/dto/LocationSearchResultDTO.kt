@@ -8,6 +8,7 @@ data class LocationSearchResultDTO(
     @SerializedName("lat") val latitude: Double,
     @SerializedName("lon") val longitude: Double,
     @SerializedName("address") val address: Address?,
+    @SerializedName("name") val name: String?,
     @SerializedName("boundingbox") val boundingBox: List<String>?
 )
 
@@ -22,11 +23,10 @@ fun LocationSearchResultDTO.toDomain(): LocationSearchResult {
     val westLon = boundingBox?.getOrNull(2)?.toDoubleOrNull() ?: longitude
     val eastLon = boundingBox?.getOrNull(3)?.toDoubleOrNull() ?: longitude
 
-    val locationName = listOfNotNull(address?.state, address?.country).joinToString(", ")
-
     return LocationSearchResult(
         osmId = osmId,
-        locationName = locationName,
+        name = name ?: "",
+        country = address?.country ?: "",
         latitude = latitude,
         longitude = longitude,
         southLat = southLat,
