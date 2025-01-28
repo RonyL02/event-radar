@@ -15,6 +15,7 @@ import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.ui.LocationSearchFragment
+import com.col.eventradar.ui.components.ToastFragment
 import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
@@ -34,6 +35,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private var zoom: Double? = null
 
     private lateinit var map: MapLibreMap
+    private lateinit var toastFragment: ToastFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
 
+        toastFragment = ToastFragment()
         initMap()
 
         return binding.root
@@ -82,7 +85,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     }
 
     private fun showFeatureContextMenu(feature: Feature, point: LatLng) {
-        Toast.makeText(requireContext(), "Clicked on: ${feature.getStringProperty("localname")}", Toast.LENGTH_SHORT).show()
+        toastFragment.showToast("Clicked on: ${feature.getStringProperty("localname")}")
     }
 
     private fun handleAddFeature(feature: Feature) {
@@ -165,7 +168,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                     //TODO: Check if user has the location already saved
                     binding.mapAddLocationButton.visibility = View.VISIBLE
                     binding.mapAddLocationButton.setOnClickListener {
-                        // TODO: Handle Add Button click
+                        toastFragment.showToast("Added ${feature.getStringProperty("localname")} to User")
                         Toast.makeText(requireContext(), "Added ${feature.getStringProperty("localname")} to User", Toast.LENGTH_SHORT).show()
                         binding.mapAddLocationButton.visibility = View.GONE
                     }
@@ -173,7 +176,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                 } catch (e: retrofit2.HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
                     Log.e(TAG, "Error body: $errorBody")
-                    Toast.makeText(
+                    toastFragment.showToast("Error fetching location: ${e.message}")
                         requireContext(),
                         "Error fetching location: ${e.message}",
                         Toast.LENGTH_SHORT

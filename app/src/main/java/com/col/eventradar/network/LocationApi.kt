@@ -5,7 +5,7 @@ import com.col.eventradar.network.dto.LocationSearchResultDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface LocationResultApi {
+interface LocationApi {
     @GET("search")
     suspend fun searchLocation(
         @Query("q") query: String,
