@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/close_button"
+        style="?attr/materialIconButtonFilledTonalStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/transparent"
+        app:icon="@drawable/baseline_close_24"
+        app:iconSize="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/modal"
+        app:layout_constraintStart_toEndOf="@+id/add_image_button"
+        app:layout_constraintTop_toTopOf="@+id/add_image_button" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -10,23 +26,32 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentsList"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="500dp"
+            android:layout_marginTop="70dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/commentsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                />
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="110dp"
             android:layout_gravity="center"
             android:paddingVertical="10dp">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/user_image_card"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
+                android:layout_marginStart="8dp"
                 app:cardCornerRadius="250dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -42,10 +67,11 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/comment_input_card"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="37dp"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 app:cardCornerRadius="25dp"
                 app:layout_constraintBottom_toBottomOf="parent"

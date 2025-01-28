@@ -26,6 +26,10 @@ class EventCommentsBottomSheet :
         bindingInternal =
             FragmentEventCommentsBottomSheetBinding.inflate(inflater, container, false)
 
+        binding.closeButton.setOnClickListener {
+            dismiss()
+        }
+
         binding.commentsList.apply {
             setHasFixedSize(true)
 
@@ -45,6 +49,46 @@ class EventCommentsBottomSheet :
                         ),
                         Comment(
                             "aaaaaaaaa", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
+                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
+                        ),
+                        Comment(
+                            "sdfsfsfddsfdsfdsfdsd", "sdfsdf",
                             LocalDateTime.of(2025, Month.MAY, 12, 5, 23)
                         ),
                         Comment(

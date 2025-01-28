@@ -37,11 +37,5 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(binding.navHostContainer.id)
         binding.bottomNavigationView.setupWithNavController(navController)
-
-        val modalBottomSheet = EventDetailsBottomSheet(EventDetails(EventType.EarthQuake,"Earthquake","Jerusalem",
-            LocalDateTime.of(2022,7,7,18,58),
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-            5))
-        modalBottomSheet.show(supportFragmentManager, EventDetailsBottomSheet.TAG)
     }
 }
