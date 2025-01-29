@@ -5,23 +5,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import org.maplibre.android.MapLibre
-import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.utils.MapUtils
 import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
-import org.maplibre.android.style.layers.FillLayer
-import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
@@ -57,6 +54,10 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         binding.mapView.onCreate(savedInstanceState)
 
         toastFragment = ToastFragment()
+        childFragmentManager.beginTransaction()
+            .add(toastFragment, "ToastFragment")
+            .commit()
+
         initMap()
 
         return binding.root
@@ -65,9 +66,10 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private fun initMap() {
         binding.mapView.getMapAsync { map ->
             this.map = map
-            map.setStyle(DEFAULT_MAP_STYLE_URL) {
-                setupInitialCameraPosition(map)
-                addMapSourcesAndLayers(map)
+
+            map.setStyle(MapUtils.DEFAULT_MAP_STYLE_URL) {
+                MapUtils.setupInitialCameraPosition(map, lat?:DEFAULT_LAT, lon?:DEFAULT_LON, zoom?:DEFAULT_ZOOM)
+                MapUtils.addMapSourcesAndLayers(map,requireContext())
             }
             map.addOnMapClickListener { point ->
                 handleMapClick(point)
@@ -77,7 +79,7 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     }
 
     private fun handleMapClick(point: LatLng) {
-        val features = map.queryRenderedFeatures(map.projection.toScreenLocation(point), SEARCH_RESULT_AREA_LAYER_NAME) //TODO: Handle click only for event layers
+        val features = map.queryRenderedFeatures(map.projection.toScreenLocation(point), MapUtils.SEARCH_RESULT_AREA_LAYER_NAME) //TODO: Handle click only for event layers
         if (features.isNotEmpty()) {
             val feature = features.first()
             showFeatureContextMenu(feature, point)
@@ -87,33 +89,6 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     private fun showFeatureContextMenu(feature: Feature, point: LatLng) {
         toastFragment.showToast("Clicked on: ${feature.getStringProperty("localname")}")
     }
-
-    private fun handleAddFeature(feature: Feature) {
-        // Logic to handle the "Add" button click
-    }
-
-    private fun setupInitialCameraPosition(map: MapLibreMap) {
-        map.cameraPosition = CameraPosition.Builder()
-            .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
-            .zoom(zoom ?: DEFAULT_ZOOM)
-            .build()
-    }
-
-    private fun addMapSourcesAndLayers(map: MapLibreMap) {
-        val style = map.style ?: return
-
-        style.addSource(GeoJsonSource(SEARCH_RESULT_AREA_SOURCE_NAME))
-        val themeColor = getThemeColor()
-
-        val fillLayer = FillLayer(SEARCH_RESULT_AREA_LAYER_NAME, SEARCH_RESULT_AREA_SOURCE_NAME).apply {
-            withProperties(
-                PropertyFactory.fillColor(themeColor),
-                PropertyFactory.fillOpacity(0.3f)
-            )
-        }
-        style.addLayer(fillLayer)
-    }
-
 
     override fun onStart() {
         super.onStart()
@@ -158,18 +133,16 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                     val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
                     val feature = result.toMapLibreFeature()
 
-                    map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.let { source ->
+                    map.style?.getSource(MapUtils.SEARCH_RESULT_AREA_SOURCE_NAME)?.let { source ->
                         if (source is GeoJsonSource) {
                             source.setGeoJson(FeatureCollection.fromFeature(feature))
                         }
                     }
 
-
                     //TODO: Check if user has the location already saved
                     binding.mapAddLocationButton.visibility = View.VISIBLE
                     binding.mapAddLocationButton.setOnClickListener {
                         toastFragment.showToast("Added ${feature.getStringProperty("localname")} to User")
-                        Toast.makeText(requireContext(), "Added ${feature.getStringProperty("localname")} to User", Toast.LENGTH_SHORT).show()
                         binding.mapAddLocationButton.visibility = View.GONE
                     }
 
@@ -177,10 +150,6 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
                     val errorBody = e.response()?.errorBody()?.string()
                     Log.e(TAG, "Error body: $errorBody")
                     toastFragment.showToast("Error fetching location: ${e.message}")
-                        requireContext(),
-                        "Error fetching location: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 } catch (e: Exception) {
                     Log.e(TAG, "General error: ${e.message}")
                 }
@@ -192,37 +161,25 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         }
     }
 
-    private fun getThemeColor(): Int {
-        val typedValue = android.util.TypedValue()
-        val theme = requireContext().theme
-        theme.resolveAttribute(android.R.attr.colorAccent, typedValue, true)
-        return typedValue.data
-    }
+   companion object {
+    private const val ARG_LAT = "lat"
+    private const val ARG_LON = "lon"
+    private const val ARG_ZOOM = "zoom"
 
-    companion object {
-        private const val ARG_LAT = "lat"
-        private const val ARG_LON = "lon"
-        private const val ARG_ZOOM = "zoom"
+    val TAG = "Map"
 
-        val TAG = "Map"
+    private const val DEFAULT_LAT = 32.0
+    private const val DEFAULT_LON = 35.0
+    private const val DEFAULT_ZOOM = 5.0
 
-        val SEARCH_RESULT_AREA_SOURCE_NAME = "seatch-result-area-source"
-        val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
-
-        private const val DEFAULT_LAT = 32.0
-        private const val DEFAULT_LON = 35.0
-        private const val DEFAULT_ZOOM = 5.0
-
-        private const val DEFAULT_MAP_STYLE_URL = "https://demotiles.maplibre.org/style.json";
-
-        @JvmStatic
-        fun newInstance(lat: Double, lon: Double, zoom: Double) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putDouble(ARG_LAT, lat)
-                    putDouble(ARG_LON, lon)
-                    putDouble(ARG_ZOOM, zoom)
-                }
+    @JvmStatic
+    fun newInstance(lat: Double, lon: Double, zoom: Double) =
+        MapFragment().apply {
+            arguments = Bundle().apply {
+                putDouble(ARG_LAT, lat)
+                putDouble(ARG_LON, lon)
+                putDouble(ARG_ZOOM, zoom)
             }
+        }
     }
 }
