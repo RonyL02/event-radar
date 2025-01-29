@@ -21,9 +21,9 @@ import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 
 object MapUtils {
-    private const val DEFAULT_LAT = 32.0
-    private const val DEFAULT_LON = 35.0
-    private const val DEFAULT_ZOOM = 5.0
+    const val DEFAULT_LAT = 32.0
+    const val DEFAULT_LON = 35.0
+    const val DEFAULT_ZOOM = 5.0
 
     const val SEARCH_RESULT_AREA_SOURCE_NAME = "search-result-area-source"
     const val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
@@ -40,9 +40,10 @@ object MapUtils {
 
     fun initMap(map: MapLibreMap, context: Context, toastFragment: ToastFragment) {
 
-        map.setStyle(DEFAULT_MAP_STYLE_URL) {
+        map.setStyle(DEFAULT_MAP_STYLE_URL) { style ->
             setupInitialCameraPosition(map, DEFAULT_LAT, DEFAULT_LON, DEFAULT_ZOOM)
             addMapSourcesAndLayers(map, context)
+//            enableLocationComponent(style)
         }
 
         map.addOnMapClickListener { point ->
@@ -50,7 +51,8 @@ object MapUtils {
             true
         }
     }
-    private fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
+
+    fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
         val style = map.style ?: return
 
         val rasterSource = RasterSource(
@@ -80,14 +82,14 @@ object MapUtils {
         style.addLayer(fillLayer)
     }
 
-    private fun setupInitialCameraPosition(map: MapLibreMap, lat: Double, lon: Double, zoom: Double) {
+    fun setupInitialCameraPosition(map: MapLibreMap, lat: Double, lon: Double, zoom: Double) {
         map.cameraPosition = CameraPosition.Builder()
             .target(LatLng(lat, lon))
             .zoom(zoom)
             .build()
     }
 
-    private fun handleMapClick(map: MapLibreMap, point: LatLng, toastFragment: ToastFragment) {
+    fun handleMapClick(map: MapLibreMap, point: LatLng, toastFragment: ToastFragment) {
         val features = map.queryRenderedFeatures(map.projection.toScreenLocation(point), SEARCH_RESULT_AREA_LAYER_NAME)
         if (features.isNotEmpty()) {
             val feature = features.first()

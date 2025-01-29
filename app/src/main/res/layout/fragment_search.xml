@@ -38,7 +38,14 @@
             android:visibility="gone"
             />
     </LinearLayout>
-
+    <fragment
+        android:id="@+id/searchGpsLocationFragment"
+        android:name="com.col.eventradar.ui.components.GpsLocationSearchFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="10dp"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecyclerView"
         android:layout_width="match_parent"
