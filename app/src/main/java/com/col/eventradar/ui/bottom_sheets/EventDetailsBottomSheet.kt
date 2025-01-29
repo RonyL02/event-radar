@@ -8,15 +8,16 @@ import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
 import com.col.eventradar.models.EventDetails
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EventDetailsBottomSheet(private val eventDetails: EventDetails) :
-    BottomSheetDialogFragment() {
+class EventDetailsBottomSheet(
+    private val eventDetails: EventDetails,
+) : BottomSheetDialogFragment() {
     private var bindingInternal: FragmentEventDetailsBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentEventDetailsBottomSheetBinding.inflate(inflater, container, false)
 
