@@ -20,7 +20,6 @@ import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.network.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 
 class LocationSearchFragment : Fragment() {
 
@@ -34,7 +33,7 @@ class LocationSearchFragment : Fragment() {
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
         isProgrammaticChange = true
-        binding.searchEditText.setText(result.locationName)
+        binding.searchEditText.setText(result.name)
         binding.searchResultsRecyclerView.visibility = View.GONE
         binding.searchEditText.clearFocus()
     }
