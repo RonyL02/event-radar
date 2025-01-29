@@ -13,6 +13,7 @@ import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.RasterLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.android.style.sources.RasterSource
 import org.maplibre.android.style.sources.TileSet
@@ -56,10 +57,10 @@ object MapUtils {
             RASTER_SOURCE_NAME,
             TileSet(TileJSON_VERSION, "${DEFAULT_MAP_RASTER_URL}/{z}/{x}/{y}.png")
         )
-        val rasterLayer = org.maplibre.android.style.layers.RasterLayer(
+        val rasterLayer = RasterLayer(
             RASTER_LAYER_ID,
             RASTER_SOURCE_NAME
-        )
+        ).withProperties(PropertyFactory.rasterSaturation(-1f))
 
         style.addSource(rasterSource)
         style.addLayer(rasterLayer)
