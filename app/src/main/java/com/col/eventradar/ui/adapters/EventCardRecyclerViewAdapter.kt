@@ -2,7 +2,6 @@ package com.col.eventradar.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.FragmentEventCardBinding
 import com.col.eventradar.models.Event
@@ -12,39 +11,42 @@ import com.col.eventradar.models.Event
  * TODO: Replace the implementation with code for your data type.
  */
 class EventCardRecyclerViewAdapter(
-    private val values: List<Event>,
-) : RecyclerView.Adapter<EventCardRecyclerViewAdapter.ViewHolder>() {
+    private val events: List<Event>,
+    private val onClickListener: (Event) -> Unit,
+) : RecyclerView.Adapter<EventCardRecyclerViewAdapter.EventViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): ViewHolder =
-        ViewHolder(
-            FragmentEventCardBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false,
-            ),
-        )
+    ) = EventViewHolder(
+        FragmentEventCardBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false,
+        ),
+    )
 
     override fun onBindViewHolder(
-        holder: ViewHolder,
+        holder: EventViewHolder,
         position: Int,
-    ) {
-        val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
-        holder.titleView.text = item.title
-    }
+    ) = holder.bind(events[position])
 
-    override fun getItemCount(): Int = values.size
+    override fun getItemCount(): Int = events.size
 
-    inner class ViewHolder(
-        binding: FragmentEventCardBinding,
+    inner class EventViewHolder(
+        private val binding: FragmentEventCardBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-        val idView: TextView = binding.itemNumber
-        val contentView: TextView = binding.eventFragmentContent
-        val titleView: TextView = binding.eventFragmentTitle
+        fun bind(event: Event) {
+            with(binding) {
+                eventTitle.text = event.title
+                eventTime.text =
+                    event.getFormattedTime()
+                locationName.text = event.locationName
+                eventTypeIcon.setImageResource(event.getIconRes())
+                eventDescription.text = event.getDescriptionPreview()
+                commentsCount.text = event.comments.size.toString()
 
-        override fun toString(): String = super.toString() + " '" + titleView.text + contentView.text + "'"
+                root.setOnClickListener { onClickListener(event) }
+            }
+        }
     }
 }

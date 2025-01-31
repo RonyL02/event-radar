@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
-import com.col.eventradar.models.EventDetails
+import com.col.eventradar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.util.Locale
 
 class EventDetailsBottomSheet(
-    private val eventDetails: EventDetails,
+    private val event: Event,
 ) : BottomSheetDialogFragment() {
     private var bindingInternal: FragmentEventDetailsBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
@@ -21,19 +22,27 @@ class EventDetailsBottomSheet(
     ): View {
         bindingInternal = FragmentEventDetailsBottomSheetBinding.inflate(inflater, container, false)
 
-        binding.apply {
-            locationName.text = eventDetails.locationName
-            eventTitle.text = eventDetails.name
-            eventDescription.text = eventDetails.description
-            eventTime.text = "${eventDetails.time.hour}:${eventDetails.time.minute}"
-            commentsCount.text = eventDetails.commentsAmount.toString()
-            closeButton.setOnClickListener {
-                dismiss()
-            }
+        event.let {
+            with(binding) {
+                locationName.text = it.locationName
+                eventTitle.text = it.title
+                eventDescription.text = it.description
+                eventTime.text =
+                    String.format(
+                        Locale.UK,
+                        "%02d:%02d",
+                        it.time.hour,
+                        it.time.minute,
+                    )
+                commentsCount.text = event.comments.size.toString()
+                closeButton.setOnClickListener {
+                    dismiss()
+                }
 
-            commentsTitle.setOnClickListener {
-                val modalBottomSheet = EventCommentsBottomSheet()
-                modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)
+                commentsTitle.setOnClickListener {
+                    val modalBottomSheet = EventCommentsBottomSheet(event.comments)
+                    modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)
+                }
             }
         }
 
