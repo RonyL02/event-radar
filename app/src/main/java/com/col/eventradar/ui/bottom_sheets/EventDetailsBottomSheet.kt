@@ -39,7 +39,7 @@ class EventDetailsBottomSheet(
                     dismiss()
                 }
 
-                commentsTitle.setOnClickListener {
+                footer.setOnClickListener {
                     val modalBottomSheet = EventCommentsBottomSheet(event.comments)
                     modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)
                 }

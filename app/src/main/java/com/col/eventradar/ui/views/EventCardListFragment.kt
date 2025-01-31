@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
 import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.models.EventModel
@@ -55,6 +58,12 @@ class EventCardListFragment : Fragment() {
                         modalBottomSheet.show(parentFragmentManager, EventDetailsBottomSheet.TAG)
                     },
                 )
+
+            val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            ContextCompat.getDrawable(requireContext(), R.drawable.event_list_divider)?.let {
+                divider.setDrawable(it)
+            }
+            addItemDecoration(divider)
         }
 
         return binding.root
