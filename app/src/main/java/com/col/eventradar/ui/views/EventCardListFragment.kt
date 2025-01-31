@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
 import com.col.eventradar.databinding.FragmentEventCardListBinding
-import com.col.eventradar.models.EventDetails
 import com.col.eventradar.models.EventModel
-import com.col.eventradar.models.EventType
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
-import java.time.LocalDateTime
 
 /**
  * A fragment representing a list of Items.
@@ -49,18 +49,22 @@ class EventCardListFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-            adapter = EventCardRecyclerViewAdapter(EventModel.EVENTS_DATA)
-        }
+            adapter =
+                EventCardRecyclerViewAdapter(
+                    EventModel.EVENTS_DATA,
+                    onClickListener = { eventDetails ->
+                        val modalBottomSheet =
+                            EventDetailsBottomSheet(eventDetails)
+                        modalBottomSheet.show(parentFragmentManager, EventDetailsBottomSheet.TAG)
+                    },
+                )
 
-        val modalBottomSheet = EventDetailsBottomSheet(
-            EventDetails(
-                EventType.EarthQuake, "Earthquake", "Jerusalem",
-                LocalDateTime.of(2022, 7, 7, 18, 58),
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-                5
-            )
-        )
-        modalBottomSheet.show(parentFragmentManager, EventDetailsBottomSheet.TAG)
+            val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            ContextCompat.getDrawable(requireContext(), R.drawable.event_list_divider)?.let {
+                divider.setDrawable(it)
+            }
+            addItemDecoration(divider)
+        }
 
         return binding.root
     }

@@ -9,10 +9,10 @@ import com.col.eventradar.databinding.FragmentEventCommentsBottomSheetBinding
 import com.col.eventradar.models.Comment
 import com.col.eventradar.ui.adapters.EventCommentRecyclerViewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.time.LocalDateTime
-import java.time.Month
 
-class EventCommentsBottomSheet : BottomSheetDialogFragment() {
+class EventCommentsBottomSheet(
+    private val comments: List<Comment>,
+) : BottomSheetDialogFragment() {
     private var bindingInternal: FragmentEventCommentsBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
     private lateinit var commentRecyclerAdapter: EventCommentRecyclerViewAdapter
@@ -36,78 +36,7 @@ class EventCommentsBottomSheet : BottomSheetDialogFragment() {
             layoutManager = linearLayoutManager
             commentRecyclerAdapter =
                 EventCommentRecyclerViewAdapter(
-                    listOf(
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "aaaaaaaaa",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                        Comment(
-                            "sdfsfsfddsfdsfdsfdsd",
-                            "sdfsdf",
-                            LocalDateTime.of(2025, Month.MAY, 12, 5, 23),
-                        ),
-                    ),
+                    comments,
                 )
             adapter = commentRecyclerAdapter
         }
