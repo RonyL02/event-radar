@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginn"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="16dp">
+
+    <!-- לוגו (סמל מטרה) -->
+
+    <!-- שם האפליקציה -->
+
+    <!-- תיאור קצר -->
+
+    <!-- כפתור כניסה עם Google -->
+
+    <!-- סמל זכויות יוצרים בתחתית -->
+
+    <ImageView
+        android:id="@+id/logo_icon"
+        android:layout_width="72dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="5dp"
+        android:contentDescription="EventRadar logo"
+        android:src="@drawable/tabler_radar_2"
+        app:layout_constraintBottom_toBottomOf="@+id/logo_text"
+        app:layout_constraintStart_toEndOf="@+id/logo_text"
+        app:layout_constraintTop_toTopOf="@+id/logo_text"
+        app:layout_constraintVertical_bias="0.198"
+         />
+
+    <TextView
+        android:id="@+id/logo_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logo_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="432dp"
+        android:fontFamily="sans-serif"
+        android:text="EventRadar"
+        android:textColor="#E74C3C"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        />
+
+    <TextView
+        android:id="@+id/tagline_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logo_text"
+        android:fontFamily="sans-serif-light"
+        android:text="Welcome to"
+        android:textStyle="bold"
+        android:textColor="#7F8C8D"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/logo_text"
+        app:layout_constraintStart_toStartOf="@+id/logo_text"
+        />
+
+    <TextView
+        android:id="@+id/copyright_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-light"
+        android:text="© 2025 EventRadar"
+        android:textColor="#B0B0B0"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.525"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+       />
+
+    <Button
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:fontFamily="sans-serif"
+        android:text="Sign in with Google"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/copyright_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        android:drawableLeft="@drawable/devicon_google"
+         />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
