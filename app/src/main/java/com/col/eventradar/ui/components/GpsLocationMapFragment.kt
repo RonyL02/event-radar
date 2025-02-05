@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.col.eventradar.R
 import com.col.eventradar.ui.views.MapFragment.Companion.TAG
 import com.col.eventradar.utils.ThemeUtils
@@ -21,7 +22,6 @@ import org.maplibre.android.location.LocationComponent
 import org.maplibre.android.location.LocationComponentActivationOptions
 import org.maplibre.android.location.LocationComponentOptions
 import org.maplibre.android.location.modes.RenderMode
-import org.maplibre.android.location.permissions.PermissionsListener
 import org.maplibre.android.location.permissions.PermissionsManager
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
@@ -29,8 +29,20 @@ import org.maplibre.android.maps.Style
 
 class GpsLocationMapFragment : Fragment() {
     var locationComponent: LocationComponent? = null
-    private var permissionsManager: PermissionsManager? = null
     private var map: MapLibreMap? = null
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d(TAG, "Permission granted")
+                enableLocationComponent(map?.style!!)
+            } else {
+                Toast.makeText(
+                    context,
+                    "You need to accept location permissions.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,32 +89,8 @@ class GpsLocationMapFragment : Fragment() {
         if (PermissionsManager.areLocationPermissionsGranted(context)) {
             enableLocationComponent(style)
         } else {
-            permissionsManager = PermissionsManager(object : PermissionsListener {
-                override fun onExplanationNeeded(permissionsToExplain: List<String>) {}
-
-                override fun onPermissionResult(granted: Boolean) {
-                    if (!granted) {
-                        Toast.makeText(
-                            context,
-                            "You need to accept location permissions.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        enableLocationComponent(style);
-                    }
-                }
-            })
-            permissionsManager!!.requestLocationPermissions(activity)
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionsManager!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     fun getCurrentLocation(): Location? {
@@ -125,7 +113,7 @@ class GpsLocationMapFragment : Fragment() {
                 "You need to accept location permissions to to use Location based services.",
                 Toast.LENGTH_SHORT
             ).show()
-            permissionsManager!!.requestLocationPermissions(activity)
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
         else {
             Toast.makeText(context, "Location not available", Toast.LENGTH_SHORT).show()
