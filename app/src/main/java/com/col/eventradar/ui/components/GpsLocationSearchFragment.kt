@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.databinding.FragmentGpsLocationSearchBinding
 import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.network.OpenStreetMapService
-import com.col.eventradar.network.dto.toDomain
+import com.col.eventradar.api.OpenStreetMapService
+import com.col.eventradar.api.dto.toDomain
 import com.col.eventradar.ui.views.MapFragment
 import kotlinx.coroutines.launch
 
@@ -38,17 +38,22 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
         savedInstanceState: Bundle?
     ): View {
         bindingInternal = FragmentGpsLocationSearchBinding.inflate(inflater, container, false)
+
         binding.searchGpsLocationLayout.setOnClickListener {
             val location = locationListener?.onGetLocation()
             locationListener?.onGPSLocationClick()
             Log.d(TAG, location.toString())
-            if (location != null) {
-                binding.root.visibility = View.GONE
+
+            location?.let {
+                binding.apply {
+                    root.visibility = View.GONE
+                }
+
                 lifecycleScope.launch {
                     try {
                         val recievedLocationResult = OpenStreetMapService.api.reverseGeocode(
-                            latitude = location.latitude,
-                            longitude = location.longitude
+                            latitude = it.latitude,
+                            longitude = it.longitude
                         )
                         locationListener?.onLocationReceived(recievedLocationResult.toDomain())
                     } catch (e: retrofit2.HttpException) {
@@ -65,9 +70,11 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
                 }
             }
         }
+
         binding.root.visibility = View.GONE
         return binding.root
     }
+
 
     private fun findMapFragment(): MapFragment? {
         var currentFragment: Fragment? = this
@@ -94,10 +101,6 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
     }
 
     override fun onFocusChange(value: Boolean) {
-        if (value) {
-            binding.root.visibility = View.VISIBLE
-        } else {
-            binding.root.visibility = View.GONE
-        }
+        binding.root.visibility = if (value) View.VISIBLE else View.GONE
     }
 }

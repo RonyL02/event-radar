@@ -1,4 +1,4 @@
-package com.col.eventradar.network.dto
+package com.col.eventradar.api.dto
 
 import com.col.eventradar.models.LocationSearchResult
 import com.google.gson.annotations.SerializedName

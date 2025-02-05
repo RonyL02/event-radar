@@ -1,7 +1,7 @@
-package com.col.eventradar.network
+package com.col.eventradar.api
 
-import com.col.eventradar.network.dto.LocationDetailsResultDTO
-import com.col.eventradar.network.dto.LocationSearchResultDTO
+import com.col.eventradar.api.dto.LocationDetailsResultDTO
+import com.col.eventradar.api.dto.LocationSearchResultDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 

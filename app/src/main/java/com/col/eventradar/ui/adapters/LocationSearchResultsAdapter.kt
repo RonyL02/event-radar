@@ -33,10 +33,12 @@ class LocationSearchResultsAdapter(private val onClick: (LocationSearchResult) -
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(result: LocationSearchResult) {
-            binding.resultName.text = result.name
-            binding.resultCountry.text = result.country
-            binding.root.setOnClickListener {
-                onClick(result)
+            binding.apply {
+                resultName.text = result.name
+                resultCountry.text = result.country
+                root.setOnClickListener {
+                    onClick(result)
+                }
             }
         }
     }

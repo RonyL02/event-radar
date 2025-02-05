@@ -17,10 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.network.OpenStreetMapService
-import com.col.eventradar.network.dto.toDomain
+import com.col.eventradar.api.OpenStreetMapService
+import com.col.eventradar.api.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
+import com.col.eventradar.utils.KeyboardUtils
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment : Fragment() {
@@ -35,9 +36,12 @@ class LocationSearchFragment : Fragment() {
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
         isProgrammaticChange = true
-        binding.searchEditText.setText(result.name)
-        binding.searchResultsRecyclerView.visibility = View.GONE
-        binding.searchEditText.clearFocus()
+        binding.apply {
+            searchEditText.setText(result.name)
+            searchResultsRecyclerView.visibility = View.GONE
+            searchEditText.clearFocus()
+            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+        }
     }
 
     override fun onCreateView(
@@ -47,42 +51,44 @@ class LocationSearchFragment : Fragment() {
     ): View {
         bindingInternal = FragmentSearchBinding.inflate(inflater, container, false)
 
-        binding.searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.searchResultsRecyclerView.adapter = searchResultsAdapter
-
         gpsFragment = GpsLocationSearchFragment()
 
         childFragmentManager.beginTransaction()
             .add(R.id.gpsContainer, gpsFragment!!, "GpsFragmentTag")
             .commit()
-        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            gpsFragment?.onFocusChange(hasFocus)
-        }
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(searchValue: Editable?) {
-                if (isProgrammaticChange) {
-                    isProgrammaticChange = false
-                    return
-                }
-                searchRunnable?.let {
-                    handler.removeCallbacks(it)
-                }
 
-                searchRunnable = Runnable {
-                    val query = searchValue.toString()
-                    if (query.isNotEmpty()) {
-                        searchLocation(query)
+        binding.apply {
+            searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            searchResultsRecyclerView.adapter = searchResultsAdapter
+            searchEditText.setOnFocusChangeListener { _, hasFocus ->
+                gpsFragment?.onFocusChange(hasFocus)
+            }
+            searchEditText.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(searchValue: Editable?) {
+                    if (isProgrammaticChange) {
+                        isProgrammaticChange = false
+                        return
+                    }
+                    searchRunnable?.let {
+                        handler.removeCallbacks(it)
+                    }
+
+                    searchRunnable = Runnable {
+                        val query = searchValue.toString()
+                        if (query.isNotEmpty()) {
+                            searchLocation(query)
+                        }
+                    }
+                    searchRunnable?.let {
+                        val debounceDelayMillis = 500L
+                        handler.postDelayed(it, debounceDelayMillis)
                     }
                 }
-                searchRunnable?.let {
-                    val debounceDelayMillis = 500L
-                    handler.postDelayed(it, debounceDelayMillis)
-                }
-            }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+        }
 
         return binding.root
     }
@@ -123,8 +129,11 @@ class LocationSearchFragment : Fragment() {
     }
 
     private fun setLoading(isLoading: Boolean) {
-        binding.searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.progressBar.visibility = if (!isLoading) View.GONE else View.VISIBLE
+        binding.apply {
+            searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
     }
 
     override fun onDetach() {

@@ -1,4 +1,4 @@
-package com.col.eventradar.network
+package com.col.eventradar.api
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

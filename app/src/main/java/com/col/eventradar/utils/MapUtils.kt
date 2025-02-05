@@ -3,7 +3,7 @@ import android.util.Log
 import android.view.View
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.network.OpenStreetMapService
+import com.col.eventradar.api.OpenStreetMapService
 import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.utils.ThemeUtils
 import org.maplibre.android.camera.CameraPosition
@@ -106,10 +106,12 @@ object MapUtils {
                 }
             }
 
-            binding.mapAddLocationButton.visibility = View.VISIBLE
-            binding.mapAddLocationButton.setOnClickListener {
-                toastFragment.showToast("Added ${feature.getStringProperty("localname")} to User")
-                binding.mapAddLocationButton.visibility = View.GONE
+            binding.apply {
+                mapAddLocationButton.visibility = View.VISIBLE
+                mapAddLocationButton.setOnClickListener {
+                    toastFragment.showToast("Added ${feature.getStringProperty("localname")} to User")
+                    mapAddLocationButton.visibility = View.GONE
+                }
             }
 
         } catch (e: retrofit2.HttpException) {
