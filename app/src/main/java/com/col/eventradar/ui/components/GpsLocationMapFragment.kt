@@ -17,9 +17,6 @@ import android.widget.Toast
 import com.col.eventradar.R
 import com.col.eventradar.ui.views.MapFragment.Companion.TAG
 import com.col.eventradar.utils.ThemeUtils
-import org.maplibre.android.camera.CameraPosition
-import org.maplibre.android.camera.CameraUpdateFactory
-import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.location.LocationComponent
 import org.maplibre.android.location.LocationComponentActivationOptions
 import org.maplibre.android.location.LocationComponentOptions
@@ -34,7 +31,6 @@ class GpsLocationMapFragment : Fragment() {
     var locationComponent: LocationComponent? = null
     private var permissionsManager: PermissionsManager? = null
     private var map: MapLibreMap? = null
-    private var isLocationPermitted = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,36 +66,27 @@ class GpsLocationMapFragment : Fragment() {
             locationComponent?.isLocationComponentEnabled = true
             locationComponent?.renderMode = RenderMode.COMPASS
         } else {
-            checkPermissions()
+            checkPermissions(style)
         }
         Log.d(TAG, "Location component activated.")
     }
 
-    private fun checkPermissions() {
+    private fun checkPermissions(style: Style) {
         if (PermissionsManager.areLocationPermissionsGranted(context)) {
-            Toast.makeText(
-                context,
-                "You have location permissions.",
-                Toast.LENGTH_SHORT
-            ).show()
+            enableLocationComponent(style)
         } else {
             permissionsManager = PermissionsManager(object : PermissionsListener {
-                override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-                    Toast.makeText(
-                        context,
-                        "You need to accept location permissions.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                override fun onExplanationNeeded(permissionsToExplain: List<String>) {}
 
                 override fun onPermissionResult(granted: Boolean) {
-                    isLocationPermitted = granted
                     if (!granted) {
                         Toast.makeText(
                             context,
-                            "You need to accept location permissions to to use Location based services.",
+                            "You need to accept location permissions.",
                             Toast.LENGTH_SHORT
                         ).show()
+                    } else {
+                        enableLocationComponent(style);
                     }
                 }
             })
@@ -116,12 +103,11 @@ class GpsLocationMapFragment : Fragment() {
         permissionsManager!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-
     fun getCurrentLocation(): Location? {
         val location = locationComponent?.lastKnownLocation
         if (location != null) {
             return location
-        } else if (isLocationEnabled(requireContext())) {
+        } else if (!isLocationEnabled(requireContext())) {
             AlertDialog.Builder(context)
                 .setTitle("Enable Location")
                 .setMessage("Your location is turned off. Please enable it to use this feature.")
@@ -131,7 +117,15 @@ class GpsLocationMapFragment : Fragment() {
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
-        } else {
+        } else if (!PermissionsManager.areLocationPermissionsGranted(context)) {
+            Toast.makeText(
+                context,
+                "You need to accept location permissions to to use Location based services.",
+                Toast.LENGTH_SHORT
+            ).show()
+            permissionsManager!!.requestLocationPermissions(activity)
+        }
+        else {
             Toast.makeText(context, "Location not available", Toast.LENGTH_SHORT).show()
         }
         return null
@@ -139,7 +133,10 @@ class GpsLocationMapFragment : Fragment() {
 
     private fun isLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+        val locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF && (isGpsEnabled || isNetworkEnabled)
     }
 }

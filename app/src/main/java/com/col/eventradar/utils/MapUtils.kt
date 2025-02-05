@@ -37,7 +37,7 @@ object MapUtils {
     const val TileJSON_VERSION = "2.1.0"
 
     val TAG = "MapUtils"
-    
+
     fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
         val style = map.style ?: return
 
@@ -100,9 +100,9 @@ object MapUtils {
             val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
             val feature = result.toMapLibreFeature()
 
-            map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.let { source ->
-                if (source is GeoJsonSource) {
-                    source.setGeoJson(FeatureCollection.fromFeature(feature))
+            map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
+                if (this is GeoJsonSource) {
+                    setGeoJson(FeatureCollection.fromFeature(feature))
                 }
             }
 

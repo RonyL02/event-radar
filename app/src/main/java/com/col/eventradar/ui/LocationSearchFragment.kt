@@ -24,7 +24,6 @@ import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment : Fragment() {
-
     private var bindingInternal: FragmentSearchBinding? = null
     private val binding get() = bindingInternal!!
     private var listener: MapFragmentListener? = null
@@ -97,6 +96,7 @@ class LocationSearchFragment : Fragment() {
     private fun searchLocation(query: String) {
         lifecycleScope.launch {
             try {
+                setLoading(true)
                 val results = OpenStreetMapService.api.searchLocation(query = query, limit = 5)
                 val locationResults = results.map { it.toDomain() }
                 Log.d(TAG, results.toString())
@@ -118,7 +118,13 @@ class LocationSearchFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e(TAG, "General error: ${e.message}")
             }
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        binding.searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
+        binding.progressBar.visibility = if (!isLoading) View.GONE else View.VISIBLE
     }
 
     override fun onDetach() {
