@@ -21,4 +21,11 @@ interface LocationApi {
         @Query("polygon_geojson") polygonGeoJson: Int = 1,
         @Query("format") format: String = "json"
     ): LocationDetailsResultDTO
+
+    @GET("reverse")
+    suspend fun reverseGeocode(
+        @Query("format") format: String = "json",
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double
+    ): LocationSearchResultDTO
 }

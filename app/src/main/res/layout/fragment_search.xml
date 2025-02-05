@@ -38,14 +38,12 @@
             android:visibility="gone"
             />
     </LinearLayout>
-    <fragment
-        android:id="@+id/searchGpsLocationFragment"
-        android:name="com.col.eventradar.ui.components.GpsLocationSearchFragment"
+    <FrameLayout
+        android:id="@+id/gpsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
         android:layout_marginTop="10dp"
-        />
+        android:layout_gravity="top"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecyclerView"
         android:layout_width="match_parent"

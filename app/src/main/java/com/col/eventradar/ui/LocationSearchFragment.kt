@@ -14,11 +14,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.R
 import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.network.OpenStreetMapService
 import com.col.eventradar.network.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
+import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment : Fragment() {
@@ -29,6 +31,7 @@ class LocationSearchFragment : Fragment() {
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
     private var isProgrammaticChange = false
+    private var gpsFragment: GpsLocationSearchFragment? = null
 
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
@@ -48,6 +51,14 @@ class LocationSearchFragment : Fragment() {
         binding.searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.searchResultsRecyclerView.adapter = searchResultsAdapter
 
+        gpsFragment = GpsLocationSearchFragment()
+
+        childFragmentManager.beginTransaction()
+            .add(R.id.gpsContainer, gpsFragment!!, "GpsFragmentTag")
+            .commit()
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            gpsFragment?.onFocusChange(hasFocus)
+        }
         binding.searchEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(searchValue: Editable?) {
                 if (isProgrammaticChange) {
@@ -105,8 +116,8 @@ class LocationSearchFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: Exception) {
-            Log.e(TAG, "General error: ${e.message}")
-        }
+                Log.e(TAG, "General error: ${e.message}")
+            }
         }
     }
 

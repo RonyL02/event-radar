@@ -37,21 +37,7 @@ object MapUtils {
     const val TileJSON_VERSION = "2.1.0"
 
     val TAG = "MapUtils"
-
-    fun initMap(map: MapLibreMap, context: Context, toastFragment: ToastFragment) {
-
-        map.setStyle(DEFAULT_MAP_STYLE_URL) { style ->
-            setupInitialCameraPosition(map, DEFAULT_LAT, DEFAULT_LON, DEFAULT_ZOOM)
-            addMapSourcesAndLayers(map, context)
-//            enableLocationComponent(style)
-        }
-
-        map.addOnMapClickListener { point ->
-            handleMapClick(map, point, toastFragment)
-            true
-        }
-    }
-
+    
     fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
         val style = map.style ?: return
 
@@ -90,7 +76,10 @@ object MapUtils {
     }
 
     fun handleMapClick(map: MapLibreMap, point: LatLng, toastFragment: ToastFragment) {
-        val features = map.queryRenderedFeatures(map.projection.toScreenLocation(point), SEARCH_RESULT_AREA_LAYER_NAME)
+        val features = map.queryRenderedFeatures(
+            map.projection.toScreenLocation(point),
+            SEARCH_RESULT_AREA_LAYER_NAME
+        )
         if (features.isNotEmpty()) {
             val feature = features.first()
             showFeatureContextMenu(toastFragment, feature)
@@ -136,6 +125,6 @@ object MapUtils {
             .include(LatLng(searchResult.northLat, searchResult.eastLon))
             .build()
 
-        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150), 500)
+        map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 250), 500)
     }
 }
