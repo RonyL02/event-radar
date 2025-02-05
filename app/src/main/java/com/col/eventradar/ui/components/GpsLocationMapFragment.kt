@@ -55,6 +55,8 @@ class GpsLocationMapFragment : Fragment() {
                 .pulseColor(accentColor)
                 .foregroundTintColor(accentColor)
                 .bearingTintColor(accentColor)
+                .maxZoomIconScale(1.0f)
+                .minZoomIconScale(1.0f)
                 .build()
 
             locationComponent?.activateLocationComponent(

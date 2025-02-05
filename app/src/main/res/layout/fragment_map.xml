@@ -9,14 +9,13 @@
         android:layout_height="match_parent"
         app:maplibre_cameraZoomMax="26.0"
         app:maplibre_cameraZoomMin="2.0"
-        app:maplibre_uiCompass="true"
-        app:maplibre_uiCompassFadeFacingNorth="true"
-        app:maplibre_uiCompassGravity="top|end"
+        app:maplibre_uiCompass="false"
         app:maplibre_uiDoubleTapGestures="true"
         app:maplibre_uiHorizontalScrollGestures="true"
         app:maplibre_uiRotateGestures="true"
         app:maplibre_uiScrollGestures="true"
         app:maplibre_uiTiltGestures="true"
+        app:maplibre_pixelRatio="2.0"
         app:maplibre_uiZoomGestures="true" />
     <fragment
         android:id="@+id/searchFragment"
