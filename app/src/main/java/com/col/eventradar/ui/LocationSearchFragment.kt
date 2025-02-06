@@ -30,12 +30,12 @@ class LocationSearchFragment : Fragment() {
     private var listener: MapFragmentListener? = null
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
-    private var isProgrammaticChange = false
+    private var isResultChosen = false
     private var gpsFragment: GpsLocationSearchFragment? = null
 
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
-        isProgrammaticChange = true
+        isResultChosen = true
         binding.apply {
             searchEditText.setText(result.name)
             searchResultsRecyclerView.visibility = View.GONE
@@ -65,8 +65,8 @@ class LocationSearchFragment : Fragment() {
             }
             searchEditText.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(searchValue: Editable?) {
-                    if (isProgrammaticChange) {
-                        isProgrammaticChange = false
+                    if (isResultChosen) {
+                        isResultChosen = false
                         return
                     }
                     searchRunnable?.let {
