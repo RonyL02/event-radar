@@ -11,21 +11,23 @@ interface LocationApi {
         @Query("q") query: String,
         @Query("format") format: String = "json",
         @Query("addressdetails") addressDetails: Int = 1,
+        @Query("accept-language") lang: String = "en",
         @Query("limit") limit: Int
     ): List<LocationSearchResultDTO>
 
     @GET("details")
     suspend fun getLocationDetails(
-        @Query("osmtype") osmType: String = "R",
-        @Query("osmid") osmId: Long,
+        @Query("place_id") placeId: Long,
         @Query("polygon_geojson") polygonGeoJson: Int = 1,
-        @Query("format") format: String = "json"
+        @Query("format") format: String = "json",
+        @Query("accept-language") lang: String = "en"
     ): LocationDetailsResultDTO
 
     @GET("reverse")
     suspend fun reverseGeocode(
         @Query("format") format: String = "json",
         @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double
+        @Query("lon") longitude: Double,
+        @Query("accept-language") lang: String = "en"
     ): LocationSearchResultDTO
 }

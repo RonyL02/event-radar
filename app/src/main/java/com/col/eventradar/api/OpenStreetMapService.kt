@@ -10,7 +10,7 @@ object OpenStreetMapService {
     private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .header("User-Agent", "Event-Radar/1.0 (your.email@example.com)")
+                .header("User-Agent", "Event-Radar/1.0")
                 .build()
             chain.proceed(request)
         }

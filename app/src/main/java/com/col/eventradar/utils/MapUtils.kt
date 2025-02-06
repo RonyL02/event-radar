@@ -97,7 +97,7 @@ object MapUtils {
         binding: FragmentMapBinding
     ) {
         try {
-            val result = OpenStreetMapService.api.getLocationDetails(osmId = searchResult.osmId)
+            val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
             val feature = result.toMapLibreFeature()
 
             map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {

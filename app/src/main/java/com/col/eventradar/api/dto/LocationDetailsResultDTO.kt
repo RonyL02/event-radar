@@ -71,7 +71,7 @@ data class LocationDetailsResultDTO(
             }
 
             feature.apply {
-                addStringProperty("osm_id", osm_id.toString())
+                addStringProperty("place_id", place_id.toString())
                 addStringProperty("localname", localname)
                 addStringProperty("category", category)
                 addStringProperty("type", type)
