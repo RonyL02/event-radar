@@ -28,6 +28,7 @@ interface LocationApi {
         @Query("format") format: String = "json",
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
+        @Query("zoom") zoom: Int = 14,
         @Query("accept-language") lang: String = "en"
     ): LocationSearchResultDTO
 }
