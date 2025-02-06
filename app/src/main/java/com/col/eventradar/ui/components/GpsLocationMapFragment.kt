@@ -28,6 +28,8 @@ import org.maplibre.android.maps.Style
 
 
 class GpsLocationMapFragment : Fragment() {
+    private var bindingInternal: FragmentGpsLocationMapBinding? = null
+    private val binding get() = bindingInternal!!
     var locationComponent: LocationComponent? = null
     private var map: MapLibreMap? = null
     private val requestPermissionLauncher =
@@ -47,8 +49,9 @@ class GpsLocationMapFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_gps_location_map, container, false)
+    ): View {
+        bindingInternal = FragmentGpsLocationMapBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     fun attachToMap(map: MapLibreMap, style: Style) {
