@@ -15,12 +15,12 @@ object OpenStreetMapService {
             chain.proceed(request)
         }
         .build()
-    val api: LocationResultApi by lazy {
+    val api: LocationApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
-            .create(LocationResultApi::class.java)
+            .create(LocationApi::class.java)
     }
 }
