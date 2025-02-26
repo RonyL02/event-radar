@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/loginn"
+    android:id="@+id/login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/white"
     android:padding="16dp">
-
-    <!-- לוגו (סמל מטרה) -->
-
-    <!-- שם האפליקציה -->
-
-    <!-- תיאור קצר -->
-
-    <!-- כפתור כניסה עם Google -->
-
-    <!-- סמל זכויות יוצרים בתחתית -->
 
     <ImageView
         android:id="@+id/logo_icon"
@@ -28,8 +19,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/logo_text"
         app:layout_constraintStart_toEndOf="@+id/logo_text"
         app:layout_constraintTop_toTopOf="@+id/logo_text"
-        app:layout_constraintVertical_bias="0.198"
-         />
+        app:layout_constraintVertical_bias="0.198" />
 
     <TextView
         android:id="@+id/logo_text"
@@ -48,8 +38,7 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/tagline_text"
@@ -62,8 +51,7 @@
         android:textColor="#7F8C8D"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/logo_text"
-        app:layout_constraintStart_toStartOf="@+id/logo_text"
-        />
+        app:layout_constraintStart_toStartOf="@+id/logo_text" />
 
     <TextView
         android:id="@+id/copyright_text"
@@ -80,8 +68,7 @@
         app:layout_constraintHorizontal_bias="0.525"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-       />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/textView"
@@ -96,9 +83,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        android:drawableLeft="@drawable/devicon_google"
-         />
-
-
+        android:drawableLeft="@drawable/devicon_google" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
