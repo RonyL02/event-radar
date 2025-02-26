@@ -1,15 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/settingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.views.SettingsFragment">
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/ic_profile_placeholder"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MissingClass" />
+
+
+    <ImageView
+        android:id="@+id/camera_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="Change Photo"
+        android:src="@drawable/ic_camera"
+        android:background="@drawable/circle_background"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="@+id/profile_image"/>
+
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/title_settings_screen" />
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shiran"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/profile_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
 
-</FrameLayout>
+
+    <ImageView
+        android:id="@+id/edit_username"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:contentDescription="Edit Name"
+        android:src="@drawable/ic_edit"
+        app:tint="@color/red_600"
+        app:layout_constraintBottom_toBottomOf="@+id/username"
+        app:layout_constraintStart_toEndOf="@id/username"
+        app:layout_constraintTop_toTopOf="@id/username" />
+
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/theme_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username">
+
+
+        <ImageView
+            android:id="@+id/theme_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background_with_shadow"
+            android:elevation="4dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_theme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/theme_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Theme"
+            android:textColor="@color/red_600"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/theme_icon"
+            app:layout_constraintTop_toTopOf="@id/theme_icon" />
+
+
+        <Spinner
+            android:id="@+id/theme_spinner"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/spinner_background"
+            android:padding="12dp"
+            android:spinnerMode="dropdown"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:dropDownVerticalOffset="8dp"
+            android:textColor="@android:color/black"
+            android:popupBackground="@android:color/white"
+            android:textStyle="bold"
+            android:entries="@array/theme_options"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/theme_icon"
+            app:layout_constraintTop_toBottomOf="@id/theme_label" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/areas_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/theme_section"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+
+        <ImageView
+            android:id="@+id/areas_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_location"
+            android:background="@drawable/circle_background_with_shadow"
+            android:padding="8dp"
+            android:elevation="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <TextView
+            android:id="@+id/areas_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Areas of Interest"
+            android:textColor="@color/red_600"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/areas_icon"
+            app:layout_constraintTop_toTopOf="@id/areas_icon"
+            android:layout_marginStart="12dp"/>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:background="@drawable/outlined_background"
+            android:padding="12dp"
+            app:layout_constraintStart_toEndOf="@id/areas_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/areas_label"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/areas_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3 Locations"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"/>
+
+            <ImageView
+                android:id="@+id/edit_areas"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="Edit Areas"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/red_600"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/more_settings_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/areas_section"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+
+        <ImageView
+            android:id="@+id/more_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_more"
+            android:background="@drawable/circle_background_with_shadow"
+            android:padding="8dp"
+            android:elevation="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <TextView
+            android:id="@+id/more_settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="More settings we will think of"
+            android:textColor="@color/red_600"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/more_icon"
+            app:layout_constraintTop_toTopOf="@id/more_icon"
+            android:layout_marginStart="12dp"/>
+
+
+        <Spinner
+            android:id="@+id/more_settings_spinner"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@drawable/spinner_background"
+            android:padding="12dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:spinnerMode="dropdown"
+            android:popupBackground="@android:color/white"
+            android:entries="@array/more_settings_options"
+            app:layout_constraintStart_toEndOf="@id/more_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/more_settings_label"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

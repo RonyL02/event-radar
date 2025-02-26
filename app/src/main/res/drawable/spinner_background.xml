@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background with Border -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1dp" android:color="#8B4513"/> <!-- Brown border -->
+            <corners android:radius="8dp"/>
+        </shape>
+    </item>
+
+    <!-- Dropdown Arrow (Positioned to the Right) -->
+    <item android:drawable="@drawable/ic_arrow_drop_down"
+        android:right="12dp"
+        android:top="12dp"
+        android:bottom="12dp"
+        android:gravity="end|center_vertical"/>
+</layer-list>
