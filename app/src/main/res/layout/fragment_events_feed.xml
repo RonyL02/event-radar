@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.views.EventsFeedFragment">
+    <!-- NestedScrollView to wrap both stats and list -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Stats Fragment - Now part of the scrolling content -->
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/eventsStatsFragmentContainerInsideScroll"
+                android:name="com.col.eventradar.ui.views.EventsStatsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Event List Fragment -->
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/eventCardListFragmentContainer"
+                android:name="com.col.eventradar.ui.views.EventCardListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -52,6 +52,7 @@ object EventModel {
 
     private fun createEventItem(position: Int): Event {
         val isoDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) // ISO 8601 format
+        val type = if (position % 2 == 0) EventType.Disaster else EventType.Suicide
 
         return Event(
             id = position.toString(),
@@ -59,7 +60,7 @@ object EventModel {
             location = Location(34.2, 34.2),
             locationName = "Tel Aviv",
             time = LocalDateTime.now(), // Now in ISO format
-            type = EventType.EarthQuake,
+            type = type,
             description = makeDetails(position),
             comments = makeComments(position.toString(), count = (1..5).random()),
         )
@@ -96,5 +97,18 @@ object EventModel {
                         .minusMinutes(random.nextLong(60)), // Random time within the last hour
             )
         }
+    }
+
+    fun getEventsAmountPerTypeSince(sinceTime: LocalDateTime): Map<EventType, Int> {
+        // Group events that happened after the given time by type and count them
+        return EVENTS_DATA
+            .filter { it.time.isAfter(sinceTime) } // Filter events happening after the given time
+            .groupingBy { it.type } // Group by EventType
+            .eachCount() // Count occurrences per type
+    }
+
+    fun getTotalEventsAmountSince(sinceTime: LocalDateTime): Int {
+        // Count all events that happened after the given time
+        return EVENTS_DATA.count { it.time.isAfter(sinceTime) }
     }
 }

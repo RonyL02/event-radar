@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.FragmentEventCardBinding
 import com.col.eventradar.models.Event
+import com.col.eventradar.models.EventTypeConfig
+import com.col.eventradar.utils.getFormattedTime
 
 /**
  * [RecyclerView.Adapter] that can display a [Event].
@@ -39,9 +41,9 @@ class EventCardRecyclerViewAdapter(
             with(binding) {
                 eventTitle.text = event.title
                 eventTime.text =
-                    event.getFormattedTime()
+                    event.time.getFormattedTime()
                 locationName.text = event.locationName
-                eventTypeIcon.setImageResource(event.getIconRes())
+                eventTypeIcon.setImageResource(EventTypeConfig.getIconResId(event.type))
                 eventDescription.text = event.getDescriptionPreview()
                 commentsCount.text = event.comments.size.toString()
 
