@@ -30,7 +30,7 @@
         android:layout_marginBottom="432dp"
         android:fontFamily="sans-serif"
         android:text="EventRadar"
-        android:textColor="#E74C3C"
+        android:textColor="#9D0C10"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -48,7 +48,7 @@
         android:fontFamily="sans-serif-light"
         android:text="Welcome to"
         android:textStyle="bold"
-        android:textColor="#7F8C8D"
+        android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/logo_text"
         app:layout_constraintStart_toStartOf="@+id/logo_text" />
@@ -60,7 +60,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-light"
-        android:text="© 2025 EventRadar"
         android:textColor="#B0B0B0"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -70,19 +69,34 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
-        android:fontFamily="sans-serif"
+        android:background="@drawable/button_border"
+        android:padding="12dp"
+        android:fontFamily="sans-serif-light"
         android:text="Sign in with Google"
+        android:textStyle="bold"
         android:textColor="#000000"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/copyright_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        android:drawableLeft="@drawable/devicon_google" />
+        android:textSize="18sp"
+        android:letterSpacing="0.05"
+        android:shadowColor="#808080"
+        android:shadowRadius="2"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:drawableLeft="@drawable/devicon_google"
+        android:drawablePadding="24dp"
+    android:textAllCaps="false"
+    app:layout_constraintBottom_toTopOf="@+id/copyright_text"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.497"
+    app:layout_constraintStart_toStartOf="parent"/>
+
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

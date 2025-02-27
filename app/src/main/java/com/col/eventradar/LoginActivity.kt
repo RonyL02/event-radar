@@ -1,6 +1,8 @@
 package com.col.eventradar
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,7 +17,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -24,6 +25,14 @@ class LoginActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+
+        binding.textView.setOnClickListener {
+            Toast.makeText(this, "Google Sign-In Clicked!", Toast.LENGTH_SHORT).show()
+
+            // val intent = Intent(this, NextActivity::class.java)
+            // startActivity(intent)
         }
     }
 }
