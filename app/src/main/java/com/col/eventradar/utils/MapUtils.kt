@@ -134,11 +134,11 @@ object MapUtils {
         }
 
         feature.apply {
-            addStringProperty("place_id", result.place_id.toString())
+            addStringProperty("placeId", result.placeId.toString())
             addStringProperty("localname", result.localname)
             addStringProperty("category", result.category)
             addStringProperty("type", result.type)
-            addStringProperty("country_code", result.country_code)
+            addStringProperty("countryCode", result.countryCode)
         }
 
         return feature
