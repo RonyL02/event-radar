@@ -115,7 +115,6 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
         locationFragment.locationComponent?.lastKnownLocation?.let {
             val cameraPosition = CameraPosition.Builder()
                 .target(LatLng(it.latitude, it.longitude))
-//                .zoom(10.0)
                 .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }

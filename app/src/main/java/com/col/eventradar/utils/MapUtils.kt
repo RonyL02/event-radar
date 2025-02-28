@@ -4,8 +4,11 @@ import android.view.View
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.api.OpenStreetMapService
+import com.col.eventradar.api.dto.LocationDetailsResultDTO
 import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.utils.ThemeUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
@@ -19,6 +22,8 @@ import org.maplibre.android.style.sources.RasterSource
 import org.maplibre.android.style.sources.TileSet
 import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 
 object MapUtils {
     const val DEFAULT_LAT = 32.0
@@ -90,6 +95,55 @@ object MapUtils {
         toastFragment.showToast("Clicked on: ${feature.getStringProperty("localname")}")
     }
 
+    fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
+        val geometry = result.geometry
+        val feature = when (geometry.type) {
+            "Polygon" -> {
+                val coordinates = Gson().fromJson<List<List<List<Double>>>>(
+                    geometry.coordinates,
+                    object : TypeToken<List<List<List<Double>>>>() {}.type
+                )
+
+                val polygonCoordinates = coordinates[0].map { point -> Point.fromLngLat(point[0], point[1]) }
+
+                val polygon = Polygon.fromLngLats(listOf(polygonCoordinates))
+                Feature.fromGeometry(polygon)
+            }
+
+            "MultiPolygon" -> {
+                val coordinates = Gson().fromJson<List<List<List<List<Double>>>>>(
+                    geometry.coordinates,
+                    object : TypeToken<List<List<List<List<Double>>>>>() {}.type
+                )
+
+                val multiPolygonCoordinates = coordinates.map { polygon ->
+                    polygon.map { ring ->
+                        ring.map { point -> Point.fromLngLat(point[0], point[1]) }
+                    }
+                }
+
+                val multiPolygon = org.maplibre.geojson.MultiPolygon.fromLngLats(multiPolygonCoordinates)
+                Feature.fromGeometry(multiPolygon)
+            }
+
+            else -> {
+                val centroidCoordinates = result.centroid.coordinates
+                val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
+                Feature.fromGeometry(point)
+            }
+        }
+
+        feature.apply {
+            addStringProperty("place_id", result.place_id.toString())
+            addStringProperty("localname", result.localname)
+            addStringProperty("category", result.category)
+            addStringProperty("type", result.type)
+            addStringProperty("country_code", result.country_code)
+        }
+
+        return feature
+    }
+
     suspend fun handleLocationSelection(
         map: MapLibreMap,
         searchResult: LocationSearchResult,
@@ -98,7 +152,7 @@ object MapUtils {
     ) {
         try {
             val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
-            val feature = result.toMapLibreFeature()
+            val feature = toMapLibreFeature(result)
 
             map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
                 if (this is GeoJsonSource) {

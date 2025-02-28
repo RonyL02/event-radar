@@ -30,57 +30,7 @@ data class LocationDetailsResultDTO(
     val centroid: Centroid,
     val geometry: Geometry,
     val icon: String
-) {
-        fun toMapLibreFeature(): Feature {
-            val geometry = this.geometry
-            val feature = when (geometry.type) {
-                "Polygon" -> {
-                    val coordinates = Gson().fromJson<List<List<List<Double>>>>(
-                        geometry.coordinates,
-                        object : TypeToken<List<List<List<Double>>>>() {}.type
-                    )
-
-                    val polygonCoordinates = coordinates[0].map { point -> Point.fromLngLat(point[0], point[1]) }
-
-                    val polygon = Polygon.fromLngLats(listOf(polygonCoordinates))
-                    Feature.fromGeometry(polygon)
-                }
-
-                "MultiPolygon" -> {
-                    val coordinates = Gson().fromJson<List<List<List<List<Double>>>>>(
-                        geometry.coordinates,
-                        object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                    )
-
-                    val multiPolygonCoordinates = coordinates.map { polygon ->
-                        polygon.map { ring ->
-                            ring.map { point -> Point.fromLngLat(point[0], point[1]) }
-                        }
-                    }
-
-                    val multiPolygon = org.maplibre.geojson.MultiPolygon.fromLngLats(multiPolygonCoordinates)
-                    Feature.fromGeometry(multiPolygon)
-                }
-
-                else -> {
-                    // Fallback to centroid point
-                    val centroidCoordinates = this.centroid.coordinates
-                    val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
-                    Feature.fromGeometry(point)
-                }
-            }
-
-            feature.apply {
-                addStringProperty("place_id", place_id.toString())
-                addStringProperty("localname", localname)
-                addStringProperty("category", category)
-                addStringProperty("type", type)
-                addStringProperty("country_code", country_code)
-            }
-
-            return feature
-        }
-    }
+)
 
 data class Names(
     val name: String,

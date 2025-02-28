@@ -54,7 +54,7 @@ class LocationSearchFragment : Fragment() {
         gpsFragment = GpsLocationSearchFragment()
 
         childFragmentManager.beginTransaction()
-            .add(R.id.gpsContainer, gpsFragment!!, "GpsFragmentTag")
+            .add(R.id.gpsContainer, gpsFragment!!, GpsLocationSearchFragment.TAG)
             .commit()
 
         binding.apply {

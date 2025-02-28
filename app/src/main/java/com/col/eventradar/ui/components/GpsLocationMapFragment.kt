@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.col.eventradar.R
+import com.col.eventradar.databinding.FragmentGpsLocationMapBinding
 import com.col.eventradar.ui.views.MapFragment.Companion.TAG
 import com.col.eventradar.utils.ThemeUtils
 import org.maplibre.android.location.LocationComponent
