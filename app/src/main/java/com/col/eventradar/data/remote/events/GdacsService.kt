@@ -1,4 +1,4 @@
-package com.col.eventradar.network.events
+package com.col.eventradar.data.remote.events
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

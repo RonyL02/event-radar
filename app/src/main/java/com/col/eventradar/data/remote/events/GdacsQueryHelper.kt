@@ -1,4 +1,4 @@
-package com.col.eventradar.network.events
+package com.col.eventradar.data.remote.events
 
 import com.col.eventradar.models.AlertLevel
 import com.col.eventradar.models.EventType

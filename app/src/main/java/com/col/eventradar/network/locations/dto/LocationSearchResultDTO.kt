@@ -1,4 +1,4 @@
-package com.col.eventradar.network.dto
+package com.col.eventradar.network.locations.dto
 
 import com.col.eventradar.models.LocationSearchResult
 import com.google.gson.annotations.SerializedName
@@ -8,12 +8,12 @@ data class LocationSearchResultDTO(
     @SerializedName("lat") val latitude: Double,
     @SerializedName("lon") val longitude: Double,
     @SerializedName("address") val address: Address?,
-    @SerializedName("boundingbox") val boundingBox: List<String>?
+    @SerializedName("boundingbox") val boundingBox: List<String>?,
 )
 
 data class Address(
     @SerializedName("state") val state: String?,
-    @SerializedName("country") val country: String?
+    @SerializedName("country") val country: String?,
 )
 
 fun LocationSearchResultDTO.toDomain(): LocationSearchResult {
@@ -32,6 +32,6 @@ fun LocationSearchResultDTO.toDomain(): LocationSearchResult {
         southLat = southLat,
         northLat = northLat,
         westLon = westLon,
-        eastLon = eastLon
+        eastLon = eastLon,
     )
 }

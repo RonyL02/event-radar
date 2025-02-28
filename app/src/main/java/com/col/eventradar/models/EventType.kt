@@ -1,18 +1,34 @@
-package com.col.eventradar.models;
+package com.col.eventradar.models
 
-public enum EventType {
-    Disaster,
-    Suicide,
-}
-
-enum class EventTypes(val code: String) {
+enum class EventType(
+    val code: String,
+) {
     EARTHQUAKE("EQ"),
     TSUNAMI("TS"),
     FLOOD("FL"),
     CYCLONE("TC"),
     VOLCANO("VO"),
     DROUGHT("DR"),
-    FOREST_FIRE("WF");
+    FOREST_FIRE("WF"),
+    UNKNOWN("XX"),
+    ;
 
     override fun toString(): String = code
+
+    companion object {
+        fun fromString(value: String): EventType =
+            when (value.uppercase()) {
+                "EQ" -> EARTHQUAKE
+                "TS" -> TSUNAMI
+                "FL" -> FLOOD
+                "TC" -> CYCLONE
+                "VO" -> VOLCANO
+                "DR" -> DROUGHT
+                "WF" -> FOREST_FIRE
+                else -> UNKNOWN
+            }
+
+        val allExceptUnknown: List<EventType>
+            get() = entries.filterNot { it == UNKNOWN }
+    }
 }

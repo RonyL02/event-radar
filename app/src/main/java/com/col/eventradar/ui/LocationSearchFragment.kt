@@ -16,14 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.network.OpenStreetMapService
-import com.col.eventradar.network.dto.toDomain
+import com.col.eventradar.network.locations.OpenStreetMapService
+import com.col.eventradar.network.locations.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 
 class LocationSearchFragment : Fragment() {
-
     private var bindingInternal: FragmentSearchBinding? = null
     private val binding get() = bindingInternal!!
     private var listener: MapFragmentListener? = null
@@ -31,49 +29,64 @@ class LocationSearchFragment : Fragment() {
     private var searchRunnable: Runnable? = null
     private var isProgrammaticChange = false
 
-    private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
-        listener?.onLocationSelected(result)
-        isProgrammaticChange = true
-        binding.searchEditText.setText(result.locationName)
-        binding.searchResultsRecyclerView.visibility = View.GONE
-        binding.searchEditText.clearFocus()
-    }
+    private val searchResultsAdapter =
+        LocationSearchResultsAdapter { result ->
+            listener?.onLocationSelected(result)
+            isProgrammaticChange = true
+            binding.searchEditText.setText(result.locationName)
+            binding.searchResultsRecyclerView.visibility = View.GONE
+            binding.searchEditText.clearFocus()
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentSearchBinding.inflate(inflater, container, false)
 
         binding.searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.searchResultsRecyclerView.adapter = searchResultsAdapter
 
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(searchValue: Editable?) {
-                if (isProgrammaticChange) {
-                    isProgrammaticChange = false
-                    return
-                }
-                searchRunnable?.let {
-                    handler.removeCallbacks(it)
-                }
+        binding.searchEditText.addTextChangedListener(
+            object : TextWatcher {
+                override fun afterTextChanged(searchValue: Editable?) {
+                    if (isProgrammaticChange) {
+                        isProgrammaticChange = false
+                        return
+                    }
+                    searchRunnable?.let {
+                        handler.removeCallbacks(it)
+                    }
 
-                searchRunnable = Runnable {
-                    val query = searchValue.toString()
-                    if (query.isNotEmpty()) {
-                        searchLocation(query)
+                    searchRunnable =
+                        Runnable {
+                            val query = searchValue.toString()
+                            if (query.isNotEmpty()) {
+                                searchLocation(query)
+                            }
+                        }
+                    searchRunnable?.let {
+                        val debounceDelayMillis = 500L
+                        handler.postDelayed(it, debounceDelayMillis)
                     }
                 }
-                searchRunnable?.let {
-                    val debounceDelayMillis = 500L
-                    handler.postDelayed(it, debounceDelayMillis)
-                }
-            }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) {}
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) {}
+            },
+        )
 
         return binding.root
     }
@@ -100,14 +113,15 @@ class LocationSearchFragment : Fragment() {
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 Log.e(TAG, "Error body: $errorBody")
-                Toast.makeText(
-                    requireContext(),
-                    "Error fetching location: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast
+                    .makeText(
+                        requireContext(),
+                        "Error fetching location: ${e.message}",
+                        Toast.LENGTH_SHORT,
+                    ).show()
             } catch (e: Exception) {
-            Log.e(TAG, "General error: ${e.message}")
-        }
+                Log.e(TAG, "General error: ${e.message}")
+            }
         }
     }
 

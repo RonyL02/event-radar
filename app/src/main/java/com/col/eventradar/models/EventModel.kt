@@ -52,7 +52,7 @@ object EventModel {
 
     private fun createEventItem(position: Int): Event {
         val isoDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) // ISO 8601 format
-        val type = if (position % 2 == 0) EventType.Disaster else EventType.Suicide
+        val type = if (position % 2 == 0) EventType.EARTHQUAKE else EventType.FLOOD
 
         return Event(
             id = position.toString(),

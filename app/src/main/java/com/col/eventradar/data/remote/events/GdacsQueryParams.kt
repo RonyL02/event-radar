@@ -1,4 +1,4 @@
-package com.col.eventradar.network.events
+package com.col.eventradar.data.remote.events
 
 object GdacsQueryParams {
     const val FROM_DATE = "fromDate"

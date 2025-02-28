@@ -1,5 +1,7 @@
 package com.col.eventradar.models
 
+import com.col.eventradar.models.Event.Companion.DESCRIPTION_PREVIEW_LENGTH
+import com.col.eventradar.models.Event.Companion.TITLE_PREVIEW_LENGTH
 import java.time.LocalDateTime
 
 /**
@@ -17,14 +19,22 @@ data class Event(
 ) {
     override fun toString(): String = description
 
-    fun getDescriptionPreview() =
-        if (description.length > DESCRIPTION_PREVIEW_LENGTH) {
-            description.take(DESCRIPTION_PREVIEW_LENGTH) + "..."
-        } else {
-            description
-        }
-
     companion object {
         const val DESCRIPTION_PREVIEW_LENGTH = 50
+        const val TITLE_PREVIEW_LENGTH = 14
     }
 }
+
+fun Event.getDescriptionPreview() =
+    if (description.length > DESCRIPTION_PREVIEW_LENGTH) {
+        description.take(DESCRIPTION_PREVIEW_LENGTH) + "..."
+    } else {
+        description
+    }
+
+fun Event.getTitlePreview() =
+    if (title.length > TITLE_PREVIEW_LENGTH) {
+        title.take(TITLE_PREVIEW_LENGTH) + "..."
+    } else {
+        title
+    }

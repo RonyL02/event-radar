@@ -1,16 +1,17 @@
 package com.col.eventradar.ui.views
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
-import com.col.eventradar.models.EventModel.getEventsAmountPerTypeSince
-import com.col.eventradar.models.EventModel.getTotalEventsAmountSince
 import com.col.eventradar.models.EventType
 import com.col.eventradar.models.EventTypeConfig
 import com.col.eventradar.utils.getFormattedTime
+import com.col.eventradar.viewmodel.EventViewModel
 import java.time.LocalDateTime
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,6 +27,7 @@ private const val ARG_PARAM2 = "param2"
 class EventsStatsFragment : Fragment() {
     private var bindingInternal: FragmentEventsStatsBinding? = null
     private val binding get() = bindingInternal!!
+    private val eventViewModel: EventViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,25 +35,32 @@ class EventsStatsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentEventsStatsBinding.inflate(inflater, container, false)
-
-        val sinceTime = LocalDateTime.now().minusHours(5)
-
-        val totalEventsAmount = getTotalEventsAmountSince(sinceTime)
-        val eventsAmountPerType = getEventsAmountPerTypeSince(sinceTime)
-
-        binding.totalEventsAmount.text = totalEventsAmount.toString()
-
-        binding.type1Title.text = EventTypeConfig.getName(EventType.Disaster)
-        binding.type1Icon.setImageResource(EventTypeConfig.getIconResId(EventType.Disaster))
-        binding.type1EventsAmount.text = eventsAmountPerType[EventType.Disaster].toString()
-
-        binding.type2Title.text = EventTypeConfig.getName(EventType.Suicide)
-        binding.type2Icon.setImageResource(EventTypeConfig.getIconResId(EventType.Suicide))
-        binding.type2EventsAmount.text = eventsAmountPerType[EventType.Suicide].toString()
-
-        binding.sinceTime.text = sinceTime.getFormattedTime()
-
         return binding.root
+    }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        val sinceOneMonthAgo = LocalDateTime.now().minusMonths(12)
+
+        eventViewModel.getEventsSince(sinceOneMonthAgo).observe(viewLifecycleOwner) { total ->
+            binding.totalEventsAmount.text = total.toString()
+        }
+
+        eventViewModel
+            .getEventsPerTypeSince(sinceOneMonthAgo)
+            .observe(viewLifecycleOwner) { eventsPerType ->
+                updateEventTypeUI(EventType.EARTHQUAKE, eventsPerType)
+                updateEventTypeUI(EventType.FOREST_FIRE, eventsPerType)
+            }
+
+        binding.sinceTime.text = LocalDateTime.now().minusHours(5).getFormattedTime()
     }
 
     override fun onDestroyView() {
@@ -59,7 +68,37 @@ class EventsStatsFragment : Fragment() {
         bindingInternal = null
     }
 
+    private fun updateEventTypeUI(
+        type: EventType,
+        eventsPerType: Map<EventType, Int>,
+    ) {
+        val titleView =
+            when (type) {
+                EventType.DROUGHT -> binding.type1Title
+                EventType.FOREST_FIRE -> binding.type2Title
+                else -> return
+            }
+        val iconView =
+            when (type) {
+                EventType.DROUGHT -> binding.type1Icon
+                EventType.FOREST_FIRE -> binding.type2Icon
+                else -> return
+            }
+        val amountView =
+            when (type) {
+                EventType.DROUGHT -> binding.type1EventsAmount
+                EventType.FOREST_FIRE -> binding.type2EventsAmount
+                else -> return
+            }
+
+        Log.d(TAG, "updateEventTypeUI: $eventsPerType")
+
+        titleView.text = EventTypeConfig.getName(type)
+        iconView.setImageResource(EventTypeConfig.getIconResId(type))
+        amountView.text = eventsPerType[type]?.toString() ?: "0"
+    }
+
     companion object {
-        const val TAG = "EventDetailsModalBottomSheet"
+        const val TAG = "EventsStatsFragment"
     }
 }

@@ -5,12 +5,27 @@ import com.col.eventradar.R
 object EventTypeConfig {
     private val configMap =
         mapOf(
-            EventType.Disaster to
+            EventType.EARTHQUAKE to
                 EventTypeDetails(
                     name = "Disaster",
                     iconResId = R.drawable.earthquake,
                 ),
-            EventType.Suicide to
+            EventType.FLOOD to
+                EventTypeDetails(
+                    name = "Suicide",
+                    iconResId = R.drawable.pistol,
+                ),
+            EventType.CYCLONE to
+                EventTypeDetails(
+                    name = "Suicide",
+                    iconResId = R.drawable.pistol,
+                ),
+            EventType.FOREST_FIRE to
+                EventTypeDetails(
+                    name = "Suicide",
+                    iconResId = R.drawable.pistol,
+                ),
+            EventType.DROUGHT to
                 EventTypeDetails(
                     name = "Suicide",
                     iconResId = R.drawable.pistol,

@@ -1,9 +1,9 @@
-package com.col.eventradar.network.events
+package com.col.eventradar.data.remote.events
 
 import android.util.Log
+import com.col.eventradar.data.remote.events.dto.EventListResponseDTO
 import com.col.eventradar.models.AlertLevel
 import com.col.eventradar.models.EventType
-import com.col.eventradar.network.events.dto.EventListResponseDTO
 import java.time.LocalDateTime
 
 class EventRepository {
@@ -18,7 +18,12 @@ class EventRepository {
             GdacsQueryHelper.buildEventQueryParams(
                 fromDate = fromDate ?: LocalDateTime.now().minusDays(7),
                 toDate = toDate ?: LocalDateTime.now(),
-                alertLevels = alertLevels ?: listOf(AlertLevel.RED, AlertLevel.ORANGE),
+                alertLevels =
+                    alertLevels ?: listOf(
+                        AlertLevel.RED,
+                        AlertLevel.ORANGE,
+                        AlertLevel.GREEN,
+                    ),
                 eventTypes = eventTypes ?: EventType.allExceptUnknown,
                 country = country ?: "United States",
             )

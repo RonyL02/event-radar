@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
 import com.col.eventradar.models.Event
+import com.col.eventradar.models.getTitlePreview
+import com.col.eventradar.utils.getFormattedDate
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.util.Locale
 
 class EventDetailsBottomSheet(
     private val event: Event,
@@ -25,15 +26,10 @@ class EventDetailsBottomSheet(
         event.let {
             with(binding) {
                 locationName.text = it.locationName
-                eventTitle.text = it.title
+                eventTitle.text = it.getTitlePreview()
                 eventDescription.text = it.description
                 eventTime.text =
-                    String.format(
-                        Locale.UK,
-                        "%02d:%02d",
-                        it.time.hour,
-                        it.time.minute,
-                    )
+                    it.time.getFormattedDate()
                 commentsCount.text = event.comments.size.toString()
                 closeButton.setOnClickListener {
                     dismiss()
