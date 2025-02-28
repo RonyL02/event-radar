@@ -26,7 +26,7 @@
         android:layout_marginTop="3dp"
         android:overScrollMode="never"
         android:text="country"
-        android:textColor="@color/darkGrey"
+        android:textColor="@color/grey_dark"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/locationIcon"
@@ -38,7 +38,7 @@
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:src="@drawable/ic_location"
-        app:tint="@color/darkGrey"
+        app:tint="@color/grey_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
