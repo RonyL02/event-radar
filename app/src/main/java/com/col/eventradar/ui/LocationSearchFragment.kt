@@ -9,7 +9,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +18,7 @@ import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
+import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
 import com.col.eventradar.utils.KeyboardUtils
 import kotlinx.coroutines.flow.collectLatest
@@ -34,6 +34,7 @@ class LocationSearchFragment : Fragment() {
     private var searchRunnable: Runnable? = null
     private var isResultChosen = false
     private var gpsFragment: GpsLocationSearchFragment? = null
+    private var toastFragment: ToastFragment = ToastFragment()
 
     private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
         listener?.onLocationSelected(result)
@@ -110,7 +111,7 @@ class LocationSearchFragment : Fragment() {
                 } else {
                     binding.searchResultsRecyclerView.visibility = View.GONE
                     if (viewModel.hasSearched) {
-                        Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
+                        toastFragment("No results found")
                     }
                 }
             }

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.databinding.FragmentGpsLocationSearchBinding
 import com.col.eventradar.models.LocationSearchResult
@@ -24,6 +23,7 @@ interface SearchBarEventListener {
 class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
     private var bindingInternal: FragmentGpsLocationSearchBinding? = null
     private val binding get() = bindingInternal!!
+    private val toastFragment: ToastFragment = ToastFragment()
 
     interface GpsLocationListener {
         fun onLocationReceived(location: LocationSearchResult)
@@ -59,11 +59,7 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
                     } catch (e: retrofit2.HttpException) {
                         val errorBody = e.response()?.errorBody()?.string()
                         Log.e(TAG, "Error body: $errorBody")
-                        Toast.makeText(
-                            requireContext(),
-                            "Error fetching location: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        toastFragment("Error fetching location: ${e.message}")
                     } catch (e: Exception) {
                         Log.e(TAG, "General error: ${e.message}")
                     }

@@ -92,10 +92,10 @@ object MapUtils {
     }
 
     private fun showFeatureContextMenu(toastFragment: ToastFragment, feature: Feature) {
-        toastFragment.showToast("Clicked on: ${feature.getStringProperty("localname")}")
+        toastFragment("Clicked on: ${feature.getStringProperty("localname")}")
     }
 
-    fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
+    private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
         val feature = when (geometry.type) {
             "Polygon" -> {
@@ -163,7 +163,7 @@ object MapUtils {
             binding.apply {
                 mapAddLocationButton.visibility = View.VISIBLE
                 mapAddLocationButton.setOnClickListener {
-                    toastFragment.showToast("Added ${feature.getStringProperty("localname")} to User")
+                    toastFragment("Added ${feature.getStringProperty("localname")} to User")
                     mapAddLocationButton.visibility = View.GONE
                 }
             }
@@ -171,7 +171,7 @@ object MapUtils {
         } catch (e: retrofit2.HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             Log.e(TAG, "Error body: $errorBody")
-            toastFragment.showToast("Error fetching location: ${e.message}")
+            toastFragment("Error fetching location: ${e.message}")
         } catch (e: Exception) {
             Log.e(TAG, "General error: ${e.message}")
         }

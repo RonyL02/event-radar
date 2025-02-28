@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.col.eventradar.databinding.FragmentGpsLocationMapBinding
 import com.col.eventradar.utils.ThemeUtils
@@ -31,17 +30,14 @@ class GpsLocationMapFragment : Fragment() {
     private val binding get() = bindingInternal!!
     var locationComponent: LocationComponent? = null
     private var map: MapLibreMap? = null
+    private var toastFragment: ToastFragment = ToastFragment();
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 Log.d(TAG, "Permission granted")
                 enableLocationComponent(map?.style!!)
             } else {
-                Toast.makeText(
-                    context,
-                    "You need to accept location permissions.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                toastFragment("You need to accept location permissions.")
             }
         }
 
@@ -110,15 +106,12 @@ class GpsLocationMapFragment : Fragment() {
                 .setNegativeButton("Cancel", null)
                 .show()
         } else if (!PermissionsManager.areLocationPermissionsGranted(context)) {
-            Toast.makeText(
-                context,
-                "You need to accept location permissions to to use Location based services.",
-                Toast.LENGTH_SHORT
-            ).show()
+            toastFragment(
+                "You need to accept location permissions to to use Location based services.")
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
         else {
-            Toast.makeText(context, "Location not available", Toast.LENGTH_SHORT).show()
+            toastFragment( "Location not available")
         }
         return null
     }
