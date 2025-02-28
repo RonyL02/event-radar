@@ -6,27 +6,29 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.api.OpenStreetMapService
-import com.col.eventradar.api.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
+import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
 import com.col.eventradar.utils.KeyboardUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment : Fragment() {
     private var bindingInternal: FragmentSearchBinding? = null
     private val binding get() = bindingInternal!!
+    private val viewModel: LocationSearchViewModel by viewModels()
+
     private var listener: MapFragmentListener? = null
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
@@ -50,7 +52,6 @@ class LocationSearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         bindingInternal = FragmentSearchBinding.inflate(inflater, container, false)
-
         gpsFragment = GpsLocationSearchFragment()
 
         childFragmentManager.beginTransaction()
@@ -76,7 +77,7 @@ class LocationSearchFragment : Fragment() {
                     searchRunnable = Runnable {
                         val query = searchValue.toString()
                         if (query.isNotEmpty()) {
-                            searchLocation(query)
+                            viewModel.searchLocation(query)
                         }
                     }
                     searchRunnable?.let {
@@ -90,6 +91,7 @@ class LocationSearchFragment : Fragment() {
             })
         }
 
+        observeViewModel()
         return binding.root
     }
 
@@ -99,42 +101,29 @@ class LocationSearchFragment : Fragment() {
             ?: throw RuntimeException("$parentFragment must implement MapFragmentListener")
     }
 
-    private fun searchLocation(query: String) {
+    private fun observeViewModel() {
         lifecycleScope.launch {
-            try {
-                setLoading(true)
-                val results = OpenStreetMapService.api.searchLocation(query = query, limit = 5)
-                val locationResults = results.map { it.toDomain() }
-                Log.d(TAG, results.toString())
+            viewModel.searchResults.collectLatest { results ->
                 if (results.isNotEmpty()) {
-                    searchResultsAdapter.submitList(locationResults)
+                    searchResultsAdapter.submitList(results)
                     binding.searchResultsRecyclerView.visibility = View.VISIBLE
                 } else {
                     binding.searchResultsRecyclerView.visibility = View.GONE
-                    Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
+                    if (viewModel.hasSearched) {
+                        Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } catch (e: retrofit2.HttpException) {
-                val errorBody = e.response()?.errorBody()?.string()
-                Log.e(TAG, "Error body: $errorBody")
-                Toast.makeText(
-                    requireContext(),
-                    "Error fetching location: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } catch (e: Exception) {
-                Log.e(TAG, "General error: ${e.message}")
             }
-            setLoading(false)
+        }
+
+        lifecycleScope.launch {
+            viewModel.isLoading.collectLatest { isLoading ->
+                binding.searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
+                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            }
         }
     }
 
-    private fun setLoading(isLoading: Boolean) {
-        binding.apply {
-            searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
-            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-    }
 
     override fun onDetach() {
         super.onDetach()

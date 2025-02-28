@@ -30,18 +30,18 @@ object MapUtils {
     const val DEFAULT_LON = 35.0
     const val DEFAULT_ZOOM = 5.0
 
-    const val SEARCH_RESULT_AREA_SOURCE_NAME = "search-result-area-source"
-    const val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
+    private const val SEARCH_RESULT_AREA_SOURCE_NAME = "search-result-area-source"
+    private const val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
 
-    const val RASTER_SOURCE_NAME = "osm-raster-source"
-    const val RASTER_LAYER_ID = "osm-raster-layer-id"
+    private const val RASTER_SOURCE_NAME = "osm-raster-source"
+    private const val RASTER_LAYER_ID = "osm-raster-layer-id"
 
     const val DEFAULT_MAP_STYLE_URL = "https://demotiles.maplibre.org/style.json"
-    const val DEFAULT_MAP_RASTER_URL = "https://tile.openstreetmap.org"
+    private const val DEFAULT_MAP_RASTER_URL = "https://tile.openstreetmap.org"
 
-    const val TileJSON_VERSION = "2.1.0"
+    private const val TileJSON_VERSION = "2.1.0"
 
-    val TAG = "MapUtils"
+    private const val TAG = "MapUtils"
 
     fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
         val style = map.style ?: return

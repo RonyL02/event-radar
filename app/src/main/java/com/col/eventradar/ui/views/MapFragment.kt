@@ -43,11 +43,11 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
         locationFragment = GpsLocationMapFragment()
-        childFragmentManager.beginTransaction().add(locationFragment, "GpsLocationMapFragment")
+        childFragmentManager.beginTransaction().add(locationFragment, GpsLocationMapFragment.TAG)
             .commit()
 
         toastFragment = ToastFragment()
-        childFragmentManager.beginTransaction().add(toastFragment, "ToastFragment").commit()
+        childFragmentManager.beginTransaction().add(toastFragment, ToastFragment.TAG).commit()
 
         initMap()
 
@@ -122,9 +122,5 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
 
     override fun onGetLocation(): Location? {
         return locationFragment.getCurrentLocation()
-    }
-
-    companion object {
-        const val TAG = "Map"
     }
 }

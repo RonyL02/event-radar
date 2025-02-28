@@ -17,7 +17,7 @@ data class Address(
     @SerializedName("country") val country: String?
 )
 
-fun LocationSearchResultDTO.toDomain(): LocationSearchResult {
+fun LocationSearchResultDTO.toModel(): LocationSearchResult {
     val southLat = boundingBox?.getOrNull(0)?.toDoubleOrNull() ?: latitude
     val northLat = boundingBox?.getOrNull(1)?.toDoubleOrNull() ?: latitude
     val westLon = boundingBox?.getOrNull(2)?.toDoubleOrNull() ?: longitude

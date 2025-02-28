@@ -15,9 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.col.eventradar.R
 import com.col.eventradar.databinding.FragmentGpsLocationMapBinding
-import com.col.eventradar.ui.views.MapFragment.Companion.TAG
 import com.col.eventradar.utils.ThemeUtils
 import org.maplibre.android.location.LocationComponent
 import org.maplibre.android.location.LocationComponentActivationOptions
@@ -132,5 +130,9 @@ class GpsLocationMapFragment : Fragment() {
 
         val locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
         return locationMode != Settings.Secure.LOCATION_MODE_OFF && (isGpsEnabled || isNetworkEnabled)
+    }
+
+    companion object {
+        const val TAG = "GpsLocationMapFragment"
     }
 }

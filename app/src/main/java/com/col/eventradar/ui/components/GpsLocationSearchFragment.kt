@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.databinding.FragmentGpsLocationSearchBinding
 import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.api.OpenStreetMapService
-import com.col.eventradar.api.dto.toDomain
+import com.col.eventradar.api.dto.toModel
 import com.col.eventradar.ui.views.MapFragment
 import kotlinx.coroutines.launch
 
@@ -51,11 +51,11 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
 
                 lifecycleScope.launch {
                     try {
-                        val recievedLocationResult = OpenStreetMapService.api.reverseGeocode(
+                        val receivedLocationResult = OpenStreetMapService.api.reverseGeocode(
                             latitude = it.latitude,
                             longitude = it.longitude
                         )
-                        locationListener?.onLocationReceived(recievedLocationResult.toDomain())
+                        locationListener?.onLocationReceived(receivedLocationResult.toModel())
                     } catch (e: retrofit2.HttpException) {
                         val errorBody = e.response()?.errorBody()?.string()
                         Log.e(TAG, "Error body: $errorBody")
