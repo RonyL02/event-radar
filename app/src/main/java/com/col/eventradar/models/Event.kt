@@ -1,5 +1,7 @@
 package com.col.eventradar.models
 
+import java.time.LocalDateTime
+
 /**
  * A placeholder item representing a piece of content.
  */
@@ -15,3 +17,16 @@ data class Event(
 ) {
     override fun toString(): String = content
 }
+
+enum class EventType {
+    EarthQuake
+}
+
+data class EventDetails(
+    val type: EventType,
+    val name: String,
+    val locationName: String,
+    val time: LocalDateTime,
+    val description: String,
+    val commentsAmount: Int,
+)
