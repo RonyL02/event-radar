@@ -6,6 +6,8 @@
     <string name="title_settings_screen">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_location_button_text">Add Location</string>
+    <string name="enter_location">Enter location</string>
     <string name="comments">Comments</string>
     <string name="add_a_comment">Add a comment…</string>
 </resources>
