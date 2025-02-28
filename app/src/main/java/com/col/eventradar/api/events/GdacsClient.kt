@@ -1,11 +1,11 @@
-package com.col.eventradar.network.locations
+package com.col.eventradar.api.events
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object OpenStreetMapService {
-    private const val BASE_URL = "https://nominatim.openstreetmap.org/"
+object GdacsClient {
+    private const val BASE_URL = "https://www.gdacs.org/gdacsapi/api/events/"
 
     private val client =
         OkHttpClient
@@ -15,17 +15,18 @@ object OpenStreetMapService {
                     chain
                         .request()
                         .newBuilder()
-                        .header("User-Agent", "Event-Radar/1.0 (your.email@example.com)")
+                        .header("User-Agent", "Event-Radar/1.0")
                         .build()
                 chain.proceed(request)
             }.build()
-    val api: LocationResultApi by lazy {
+
+    val api: GdacsApi by lazy {
         Retrofit
             .Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
-            .create(LocationResultApi::class.java)
+            .create(GdacsApi::class.java)
     }
 }

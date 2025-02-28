@@ -15,6 +15,8 @@ navigationFragmentKtxVersion = "2.8.5"
 navigationSafeArgsGradlePlugin = "2.8.5"
 legacySupportV4 = "1.0.0"
 recyclerview = "1.4.0"
+gson = "2.10"
+maplibre = "11.5.1"
 retrofit = "2.11.0"
 
 [libraries]
@@ -35,6 +37,9 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtxVersion" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+maplibre = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]

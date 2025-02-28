@@ -1,6 +1,6 @@
-package com.col.eventradar.data.remote.events
+package com.col.eventradar.api.events
 
-import com.col.eventradar.models.AlertLevel
+import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.models.EventType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,7 +12,7 @@ object GdacsQueryHelper {
         fromDate: LocalDateTime?,
         toDate: LocalDateTime?,
         alertLevels: List<AlertLevel>? = listOf(AlertLevel.ORANGE, AlertLevel.RED),
-        eventTypes: List<EventType>? = EventType.values().toList(),
+        eventTypes: List<EventType>? = EventType.entries,
         country: String? = "United States",
     ): Map<String, String> =
         mutableMapOf<String, String>().apply {

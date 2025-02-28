@@ -1,4 +1,4 @@
-package com.col.eventradar.data.remote.events.dto
+package com.col.eventradar.api.events.dto
 
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
@@ -52,9 +52,6 @@ data class AffectedCountry(
     @SerializedName("countryname") val countryName: String,
 )
 
-/**
- * Converts API response DTO to domain model.
- */
 fun EventListResponseDTO.toDomain(): List<Event> =
     features.map { feature ->
         Event(

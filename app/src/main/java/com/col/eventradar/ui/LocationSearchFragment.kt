@@ -6,36 +6,46 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.R
+import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.databinding.FragmentSearchBinding
-import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.network.locations.OpenStreetMapService
-import com.col.eventradar.network.locations.dto.toDomain
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
+import com.col.eventradar.ui.components.GpsLocationSearchFragment
+import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
+import com.col.eventradar.utils.KeyboardUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment : Fragment() {
     private var bindingInternal: FragmentSearchBinding? = null
     private val binding get() = bindingInternal!!
+    private val viewModel: LocationSearchViewModel by viewModels()
+
     private var listener: MapFragmentListener? = null
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
-    private var isProgrammaticChange = false
+    private var isResultChosen = false
+    private var gpsFragment: GpsLocationSearchFragment? = null
+    private var toastFragment: ToastFragment = ToastFragment()
 
     private val searchResultsAdapter =
         LocationSearchResultsAdapter { result ->
             listener?.onLocationSelected(result)
-            isProgrammaticChange = true
-            binding.searchEditText.setText(result.locationName)
-            binding.searchResultsRecyclerView.visibility = View.GONE
-            binding.searchEditText.clearFocus()
+            isResultChosen = true
+            binding.apply {
+                searchEditText.setText(result.name)
+                searchResultsRecyclerView.visibility = View.GONE
+                searchEditText.clearFocus()
+                KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+            }
         }
 
     override fun onCreateView(
@@ -44,50 +54,62 @@ class LocationSearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentSearchBinding.inflate(inflater, container, false)
+        gpsFragment = GpsLocationSearchFragment()
 
-        binding.searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.searchResultsRecyclerView.adapter = searchResultsAdapter
+        childFragmentManager
+            .beginTransaction()
+            .add(R.id.gpsContainer, gpsFragment!!, GpsLocationSearchFragment.TAG)
+            .commit()
 
-        binding.searchEditText.addTextChangedListener(
-            object : TextWatcher {
-                override fun afterTextChanged(searchValue: Editable?) {
-                    if (isProgrammaticChange) {
-                        isProgrammaticChange = false
-                        return
-                    }
-                    searchRunnable?.let {
-                        handler.removeCallbacks(it)
-                    }
-
-                    searchRunnable =
-                        Runnable {
-                            val query = searchValue.toString()
-                            if (query.isNotEmpty()) {
-                                searchLocation(query)
-                            }
+        binding.apply {
+            searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            searchResultsRecyclerView.adapter = searchResultsAdapter
+            searchEditText.setOnFocusChangeListener { _, hasFocus ->
+                gpsFragment?.onFocusChange(hasFocus)
+            }
+            searchEditText.addTextChangedListener(
+                object : TextWatcher {
+                    override fun afterTextChanged(searchValue: Editable?) {
+                        if (isResultChosen) {
+                            isResultChosen = false
+                            return
                         }
-                    searchRunnable?.let {
-                        val debounceDelayMillis = 500L
-                        handler.postDelayed(it, debounceDelayMillis)
+                        searchRunnable?.let {
+                            handler.removeCallbacks(it)
+                        }
+
+                        searchRunnable =
+                            Runnable {
+                                val query = searchValue.toString()
+                                if (query.isNotEmpty()) {
+                                    viewModel.searchLocation(query)
+                                }
+                            }
+                        searchRunnable?.let {
+                            val debounceDelayMillis = 500L
+                            handler.postDelayed(it, debounceDelayMillis)
+                        }
                     }
-                }
 
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int,
-                ) {}
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int,
+                    ) {
+                    }
 
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int,
-                ) {}
-            },
-        )
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int,
+                    ) {}
+                },
+            )
+        }
 
+        observeViewModel()
         return binding.root
     }
 
@@ -97,30 +119,25 @@ class LocationSearchFragment : Fragment() {
             ?: throw RuntimeException("$parentFragment must implement MapFragmentListener")
     }
 
-    private fun searchLocation(query: String) {
+    private fun observeViewModel() {
         lifecycleScope.launch {
-            try {
-                val results = OpenStreetMapService.api.searchLocation(query = query, limit = 5)
-                val locationResults = results.map { it.toDomain() }
-                Log.d(TAG, results.toString())
+            viewModel.searchResults.collectLatest { results ->
                 if (results.isNotEmpty()) {
-                    searchResultsAdapter.submitList(locationResults)
+                    searchResultsAdapter.submitList(results)
                     binding.searchResultsRecyclerView.visibility = View.VISIBLE
                 } else {
                     binding.searchResultsRecyclerView.visibility = View.GONE
-                    Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
+                    if (viewModel.hasSearched) {
+                        toastFragment("No results found")
+                    }
                 }
-            } catch (e: retrofit2.HttpException) {
-                val errorBody = e.response()?.errorBody()?.string()
-                Log.e(TAG, "Error body: $errorBody")
-                Toast
-                    .makeText(
-                        requireContext(),
-                        "Error fetching location: ${e.message}",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-            } catch (e: Exception) {
-                Log.e(TAG, "General error: ${e.message}")
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.isLoading.collectLatest { isLoading ->
+                binding.searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
+                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
         }
     }

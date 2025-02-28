@@ -1,12 +1,12 @@
-package com.col.eventradar.data.remote.events
+package com.col.eventradar.api.events
 
 import android.util.Log
-import com.col.eventradar.data.remote.events.dto.EventListResponseDTO
-import com.col.eventradar.models.AlertLevel
+import com.col.eventradar.api.events.dto.AlertLevel
+import com.col.eventradar.api.events.dto.EventListResponseDTO
 import com.col.eventradar.models.EventType
 import java.time.LocalDateTime
 
-class EventRepository {
+class GdacsService {
     suspend fun fetchEvents(
         fromDate: LocalDateTime?,
         toDate: LocalDateTime?,
@@ -32,7 +32,7 @@ class EventRepository {
 
         return try {
             val response =
-                GdacsService.api.getEventList(
+                GdacsClient.api.getEventList(
                     fromDate = queryParams[GdacsQueryParams.FROM_DATE] ?: return null,
                     toDate = queryParams[GdacsQueryParams.TO_DATE] ?: return null,
                     alertLevel = queryParams[GdacsQueryParams.ALERT_LEVEL] ?: return null,

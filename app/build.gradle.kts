@@ -40,9 +40,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.gson)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.maplibre)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.android.sdk)
     implementation(libs.navigation.fragment.ktx)

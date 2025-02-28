@@ -14,7 +14,7 @@ import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
 import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
-import com.col.eventradar.viewmodel.EventViewModel
+import com.col.eventradar.ui.viewmodels.EventViewModel
 import java.time.LocalDateTime
 
 /**

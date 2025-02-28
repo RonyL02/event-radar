@@ -1,6 +1,6 @@
-package com.col.eventradar.data.remote.events
+package com.col.eventradar.api.events
 
-import com.col.eventradar.data.remote.events.dto.EventListResponseDTO
+import com.col.eventradar.api.events.dto.EventListResponseDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

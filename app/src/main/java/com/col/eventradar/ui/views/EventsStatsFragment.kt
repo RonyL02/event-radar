@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
 import com.col.eventradar.models.EventType
-import com.col.eventradar.models.EventTypeConfig
+import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.utils.getFormattedTime
-import com.col.eventradar.viewmodel.EventViewModel
 import java.time.LocalDateTime
 
 // TODO: Rename parameter arguments, choose names that match
@@ -56,6 +56,7 @@ class EventsStatsFragment : Fragment() {
         eventViewModel
             .getEventsPerTypeSince(sinceOneMonthAgo)
             .observe(viewLifecycleOwner) { eventsPerType ->
+                updateEventTypeUI(EventType.FLOOD, eventsPerType)
                 updateEventTypeUI(EventType.EARTHQUAKE, eventsPerType)
                 updateEventTypeUI(EventType.FOREST_FIRE, eventsPerType)
             }
@@ -91,7 +92,7 @@ class EventsStatsFragment : Fragment() {
                 else -> return
             }
 
-        Log.d(TAG, "updateEventTypeUI: $eventsPerType")
+        Log.d(TAG, "updateEventTypeUI: ${eventsPerType[type]}")
 
         titleView.text = EventTypeConfig.getName(type)
         iconView.setImageResource(EventTypeConfig.getIconResId(type))

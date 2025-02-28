@@ -3,9 +3,9 @@ package com.col.eventradar.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.FragmentEventCardBinding
 import com.col.eventradar.models.Event
-import com.col.eventradar.models.EventTypeConfig
 import com.col.eventradar.models.getDescriptionPreview
 import com.col.eventradar.models.getTitlePreview
 import com.col.eventradar.utils.getFormattedDate

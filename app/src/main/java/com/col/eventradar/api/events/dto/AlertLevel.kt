@@ -1,4 +1,4 @@
-package com.col.eventradar.models
+package com.col.eventradar.api.events.dto
 
 enum class AlertLevel(
     val value: String,

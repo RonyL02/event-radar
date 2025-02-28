@@ -1,20 +1,20 @@
-package com.col.eventradar.viewmodel
+package com.col.eventradar.ui.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.col.eventradar.data.remote.events.EventRepository
-import com.col.eventradar.data.remote.events.dto.toDomain
-import com.col.eventradar.models.AlertLevel
+import com.col.eventradar.api.events.GdacsService
+import com.col.eventradar.api.events.dto.AlertLevel
+import com.col.eventradar.api.events.dto.toDomain
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class EventViewModel : ViewModel() {
-    private val repository = EventRepository()
+    private val repository = GdacsService()
 
     private val _events = MutableLiveData<List<Event>>()
     val events: LiveData<List<Event>> get() = _events

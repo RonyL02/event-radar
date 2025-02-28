@@ -1,34 +1,45 @@
-package com.col.eventradar.models
+package com.col.eventradar.constants
 
 import com.col.eventradar.R
+import com.col.eventradar.models.EventType
 
 object EventTypeConfig {
     private val configMap =
         mapOf(
             EventType.EARTHQUAKE to
                 EventTypeDetails(
-                    name = "Disaster",
+                    name = "Earthquake",
                     iconResId = R.drawable.earthquake,
                 ),
             EventType.FLOOD to
                 EventTypeDetails(
-                    name = "Suicide",
-                    iconResId = R.drawable.pistol,
+                    name = "Flood",
+                    iconResId = R.drawable.earthquake,
                 ),
             EventType.CYCLONE to
                 EventTypeDetails(
-                    name = "Suicide",
-                    iconResId = R.drawable.pistol,
+                    name = "Cyclone",
+                    iconResId = R.drawable.earthquake,
                 ),
             EventType.FOREST_FIRE to
                 EventTypeDetails(
-                    name = "Suicide",
-                    iconResId = R.drawable.pistol,
+                    name = "Forest Fire",
+                    iconResId = R.drawable.earthquake,
                 ),
             EventType.DROUGHT to
                 EventTypeDetails(
-                    name = "Suicide",
-                    iconResId = R.drawable.pistol,
+                    name = "Drought",
+                    iconResId = R.drawable.earthquake,
+                ),
+            EventType.TSUNAMI to
+                EventTypeDetails(
+                    name = "Tsunami",
+                    iconResId = R.drawable.earthquake,
+                ),
+            EventType.VOLCANO to
+                EventTypeDetails(
+                    name = "Volcano",
+                    iconResId = R.drawable.earthquake,
                 ),
         )
 

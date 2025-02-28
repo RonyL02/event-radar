@@ -1,37 +1,40 @@
 package com.col.eventradar.ui.views
 
+import MapUtils
+import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.databinding.FragmentMapBinding
+import com.col.eventradar.ui.LocationSearchFragment
+import com.col.eventradar.ui.components.GpsLocationMapFragment
+import com.col.eventradar.ui.components.GpsLocationSearchFragment
+import com.col.eventradar.ui.components.ToastFragment
+import kotlinx.coroutines.launch
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
-import org.maplibre.android.geometry.LatLng
-import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.ui.LocationSearchFragment
 import org.maplibre.android.camera.CameraUpdateFactory
-import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapLibreMap
 
-class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
+class MapFragment :
+    Fragment(),
+    LocationSearchFragment.MapFragmentListener,
+    GpsLocationSearchFragment.GpsLocationListener {
     private var bindingInternal: FragmentMapBinding? = null
     private val binding get() = bindingInternal!!
 
-    private var lat: Double? = null
-    private var lon: Double? = null
-    private var zoom: Double? = null
+    private lateinit var map: MapLibreMap
+    private lateinit var toastFragment: ToastFragment
+    private lateinit var locationFragment: GpsLocationMapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapLibre.getInstance(requireContext())
-
-        arguments?.let {
-            lat = it.getDouble(ARG_LAT, DEFAULT_LAT)
-            lon = it.getDouble(ARG_LON, DEFAULT_LON)
-            zoom = it.getDouble(ARG_ZOOM, DEFAULT_ZOOM)
-        }
     }
 
     override fun onCreateView(
@@ -41,16 +44,47 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
     ): View {
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
+        locationFragment = GpsLocationMapFragment()
+        childFragmentManager
+            .beginTransaction()
+            .add(locationFragment, GpsLocationMapFragment.TAG)
+            .commit()
 
-        binding.mapView.getMapAsync { map ->
-            map.setStyle(DEFAULT_MAP_STYLE_URL)
-            map.cameraPosition = CameraPosition.Builder()
-                .target(LatLng(lat ?: DEFAULT_LAT, lon ?: DEFAULT_LON))
-                .zoom(zoom ?: DEFAULT_ZOOM)
-                .build()
-        }
+        toastFragment = ToastFragment()
+        childFragmentManager.beginTransaction().add(toastFragment, ToastFragment.TAG).commit()
+
+        initMap()
 
         return binding.root
+    }
+
+    private fun initMap() {
+        binding.mapView.getMapAsync { map ->
+            this.map = map
+            map.setStyle(MapUtils.DEFAULT_MAP_STYLE_URL) { style ->
+                MapUtils.setupInitialCameraPosition(
+                    map,
+                    MapUtils.DEFAULT_LAT,
+                    MapUtils.DEFAULT_LON,
+                    MapUtils.DEFAULT_ZOOM,
+                )
+                MapUtils.addMapSourcesAndLayers(map, requireContext())
+                locationFragment.attachToMap(map, style)
+            }
+
+            map.addOnMapClickListener { point ->
+                MapUtils.handleMapClick(map, point, toastFragment)
+                true
+            }
+        }
+    }
+
+    override fun onLocationSelected(searchResult: LocationSearchResult) {
+        binding.mapView.getMapAsync { map ->
+            lifecycleScope.launch {
+                MapUtils.handleLocationSelection(map, searchResult, toastFragment, binding)
+            }
+        }
     }
 
     override fun onStart() {
@@ -84,39 +118,20 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener {
         binding.mapView.onSaveInstanceState(outState)
     }
 
-    override fun onLocationSelected(searchResult: LocationSearchResult) {
-        Log.d(TAG, "onLocationSelected called")
-        val bounds = LatLngBounds.Builder()
-            .include(LatLng(searchResult.southLat, searchResult.westLon))
-            .include(LatLng(searchResult.northLat, searchResult.eastLon))
-            .build()
+    override fun onLocationReceived(location: LocationSearchResult) {
+        onLocationSelected(location)
+    }
 
-        binding.mapView.getMapAsync { map ->
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))  // 50px padding
+    override fun onGPSLocationClick() {
+        locationFragment.locationComponent?.lastKnownLocation?.let {
+            val cameraPosition =
+                CameraPosition
+                    .Builder()
+                    .target(LatLng(it.latitude, it.longitude))
+                    .build()
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }
     }
 
-    companion object {
-        private const val ARG_LAT = "lat"
-        private const val ARG_LON = "lon"
-        private const val ARG_ZOOM = "zoom"
-
-        val TAG = "Map"
-
-        private const val DEFAULT_LAT = 32.0
-        private const val DEFAULT_LON = 35.0
-        private const val DEFAULT_ZOOM = 5.0
-
-        private const val DEFAULT_MAP_STYLE_URL = "https://demotiles.maplibre.org/style.json";
-
-        @JvmStatic
-        fun newInstance(lat: Double, lon: Double, zoom: Double) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putDouble(ARG_LAT, lat)
-                    putDouble(ARG_LON, lon)
-                    putDouble(ARG_ZOOM, zoom)
-                }
-            }
-    }
+    override fun onGetLocation(): Location? = locationFragment.getCurrentLocation()
 }
