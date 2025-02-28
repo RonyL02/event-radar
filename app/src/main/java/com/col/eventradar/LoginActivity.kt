@@ -31,8 +31,7 @@ class LoginActivity : AppCompatActivity() {
         binding.textView.setOnClickListener {
             Toast.makeText(this, "Google Sign-In Clicked!", Toast.LENGTH_SHORT).show()
 
-            // val intent = Intent(this, NextActivity::class.java)
-            // startActivity(intent)
+
         }
     }
 }
