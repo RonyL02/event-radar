@@ -3,20 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <org.maplibre.android.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:maplibre_cameraZoomMax="26.0"
         app:maplibre_cameraZoomMin="2.0"
-        app:maplibre_uiCompass="true"
-        app:maplibre_uiCompassFadeFacingNorth="true"
-        app:maplibre_uiCompassGravity="top|end"
+        app:maplibre_uiCompass="false"
         app:maplibre_uiDoubleTapGestures="true"
         app:maplibre_uiHorizontalScrollGestures="true"
         app:maplibre_uiRotateGestures="true"
         app:maplibre_uiScrollGestures="true"
         app:maplibre_uiTiltGestures="true"
+        app:maplibre_pixelRatio="2.0"
         app:maplibre_uiZoomGestures="true" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.col.eventradar.ui.LocationSearchFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_margin="18dp"/>
+
+    <Button
+        android:id="@+id/map_add_location_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="130dp"
+        android:visibility="gone"
+        android:text="@string/add_location_button_text" /></androidx.coordinatorlayout.widget.CoordinatorLayout>

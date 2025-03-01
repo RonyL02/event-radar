@@ -40,7 +40,10 @@ android {
 }
 
 dependencies {
-    implementation("org.maplibre.gl:android-sdk:11.5.1")
+    implementation(libs.gson)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.maplibre)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.core.ktx)

@@ -9,6 +9,10 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.col.eventradar.databinding.ActivityMainBinding
+import com.col.eventradar.models.EventDetails
+import com.col.eventradar.models.EventType
+import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -31,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        // Setup the bottom navigation view with the navigation controller
         navController = findNavController(binding.navHostContainer.id)
         binding.bottomNavigationView.setupWithNavController(navController)
     }
