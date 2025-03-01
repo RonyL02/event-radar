@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.col.eventradar.databinding.ActivityLoginBinding
+import com.col.eventradar.ui.components.ToastFragment
 
 class LoginActivity : AppCompatActivity() {
+    private val toastFragment: ToastFragment = ToastFragment()
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -29,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.textView.setOnClickListener {
-            Toast.makeText(this, "Google Sign-In Clicked!", Toast.LENGTH_SHORT).show()
+            toastFragment("logged in successfully")
 
 
         }
