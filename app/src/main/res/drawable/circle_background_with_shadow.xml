@@ -1,5 +1,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Shadow Layer -->
+
     <item>
         <shape android:shape="oval">
             <solid android:color="#C9C9C9" />
@@ -7,7 +7,7 @@
         </shape>
     </item>
 
-    <!-- White Circle -->
+
     <item android:top="1dp" android:bottom="1dp" android:left="1dp" android:right="1dp">
         <shape android:shape="oval">
             <solid android:color="@android:color/white" />

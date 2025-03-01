@@ -1,5 +1,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Focused State -->
+
     <item android:state_focused="true">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/transparent" />
@@ -8,7 +8,7 @@
         </shape>
     </item>
 
-    <!-- Default State -->
+
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@android:color/transparent" />
