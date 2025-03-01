@@ -18,6 +18,7 @@ recyclerview = "1.4.0"
 gson = "2.10"
 maplibre = "11.5.1"
 retrofit = "2.11.0"
+shimmer = "0.5.0"
 
 [libraries]
 android-sdk = { module = "org.maplibre.gl:android-sdk", version.ref = "androidSdk" }
@@ -41,6 +42,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 maplibre = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

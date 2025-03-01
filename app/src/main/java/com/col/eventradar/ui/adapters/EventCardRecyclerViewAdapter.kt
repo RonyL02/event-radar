@@ -4,39 +4,49 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.constants.EventTypeConfig
+import com.col.eventradar.databinding.EventCardShimmerBinding
 import com.col.eventradar.databinding.FragmentEventCardBinding
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.getDescriptionPreview
 import com.col.eventradar.models.getTitlePreview
 import com.col.eventradar.utils.getFormattedDate
 
-/**
- * [RecyclerView.Adapter] that can display a [Event].
- * TODO: Replace the implementation with code for your data type.
- */
 class EventCardRecyclerViewAdapter(
-    private var events: List<Event>,
+    private var events: List<Event> = emptyList(),
+    private var isLoading: Boolean = true,
     private val onClickListener: (Event) -> Unit,
-) : RecyclerView.Adapter<EventCardRecyclerViewAdapter.EventViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    override fun getItemViewType(position: Int): Int = if (isLoading) VIEW_TYPE_SHIMMER else VIEW_TYPE_ITEM
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ) = EventViewHolder(
-        FragmentEventCardBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false,
-        ),
-    )
+    ): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == VIEW_TYPE_SHIMMER) {
+            ShimmerViewHolder(
+                EventCardShimmerBinding.inflate(inflater, parent, false),
+            )
+        } else {
+            EventViewHolder(
+                FragmentEventCardBinding.inflate(inflater, parent, false),
+            )
+        }
+    }
 
     override fun onBindViewHolder(
-        holder: EventViewHolder,
+        holder: RecyclerView.ViewHolder,
         position: Int,
-    ) = holder.bind(events[position])
+    ) {
+        if (holder is EventViewHolder && !isLoading) {
+            holder.bind(events[position])
+        }
+    }
 
-    override fun getItemCount(): Int = events.size
+    override fun getItemCount(): Int = if (isLoading) LOADING_SHIMMER_COUNT else events.size
 
     fun updateEvents(newEvents: List<Event>) {
+        isLoading = false
         events = newEvents
         notifyDataSetChanged()
     }
@@ -47,8 +57,7 @@ class EventCardRecyclerViewAdapter(
         fun bind(event: Event) {
             with(binding) {
                 eventTitle.text = event.getTitlePreview()
-                eventTime.text =
-                    event.time.getFormattedDate()
+                eventTime.text = event.time.getFormattedDate()
                 locationName.text = event.locationName
                 eventTypeIcon.setImageResource(EventTypeConfig.getIconResId(event.type))
                 eventDescription.text = event.getDescriptionPreview()
@@ -57,5 +66,15 @@ class EventCardRecyclerViewAdapter(
                 root.setOnClickListener { onClickListener(event) }
             }
         }
+    }
+
+    inner class ShimmerViewHolder(
+        binding: EventCardShimmerBinding,
+    ) : RecyclerView.ViewHolder(binding.root)
+
+    companion object {
+        private const val LOADING_SHIMMER_COUNT = 5
+        private const val VIEW_TYPE_ITEM = 0
+        private const val VIEW_TYPE_SHIMMER = 1
     }
 }

@@ -57,6 +57,7 @@ class EventCardListFragment : Fragment() {
         eventAdapter =
             EventCardRecyclerViewAdapter(
                 emptyList(),
+                isLoading = true,
                 onClickListener = { eventDetails ->
                     val modalBottomSheet = EventDetailsBottomSheet(eventDetails)
                     modalBottomSheet.show(parentFragmentManager, EventDetailsBottomSheet.TAG)
