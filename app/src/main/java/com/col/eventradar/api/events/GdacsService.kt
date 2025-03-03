@@ -53,7 +53,7 @@ class GdacsService {
                 null
             }
         } catch (e: Exception) {
-            Log.e("EventRepository", "Network error fetching events", e)
+            Log.e("EventRepository", "Network error fetching events " + e.localizedMessage)
             null
         }
     }

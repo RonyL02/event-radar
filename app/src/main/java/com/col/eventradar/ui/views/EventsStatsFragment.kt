@@ -11,7 +11,8 @@ import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
 import com.col.eventradar.models.EventType
 import com.col.eventradar.ui.viewmodels.EventViewModel
-import com.col.eventradar.utils.getFormattedTime
+import com.col.eventradar.utils.getShortFormattedDate
+import com.facebook.shimmer.ShimmerFrameLayout
 import java.time.LocalDateTime
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,6 +29,7 @@ class EventsStatsFragment : Fragment() {
     private var bindingInternal: FragmentEventsStatsBinding? = null
     private val binding get() = bindingInternal!!
     private val eventViewModel: EventViewModel by activityViewModels()
+    private var shimmerLayout: ShimmerFrameLayout? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,21 +49,24 @@ class EventsStatsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        val sinceOneMonthAgo = LocalDateTime.now().minusMonths(12)
+        val sinceOneMonthAgo = LocalDateTime.now().minusYears(1)
 
         eventViewModel.getEventsSince(sinceOneMonthAgo).observe(viewLifecycleOwner) { total ->
             binding.totalEventsAmount.text = total.toString()
+            binding.sinceTime.text = sinceOneMonthAgo.getShortFormattedDate()
+            stopShimmerAndShowContent()
         }
 
         eventViewModel
             .getEventsPerTypeSince(sinceOneMonthAgo)
-            .observe(viewLifecycleOwner) { eventsPerType ->
-                updateEventTypeUI(EventType.FLOOD, eventsPerType)
-                updateEventTypeUI(EventType.EARTHQUAKE, eventsPerType)
-                updateEventTypeUI(EventType.FOREST_FIRE, eventsPerType)
-            }
+            .observe(viewLifecycleOwner) { eventsPerType -> updateEventTypeUI(eventsPerType) }
+    }
 
-        binding.sinceTime.text = LocalDateTime.now().minusHours(5).getFormattedTime()
+    private fun stopShimmerAndShowContent() {
+        shimmerLayout?.stopShimmer()
+        shimmerLayout?.visibility = View.GONE
+        binding.shimmerContainer.visibility = View.GONE
+        binding.banner.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
@@ -69,34 +74,34 @@ class EventsStatsFragment : Fragment() {
         bindingInternal = null
     }
 
-    private fun updateEventTypeUI(
-        type: EventType,
-        eventsPerType: Map<EventType, Int>,
-    ) {
-        val titleView =
-            when (type) {
-                EventType.DROUGHT -> binding.type1Title
-                EventType.FOREST_FIRE -> binding.type2Title
-                else -> return
-            }
-        val iconView =
-            when (type) {
-                EventType.DROUGHT -> binding.type1Icon
-                EventType.FOREST_FIRE -> binding.type2Icon
-                else -> return
-            }
-        val amountView =
-            when (type) {
-                EventType.DROUGHT -> binding.type1EventsAmount
-                EventType.FOREST_FIRE -> binding.type2EventsAmount
-                else -> return
-            }
+    private fun updateEventTypeUI(eventsPerType: Map<EventType, Int>) {
+        Log.d(TAG, "Events per type: $eventsPerType")
+        val sortedEvents = eventsPerType.entries.sortedByDescending { it.value }.take(2)
 
-        Log.d(TAG, "updateEventTypeUI: ${eventsPerType[type]}")
+        if (sortedEvents.isEmpty()) {
+            binding.topEventTitle.text = ""
+            binding.topEventIcon.setImageDrawable(null)
+            binding.topEventAmount.text = "0"
 
-        titleView.text = EventTypeConfig.getName(type)
-        iconView.setImageResource(EventTypeConfig.getIconResId(type))
-        amountView.text = eventsPerType[type]?.toString() ?: "0"
+            binding.secondEventTitle.text = ""
+            binding.secondEventIcon.setImageDrawable(null)
+            binding.secondEventAmount.text = "0"
+            return
+        }
+
+        if (sortedEvents.size >= 1) {
+            val (firstType, firstCount) = sortedEvents[0]
+            binding.topEventTitle.text = EventTypeConfig.getName(firstType)
+            binding.topEventIcon.setImageResource(EventTypeConfig.getIconResId(firstType))
+            binding.topEventAmount.text = firstCount.toString()
+        }
+
+        if (sortedEvents.size >= 2) {
+            val (secondType, secondCount) = sortedEvents[1]
+            binding.secondEventTitle.text = EventTypeConfig.getName(secondType)
+            binding.secondEventIcon.setImageResource(EventTypeConfig.getIconResId(secondType))
+            binding.secondEventAmount.text = secondCount.toString()
+        }
     }
 
     companion object {

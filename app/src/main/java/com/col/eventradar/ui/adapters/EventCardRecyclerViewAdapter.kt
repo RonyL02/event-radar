@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.constants.EventTypeConfig
-import com.col.eventradar.databinding.EventCardShimmerBinding
 import com.col.eventradar.databinding.FragmentEventCardBinding
+import com.col.eventradar.databinding.FragmentEventCardShimmerBinding
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.getDescriptionPreview
 import com.col.eventradar.models.getTitlePreview
@@ -25,7 +25,7 @@ class EventCardRecyclerViewAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == VIEW_TYPE_SHIMMER) {
             ShimmerViewHolder(
-                EventCardShimmerBinding.inflate(inflater, parent, false),
+                FragmentEventCardShimmerBinding.inflate(inflater, parent, false),
             )
         } else {
             EventViewHolder(
@@ -69,7 +69,7 @@ class EventCardRecyclerViewAdapter(
     }
 
     inner class ShimmerViewHolder(
-        binding: EventCardShimmerBinding,
+        binding: FragmentEventCardShimmerBinding,
     ) : RecyclerView.ViewHolder(binding.root)
 
     companion object {

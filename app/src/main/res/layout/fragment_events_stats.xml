@@ -6,6 +6,26 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.8"
+        app:shimmer_direction="left_to_right"
+        app:shimmer_duration="1000"
+        app:shimmer_intensity="0.8">
+
+        <View
+            android:id="@+id/shimmerBanner"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/banner_background" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <!-- Actual Content Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/banner"
         android:layout_width="match_parent"
@@ -15,9 +35,10 @@
         android:background="@drawable/banner_background"
         android:paddingHorizontal="42dp"
         android:paddingVertical="24dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/shimmerContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/headerContainer"
@@ -79,14 +100,57 @@
             tools:layout_editor_absoluteX="17dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/category1Container"
+                android:id="@+id/categoryTopContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/category2Container">
+                android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/type1EventsAmount"
+                    android:id="@+id/topEventAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="24dp"
+                    android:text="20"
+                    android:textColor="@color/red_600"
+                    android:textFontWeight="700"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/topEventIcon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/earthquake"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/topEventTitle"
+                    app:layout_constraintHorizontal_bias="0.993"
+                    app:layout_constraintStart_toEndOf="@+id/topEventAmount"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/topEventTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Suicide"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/topEventIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/topEventIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/categorySecondContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/categoryTopContainer">
+
+                <TextView
+                    android:id="@+id/secondEventAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="24dp"
@@ -96,78 +160,36 @@
                     android:textSize="32sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/type1Icon"
+                    android:id="@+id/secondEventIcon"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/type1Title"
+                    app:layout_constraintEnd_toStartOf="@+id/secondEventTitle"
                     app:layout_constraintHorizontal_bias="0.993"
-                    app:layout_constraintStart_toEndOf="@+id/type1EventsAmount"
+                    app:layout_constraintStart_toEndOf="@+id/secondEventAmount"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/type1Title"
+                    android:id="@+id/secondEventTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Suicide"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/type1Icon"
+                    app:layout_constraintBottom_toBottomOf="@+id/secondEventIcon"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/type1Icon" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/category2Container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/type2EventsAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="24dp"
-                    android:text="20"
-                    android:textColor="@color/red_600"
-                    android:textFontWeight="700"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <ImageView
-                    android:id="@+id/type2Icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/earthquake"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/type2Title"
-                    app:layout_constraintHorizontal_bias="0.993"
-                    app:layout_constraintStart_toEndOf="@+id/type2EventsAmount"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/type2Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Suicide"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/type2Icon"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/type2Icon" />
+                    app:layout_constraintTop_toTopOf="@+id/secondEventIcon" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
