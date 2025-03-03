@@ -24,4 +24,13 @@
         android:name="com.col.eventradar.ui.views.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.col.eventradar.ui.views.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_nav_graph_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
 </navigation>

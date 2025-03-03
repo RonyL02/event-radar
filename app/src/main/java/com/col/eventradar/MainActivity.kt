@@ -1,6 +1,7 @@
 package com.col.eventradar
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -8,11 +9,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.col.eventradar.auth.GoogleAuthClient
 import com.col.eventradar.databinding.ActivityMainBinding
-import com.col.eventradar.models.EventDetails
-import com.col.eventradar.models.EventType
-import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
-import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -36,6 +34,16 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         navController = findNavController(binding.navHostContainer.id)
+
+        val googleAuthClient = GoogleAuthClient(applicationContext)
+
+
+        if (!googleAuthClient.isSignedIn()) {
+            navController.navigate(R.id.navigation_login)
+
+            binding.bottomNavigationView.visibility = View.INVISIBLE
+        }
+
         binding.bottomNavigationView.setupWithNavController(navController)
     }
 }
