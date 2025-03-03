@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="interest_label" type="id" />
+    <item name="more_settings" type="id" />
+</resources>
