@@ -18,6 +18,11 @@ class EventCardRecyclerViewAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemViewType(position: Int): Int = if (isLoading) VIEW_TYPE_SHIMMER else VIEW_TYPE_ITEM
 
+    fun setLoading(isLoading: Boolean) {
+        this.isLoading = isLoading
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,

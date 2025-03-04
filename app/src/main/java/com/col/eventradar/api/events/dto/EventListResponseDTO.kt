@@ -56,7 +56,7 @@ fun EventListResponseDTO.toDomain(): List<Event> =
     features.map { feature ->
         Event(
             id = feature.properties.eventId.toString(),
-            title = feature.properties.eventName.takeIf { !it.isNullOrBlank() } ?: "Unknown Event",
+            title = feature.properties.eventName ?: "",
             location = feature.geometry.toLocation(),
             locationName =
                 feature.properties.affectedCountries

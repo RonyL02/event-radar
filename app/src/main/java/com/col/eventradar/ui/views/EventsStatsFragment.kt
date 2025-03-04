@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.col.eventradar.constants.EventTypeConfig
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
 import com.col.eventradar.models.EventType
 import com.col.eventradar.ui.viewmodels.EventViewModel
+import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 import com.col.eventradar.utils.getShortFormattedDate
-import com.facebook.shimmer.ShimmerFrameLayout
 import java.time.LocalDateTime
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,8 +29,10 @@ private const val ARG_PARAM2 = "param2"
 class EventsStatsFragment : Fragment() {
     private var bindingInternal: FragmentEventsStatsBinding? = null
     private val binding get() = bindingInternal!!
-    private val eventViewModel: EventViewModel by activityViewModels()
-    private var shimmerLayout: ShimmerFrameLayout? = null
+    private val eventViewModel: EventViewModel by activityViewModels {
+        val repository = EventRepository(requireContext())
+        EventViewModelFactory(repository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,29 +52,38 @@ class EventsStatsFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        val sinceOneMonthAgo = LocalDateTime.now().minusYears(1)
+        val sinceOneYearAgo = LocalDateTime.now().minusYears(1)
 
-        eventViewModel.getEventsSince(sinceOneMonthAgo).observe(viewLifecycleOwner) { total ->
+        eventViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                startShimmer()
+            } else {
+                stopShimmerAndShowContent()
+            }
+        }
+
+        eventViewModel.getEventsSince(sinceOneYearAgo).observe(viewLifecycleOwner) { total ->
             binding.totalEventsAmount.text = total.toString()
-            binding.sinceTime.text = sinceOneMonthAgo.getShortFormattedDate()
-            stopShimmerAndShowContent()
+            binding.sinceTime.text = sinceOneYearAgo.getShortFormattedDate()
         }
 
         eventViewModel
-            .getEventsPerTypeSince(sinceOneMonthAgo)
-            .observe(viewLifecycleOwner) { eventsPerType -> updateEventTypeUI(eventsPerType) }
+            .getEventsPerTypeSince(sinceOneYearAgo)
+            .observe(viewLifecycleOwner) { eventsPerType ->
+                updateEventTypeUI(eventsPerType)
+            }
+    }
+
+    private fun startShimmer() {
+        binding.shimmerContainer.startShimmer()
+        binding.shimmerContainer.visibility = View.VISIBLE
+        binding.banner.visibility = View.GONE
     }
 
     private fun stopShimmerAndShowContent() {
-        shimmerLayout?.stopShimmer()
-        shimmerLayout?.visibility = View.GONE
+        binding.shimmerContainer.stopShimmer()
         binding.shimmerContainer.visibility = View.GONE
         binding.banner.visibility = View.VISIBLE
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        bindingInternal = null
     }
 
     private fun updateEventTypeUI(eventsPerType: Map<EventType, Int>) {

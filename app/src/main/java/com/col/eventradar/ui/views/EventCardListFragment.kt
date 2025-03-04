@@ -12,10 +12,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.viewmodels.EventViewModel
-import java.time.LocalDateTime
+import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 
 /**
  * A fragment representing a list of Items.
@@ -23,7 +24,10 @@ import java.time.LocalDateTime
 class EventCardListFragment : Fragment() {
     private var columnCount = 1
     private var bindingInternal: FragmentEventCardListBinding? = null
-    private val eventViewModel: EventViewModel by activityViewModels()
+    private val eventViewModel: EventViewModel by activityViewModels {
+        val repository = EventRepository(requireContext())
+        EventViewModelFactory(repository)
+    }
     private lateinit var eventAdapter: EventCardRecyclerViewAdapter
 
     /**
@@ -82,25 +86,24 @@ class EventCardListFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        eventViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            eventAdapter.setLoading(isLoading)
+        }
+
         eventViewModel.events.observe(viewLifecycleOwner) { events ->
             eventAdapter.updateEvents(events)
         }
     }
 
     private fun fetchEvents() {
-        eventViewModel.fetchFilteredEvents(
-            fromDate = LocalDateTime.now().minusMonths(12),
-            toDate = LocalDateTime.now(),
-        )
+        eventViewModel.fetchFilteredEvents()
     }
 
     companion object {
         const val TAG = "EventCardListFragment"
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
             EventCardListFragment().apply {

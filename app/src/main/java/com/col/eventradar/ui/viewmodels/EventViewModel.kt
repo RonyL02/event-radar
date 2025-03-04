@@ -5,17 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.col.eventradar.api.events.GdacsService
 import com.col.eventradar.api.events.dto.AlertLevel
-import com.col.eventradar.api.events.dto.toDomain
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class EventViewModel : ViewModel() {
-    private val repository = GdacsService()
-
+class EventViewModel(
+    private val repository: EventRepository,
+) : ViewModel() {
     private val _events = MutableLiveData<List<Event>>()
     val events: LiveData<List<Event>> get() = _events
 
@@ -32,23 +31,29 @@ class EventViewModel : ViewModel() {
         eventTypes: List<EventType>? = null,
         country: String? = null,
     ) {
-        _isLoading.postValue(true) // Show loading
+        _isLoading.postValue(true)
 
         viewModelScope.launch {
             try {
-                val response =
-                    repository.fetchEvents(fromDate, toDate, alertLevels, eventTypes, country)
+                val eventsList =
+                    repository.fetchAndStoreEvents(
+                        fromDate,
+                        toDate,
+                        alertLevels,
+                        eventTypes,
+                        country,
+                    )
 
-                if (response == null) {
+                if (eventsList.isEmpty()) {
                     _errorMessage.postValue("No events found.")
-                    _events.postValue(emptyList()) // Clear existing events
+                    _events.postValue(emptyList())
                 } else {
-                    _events.postValue(response.toDomain()) // Convert to Event model
+                    _events.postValue(eventsList)
                 }
             } catch (e: Exception) {
                 _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
             } finally {
-                _isLoading.postValue(false) // Hide loading
+                _isLoading.postValue(false)
             }
         }
     }
