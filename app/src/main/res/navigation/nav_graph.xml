@@ -32,5 +32,5 @@
         <action
             android:id="@+id/action_nav_graph_to_navigation_home"
             app:destination="@id/navigation_home" />
-    </fragment>
+    </fragment><action android:id="@+id/action_global_navigation_login" app:destination="@id/navigation_login"/><action android:id="@+id/action_global_navigation_home" app:destination="@id/navigation_home"/>
 </navigation>
