@@ -9,10 +9,10 @@ import com.col.eventradar.models.EventEntity
 
 @Dao
 interface EventDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEvent(event: EventEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEvents(events: List<EventEntity>): List<Long> // ✅ Returns row IDs
 
     @Query("SELECT * FROM events")

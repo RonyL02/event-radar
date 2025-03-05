@@ -35,13 +35,11 @@ class EventRepository(
 
                 val latestStoredEventDate = getLatestStoredEventDate()
 
-                // Determine the actual start date for the API request
                 val actualFromDate =
                     latestStoredEventDate?.plusSeconds(1) ?: fromDate
                         ?: LocalDateTime.now().minusYears(1)
                 val actualToDate = toDate ?: LocalDateTime.now()
 
-                // If data is already up-to-date, return cached events
                 if (latestStoredEventDate != null && latestStoredEventDate.isAfter(actualFromDate)) {
                     Log.d(TAG, "Data up-to-date. Returning only cached events.")
                     return@withContext localEvents
@@ -49,7 +47,6 @@ class EventRepository(
 
                 Log.d(TAG, "Fetching new events from API from $actualFromDate to $actualToDate...")
 
-                // Fetch new events from API
                 val response =
                     gdacsService.fetchEvents(
                         actualFromDate,
@@ -73,31 +70,22 @@ class EventRepository(
                         val insertedIds = eventDao.insertEvents(eventEntities)
                         val insertedCount =
                             insertedIds.count { it != -1L } // ✅ Count successful inserts
-                        Log.d(TAG, "Successfully inserted $insertedCount events into the database.")
 
-                        insertedIds.map { id ->
-                            Log.d(TAG, "Inserted Event ID: $id")
-                        }
-
-                        Log.d(TAG, "Fetched and stored ${eventEntities.size} new events.")
+                        Log.d(
+                            TAG,
+                            "Fetched ${eventEntities.size} and stored $insertedCount new events.",
+                        )
                         filteredEvents
                     } else {
                         Log.w(TAG, "No new events found.")
                         emptyList()
                     }
 
-                debugDatabase()
-                val uniqueEvents = (newEvents).distinctBy { it.id }
-                uniqueEvents.map { event ->
-                    Log.d(TAG, "Combined Event: ${event.id}, ${event.title}, ${event.time}")
-                }
-
-                localEvents.map { event ->
-                    Log.d(TAG, "Local Event: ${event.id}, ${event.title}, ${event.time}")
-                }
+                val uniqueEvents =
+                    (newEvents + localEvents).distinctBy { it.id }.sortedBy { it.time }
 
                 // Return combined list of local and new events
-                return@withContext newEvents
+                return@withContext uniqueEvents
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching events: ${e.localizedMessage}. Returning local DB.", e)
                 return@withContext getLocalEvents()
@@ -114,7 +102,12 @@ class EventRepository(
     suspend fun debugDatabase() {
         val events = eventDao.getAllEvents()
         Log.d(TAG, "Debug DB: Found ${events.size} events stored.")
-        events.forEach { Log.d(TAG, "Stored Event: ${it.id}, ${it.title}, ${it.time}") }
+        events.forEach {
+            Log.d(
+                TAG,
+                "Stored Event: ${it.id}, ${it.title}, ${it.time}",
+            )
+        }
     }
 
     suspend fun getLocalEvents(): List<Event> =

@@ -11,7 +11,12 @@ object GdacsQueryHelper {
     fun buildEventQueryParams(
         fromDate: LocalDateTime?,
         toDate: LocalDateTime?,
-        alertLevels: List<AlertLevel>? = listOf(AlertLevel.ORANGE, AlertLevel.RED),
+        alertLevels: List<AlertLevel>? =
+            listOf(
+                AlertLevel.ORANGE,
+                AlertLevel.RED,
+                AlertLevel.GREEN,
+            ),
         eventTypes: List<EventType>? = EventType.entries,
         country: String? = "United States",
     ): Map<String, String> =

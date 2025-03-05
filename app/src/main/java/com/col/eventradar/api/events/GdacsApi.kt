@@ -10,7 +10,7 @@ interface GdacsApi {
     suspend fun getEventList(
         @Query("fromDate") fromDate: String,
         @Query("toDate") toDate: String,
-        @Query("alertlevel") alertLevel: String = "orange;red",
+        @Query("alertlevel") alertLevel: String = "orange;red;green",
         @Query("eventlist") eventList: String = "EQ;TS,TC,FL,VO,DR,WF",
         @Query("country") country: String = "United States",
     ): Response<EventListResponseDTO>

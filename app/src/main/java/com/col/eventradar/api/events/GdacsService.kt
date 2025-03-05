@@ -40,21 +40,14 @@ class GdacsService private constructor() {
                     }
                 }
 
-            // Wait for all parallel requests to finish
             val responses = deferredResults.awaitAll().filterNotNull()
 
-            dateRanges.map { range ->
-                Log.d("GdacsService", "Fetched events from ${range.first} to ${range.second}")
-            }
-
-            // Combine results
             val combinedEvents = responses.flatMap { it.features }
-            val unique = combinedEvents.distinctBy { it.properties.eventId }
-            Log.d("GdacsService", "Fetched unique events: ${unique.size}")
-            Log.d("GdacsService", "Fetched total events: ${combinedEvents.size}")
+            val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
+            Log.d(TAG, "Fetched unique events: ${uniqueEvents.size}")
 
-            return@coroutineScope if (combinedEvents.isNotEmpty()) {
-                EventListResponseDTO(features = combinedEvents)
+            return@coroutineScope if (uniqueEvents.isNotEmpty()) {
+                EventListResponseDTO(features = uniqueEvents)
             } else {
                 null
             }
@@ -81,6 +74,8 @@ class GdacsService private constructor() {
                 country = country ?: "United States",
             )
 
+        Log.d(TAG, "query params: $queryParams")
+
         return try {
             val response =
                 GdacsClient.api.getEventList(
@@ -94,11 +89,11 @@ class GdacsService private constructor() {
             if (response.isSuccessful) {
                 response.body()?.takeIf { it.features.isNotEmpty() }
             } else {
-                Log.e("GdacsService", "API Error: ${response.code()} - ${response.message()}")
+                Log.e(TAG, "API Error: ${response.code()} - ${response.message()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e("GdacsService", "Network error fetching events: ${e.localizedMessage}")
+            Log.e(TAG, "Network error fetching events: ${e.localizedMessage}")
             null
         }
     }
@@ -119,7 +114,8 @@ class GdacsService private constructor() {
     }
 
     companion object {
-        private const val REQUEST_BATCHES_AMOUNT = 5
+        private const val REQUEST_BATCHES_AMOUNT = 1
+        const val TAG = "GdacsService"
 
         @Volatile
         private var instance: GdacsService? = null
