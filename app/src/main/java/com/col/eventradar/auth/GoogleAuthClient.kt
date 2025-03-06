@@ -33,22 +33,26 @@ class GoogleAuthClient(
     fun getCurrentUser() = auth.currentUser
 
 
-    suspend fun signIn(): Pair<Boolean, String?>? {
-        println(auth.currentUser?.displayName)
-        if (isSignedIn()) return null
+    suspend fun signIn(callback: (signInResult: Pair<Boolean, String?>) -> Unit) {
+        if (isSignedIn()) {
+            callback(Pair(false, auth.currentUser?.uid))
+            return
+        }
 
-        return try {
+        try {
             val credentialResponse = buildCredentialRequest()
             val authResult = handleSignIn(credentialResponse)
-            _userId = authResult?.user?.uid
-            _isNewUser = authResult?.additionalUserInfo?.isNewUser ?: false
             Log.i(TAG, "Signed in successfully!")
-            Pair(_isNewUser, _userId)
+            callback(
+                Pair(
+                    authResult?.additionalUserInfo?.isNewUser ?: false,
+                    authResult?.user?.uid
+                )
+            )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Sign-in failed: ${e.message}", e)
-            null
         }
     }
 

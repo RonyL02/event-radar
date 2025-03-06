@@ -10,16 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.col.eventradar.auth.GoogleAuthClient
 import com.col.eventradar.databinding.ActivityMainBinding
-import com.col.eventradar.ui.components.ToastFragment
-import com.col.eventradar.ui.viewmodels.LoginViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var loginViewModel: LoginViewModel
-    private val toastFragment = ToastFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,28 +29,23 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        loginViewModel =
-            ViewModelProvider(this)[LoginViewModel::class.java]
     }
 
     override fun onStart() {
         super.onStart()
 
         navController = findNavController(binding.navHostContainer.id)
-
-        loginViewModel.isSignedIn.observe(this) { isSignedIn ->
-            if (isSignedIn == null) {
-                navController.navigate(NavGraphDirections.actionGlobalNavigationLogin())
-                binding.bottomNavigationView.visibility = View.INVISIBLE
-            } else if (isSignedIn == true) {
-//                navController.navigate(NavGraphDirections.actionGlobalNavigationHome())
+        binding.progressBar.visibility = View.VISIBLE
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            if (auth.currentUser != null) {
                 binding.bottomNavigationView.visibility = View.VISIBLE
+                navController.navigate(NavGraphDirections.actionGlobalNavigationHome())
             } else {
-                toastFragment("Authentication failed")
+                navController.navigate(NavGraphDirections.actionGlobalNavigationLogin())
+                binding.bottomNavigationView.visibility = View.GONE
             }
+            binding.progressBar.visibility = View.GONE
         }
-
 
         binding.bottomNavigationView.setupWithNavController(navController)
     }

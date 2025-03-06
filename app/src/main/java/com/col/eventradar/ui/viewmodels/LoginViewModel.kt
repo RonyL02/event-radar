@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.col.eventradar.auth.GoogleAuthClient
 import com.col.eventradar.data.remote.UserRepository
@@ -18,29 +19,38 @@ class LoginViewModel(context: Context) : ViewModel() {
 
     fun signIn() {
         viewModelScope.launch {
-            val (isNew, id) = authClient.signIn() ?: (false to null)
-            _isSignedIn.value = id != null
-
-
-            if (!isNew) {
-                println("user does not exist registering")
-                registerUser()
-            } else {
-                println("not new")
+            authClient.signIn { (isNew, userId) ->
+                _isSignedIn.value = userId != null
+                if (isNew) {
+                    println("user does not exist registering")
+                    registerUser(userId!!)
+                } else {
+                    println("not new")
+                }
             }
         }
     }
 
-    private fun registerUser() {
+    private fun registerUser(newUserId: String) {
         authClient.getCurrentUser()?.let { currentUser ->
             viewModelScope.launch {
                 val newUser = User(
-                    authClient.userId!!,
+                    newUserId,
                     currentUser.displayName!!,
                     currentUser.photoUrl.toString()
                 )
                 userRepository.saveUser(newUser)
             }
         }
+    }
+}
+
+class LoginViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LoginViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
