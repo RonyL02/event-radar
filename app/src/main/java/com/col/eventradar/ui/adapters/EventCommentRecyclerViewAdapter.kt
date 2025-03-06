@@ -5,43 +5,34 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.EventCommentRowBinding
 import com.col.eventradar.models.Comment
-
+import java.util.Locale
 
 class EventCommentRecyclerViewAdapter(
-    private val comments: List<Comment>
-) :
-    RecyclerView.Adapter<EventCommentRecyclerViewAdapter.ViewHolder>() {
-
+    private val comments: List<Comment>,
+) : RecyclerView.Adapter<EventCommentRecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder = ViewHolder(
-        EventCommentRowBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false,
-        ),
+        viewType: Int,
+    ) = ViewHolder(
+        EventCommentRowBinding.inflate(LayoutInflater.from(parent.context), parent, false),
     )
 
-    override fun getItemCount(): Int = comments.size
+    override fun getItemCount() = comments.size
 
     override fun onBindViewHolder(
-        holder: EventCommentRecyclerViewAdapter.ViewHolder,
-        position: Int
-    ) {
-        val comment = comments[position]
-        holder.apply {
-            usernameView.text = comment.username
-            contentView.text = comment.content
-            timeView.text = "${comment.time.hour}:${comment.time.minute}"
-        }
-    }
+        holder: ViewHolder,
+        position: Int,
+    ) = holder.bind(comments[position])
 
     inner class ViewHolder(
-        binding: EventCommentRowBinding,
+        private val binding: EventCommentRowBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-        val timeView = binding.commentTime
-        val usernameView = binding.username
-        val contentView = binding.content
+        fun bind(comment: Comment) =
+            with(binding) {
+                username.text = comment.username
+                content.text = comment.content
+                commentTime.text =
+                    String.format(Locale.UK, "%02d:%02d", comment.time.hour, comment.time.minute)
+            }
     }
 }

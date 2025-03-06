@@ -2,16 +2,15 @@ package com.col.eventradar.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.col.eventradar.api.OpenStreetMapService
-import com.col.eventradar.api.dto.toModel
-import com.col.eventradar.models.LocationSearchResult
+import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.api.locations.dto.toModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class LocationSearchViewModel : ViewModel() {
-
     private val _searchResults = MutableStateFlow<List<LocationSearchResult>>(emptyList())
     val searchResults: StateFlow<List<LocationSearchResult>> get() = _searchResults
 

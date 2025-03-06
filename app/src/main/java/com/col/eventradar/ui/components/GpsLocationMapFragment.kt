@@ -9,11 +9,11 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import com.col.eventradar.databinding.FragmentGpsLocationMapBinding
 import com.col.eventradar.utils.ThemeUtils
 import org.maplibre.android.location.LocationComponent
@@ -24,13 +24,12 @@ import org.maplibre.android.location.permissions.PermissionsManager
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
 
-
 class GpsLocationMapFragment : Fragment() {
     private var bindingInternal: FragmentGpsLocationMapBinding? = null
     private val binding get() = bindingInternal!!
     var locationComponent: LocationComponent? = null
     private var map: MapLibreMap? = null
-    private var toastFragment: ToastFragment = ToastFragment();
+    private var toastFragment: ToastFragment = ToastFragment()
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -42,14 +41,18 @@ class GpsLocationMapFragment : Fragment() {
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentGpsLocationMapBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    fun attachToMap(map: MapLibreMap, style: Style) {
+    fun attachToMap(
+        map: MapLibreMap,
+        style: Style,
+    ) {
         this.map = map
         enableLocationComponent(style)
     }
@@ -60,19 +63,22 @@ class GpsLocationMapFragment : Fragment() {
             locationComponent = map?.locationComponent
             val accentColor = ThemeUtils.getThemeColor(requireContext())
 
-            val locationComponentOptions = LocationComponentOptions.builder(requireContext())
-                .accuracyColor(accentColor)
-                .pulseColor(accentColor)
-                .foregroundTintColor(accentColor)
-                .bearingTintColor(accentColor)
-                .maxZoomIconScale(1.0f)
-                .minZoomIconScale(1.0f)
-                .build()
+            val locationComponentOptions =
+                LocationComponentOptions
+                    .builder(requireContext())
+                    .accuracyColor(accentColor)
+                    .pulseColor(accentColor)
+                    .foregroundTintColor(accentColor)
+                    .bearingTintColor(accentColor)
+                    .maxZoomIconScale(1.0f)
+                    .minZoomIconScale(1.0f)
+                    .build()
 
             locationComponent?.activateLocationComponent(
-                LocationComponentActivationOptions.builder(requireContext(), style)
+                LocationComponentActivationOptions
+                    .builder(requireContext(), style)
                     .locationComponentOptions(locationComponentOptions) // Apply the options
-                    .build()
+                    .build(),
             )
 
             locationComponent?.isLocationComponentEnabled = true
@@ -96,22 +102,22 @@ class GpsLocationMapFragment : Fragment() {
         if (location != null) {
             return location
         } else if (!isLocationEnabled(requireContext())) {
-            AlertDialog.Builder(context)
+            AlertDialog
+                .Builder(context)
                 .setTitle("Enable Location")
                 .setMessage("Your location is turned off. Please enable it to use this feature.")
                 .setPositiveButton("Enable") { _, _ ->
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     activity?.startActivity(intent)
-                }
-                .setNegativeButton("Cancel", null)
+                }.setNegativeButton("Cancel", null)
                 .show()
         } else if (!PermissionsManager.areLocationPermissionsGranted(context)) {
             toastFragment(
-                "You need to accept location permissions to to use Location based services.")
+                "You need to accept location permissions to to use Location based services.",
+            )
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-        else {
-            toastFragment( "Location not available")
+        } else {
+            toastFragment("Location not available")
         }
         return null
     }
@@ -121,7 +127,8 @@ class GpsLocationMapFragment : Fragment() {
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-        val locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+        val locationMode =
+            Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
         return locationMode != Settings.Secure.LOCATION_MODE_OFF && (isGpsEnabled || isNetworkEnabled)
     }
 

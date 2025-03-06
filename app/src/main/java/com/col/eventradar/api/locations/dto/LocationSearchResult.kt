@@ -1,4 +1,4 @@
-package com.col.eventradar.models
+package com.col.eventradar.api.locations.dto
 
 data class LocationSearchResult(
     val placeId: Long,
@@ -9,5 +9,5 @@ data class LocationSearchResult(
     val southLat: Double,
     val northLat: Double,
     val westLon: Double,
-    val eastLon: Double
+    val eastLon: Double,
 )

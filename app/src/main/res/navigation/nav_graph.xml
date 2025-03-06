@@ -6,9 +6,9 @@
     app:startDestination="@+id/navigation_home">
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.col.eventradar.ui.views.EventCardListFragment"
+        android:name="com.col.eventradar.ui.views.EventsFeedFragment"
         android:label="@string/title_home_screen"
-        tools:layout="@layout/fragment_event_card_list" />
+        tools:layout="@layout/fragment_events_feed" />
     <fragment
         android:id="@+id/navigation_comments"
         android:name="com.col.eventradar.ui.views.CommentsFragment"
