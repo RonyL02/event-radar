@@ -60,29 +60,24 @@ class EventRepository(
                     if (response != null && response.features.isNotEmpty()) {
                         val events = response.toDomain()
 
-                        val filteredEvents =
-                            events.filter { event ->
-                                event.title.isNotBlank()
-                            }
-
-                        val eventEntities = filteredEvents.map { it.toEntity() }
+                        val eventEntities = events.map { it.toEntity() }
 
                         val insertedIds = eventDao.insertEvents(eventEntities)
                         val insertedCount =
-                            insertedIds.count { it != -1L } // ✅ Count successful inserts
+                            insertedIds.count { it != -1L }
 
                         Log.d(
                             TAG,
                             "Fetched ${eventEntities.size} and stored $insertedCount new events.",
                         )
-                        filteredEvents
+                        events
                     } else {
                         Log.w(TAG, "No new events found.")
                         emptyList()
                     }
 
                 val uniqueEvents =
-                    (newEvents + localEvents).distinctBy { it.id }.sortedBy { it.time }
+                    (newEvents + localEvents).distinctBy { it.id }.sortedByDescending { it.time }
 
                 // Return combined list of local and new events
                 return@withContext uniqueEvents
@@ -99,18 +94,7 @@ class EventRepository(
             latestEvent?.time
         }
 
-    suspend fun debugDatabase() {
-        val events = eventDao.getAllEvents()
-        Log.d(TAG, "Debug DB: Found ${events.size} events stored.")
-        events.forEach {
-            Log.d(
-                TAG,
-                "Stored Event: ${it.id}, ${it.title}, ${it.time}",
-            )
-        }
-    }
-
-    suspend fun getLocalEvents(): List<Event> =
+    private suspend fun getLocalEvents(): List<Event> =
         withContext(Dispatchers.IO) {
             Log.d(TAG, "Fetching events from local database.")
             val events = eventDao.getAllEvents().map { it.toDomain() }

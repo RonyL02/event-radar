@@ -23,10 +23,8 @@ class GdacsService private constructor() {
             val start = fromDate ?: LocalDateTime.now().minusYears(1)
             val end = toDate ?: LocalDateTime.now()
 
-            // Split date range into 20 smaller ranges
             val dateRanges = splitDateRange(start, end, REQUEST_BATCHES_AMOUNT)
 
-            // Run 20 API calls in parallel
             val deferredResults =
                 dateRanges.map { range ->
                     async(Dispatchers.IO) {
@@ -44,7 +42,6 @@ class GdacsService private constructor() {
 
             val combinedEvents = responses.flatMap { it.features }
             val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
-            Log.d(TAG, "Fetched unique events: ${uniqueEvents.size}")
 
             return@coroutineScope if (uniqueEvents.isNotEmpty()) {
                 EventListResponseDTO(features = uniqueEvents)
@@ -73,8 +70,6 @@ class GdacsService private constructor() {
                 eventTypes = eventTypes ?: EventType.allExceptUnknown,
                 country = country ?: "United States",
             )
-
-        Log.d(TAG, "query params: $queryParams")
 
         return try {
             val response =
@@ -114,7 +109,7 @@ class GdacsService private constructor() {
     }
 
     companion object {
-        private const val REQUEST_BATCHES_AMOUNT = 1
+        private const val REQUEST_BATCHES_AMOUNT = 10
         const val TAG = "GdacsService"
 
         @Volatile

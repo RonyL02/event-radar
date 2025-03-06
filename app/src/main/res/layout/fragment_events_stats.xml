@@ -19,13 +19,12 @@
         <View
             android:id="@+id/shimmerBanner"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="235dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/banner_background" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <!-- Actual Content Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/banner"
         android:layout_width="match_parent"
@@ -33,7 +32,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/banner_background"
-        android:paddingHorizontal="42dp"
+        android:paddingHorizontal="40dp"
         android:paddingVertical="24dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,9 +51,9 @@
                 android:id="@+id/totalEventsAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="70"
+                android:text="223"
                 android:textColor="@color/red_600"
-                android:textSize="72sp"
+                android:textSize="54sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -83,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:text="5:00 PM"
                     android:textColor="@color/red_600"
-                    android:textSize="34sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvNewEventsSince" />
@@ -126,8 +125,6 @@
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/topEventTitle"
-                    app:layout_constraintHorizontal_bias="0.993"
-                    app:layout_constraintStart_toEndOf="@+id/topEventAmount"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -171,8 +168,6 @@
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/secondEventTitle"
-                    app:layout_constraintHorizontal_bias="0.993"
-                    app:layout_constraintStart_toEndOf="@+id/secondEventAmount"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView

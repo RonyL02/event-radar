@@ -1,5 +1,6 @@
 package com.col.eventradar.api.events.dto
 
+import android.text.TextUtils.split
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
 import com.col.eventradar.models.Location
@@ -54,9 +55,18 @@ data class AffectedCountry(
 
 fun EventListResponseDTO.toDomain(): List<Event> =
     features.map { feature ->
+        val titleName =
+            if (feature.properties.eventName.isNullOrBlank()) {
+                feature.properties.description
+                    .split(" ")
+                    .firstOrNull() ?: "Unknown Event"
+            } else {
+                feature.properties.eventName
+            }
+
         Event(
             id = feature.properties.eventId.toString(),
-            title = feature.properties.eventName ?: "",
+            title = titleName,
             location = feature.geometry.toLocation(),
             locationName =
                 feature.properties.affectedCountries

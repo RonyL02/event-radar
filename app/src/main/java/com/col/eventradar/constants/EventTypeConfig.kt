@@ -14,32 +14,32 @@ object EventTypeConfig {
             EventType.FLOOD to
                 EventTypeDetails(
                     name = "Flood",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.flood,
                 ),
             EventType.CYCLONE to
                 EventTypeDetails(
                     name = "Cyclone",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.cyclone,
                 ),
             EventType.FOREST_FIRE to
                 EventTypeDetails(
                     name = "Forest Fire",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.fire,
                 ),
             EventType.DROUGHT to
                 EventTypeDetails(
                     name = "Drought",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.drought,
                 ),
             EventType.TSUNAMI to
                 EventTypeDetails(
                     name = "Tsunami",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.tsunami,
                 ),
             EventType.VOLCANO to
                 EventTypeDetails(
                     name = "Volcano",
-                    iconResId = R.drawable.earthquake,
+                    iconResId = R.drawable.volcano,
                 ),
         )
 
