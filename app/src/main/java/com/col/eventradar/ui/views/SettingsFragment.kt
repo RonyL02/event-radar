@@ -1,76 +1,126 @@
 package com.col.eventradar.ui.views
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.col.eventradar.databinding.FragmentSettingsBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    private var bindingInternal: FragmentSettingsBinding? = null
-
-    /**
-     * This property is only valid between `onCreateView` and `onDestroyView`.
-     */
-    private val binding get() = bindingInternal!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentSettingsBinding
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var pickImageLauncher: ActivityResultLauncher<String>
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        bindingInternal = FragmentSettingsBinding.inflate(inflater, container, false)
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        sharedPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                binding.profileImage.setImageURI(it)
+                saveImageUri(it.toString())
+            }
+        }
+
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        bindingInternal = null
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(
-            param1: String,
-            param2: String,
-        ) = SettingsFragment().apply {
-            arguments =
-                Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        setupThemeSpinner()
+        setupUI()
+    }
+    private fun setupUI() {
+        binding.logoutButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed() // חזרה למסך הקודם
+        }
+
+
+
+        val savedImageUri = sharedPreferences.getString("profile_image", null)
+        savedImageUri?.let {
+            binding.profileImage.setImageURI(Uri.parse(it))
+        }
+
+
+        binding.cameraIcon.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+
+
+        val savedUsername = sharedPreferences.getString("username", "Shiran")
+        binding.username.text = savedUsername
+        binding.editUsernameField.setText(savedUsername)
+
+
+        binding.editUsernameField.visibility = View.GONE
+        binding.saveUsernameButton.visibility = View.GONE
+
+
+        binding.editUsername.setOnClickListener {
+            binding.username.visibility = View.GONE
+            binding.editUsernameField.visibility = View.VISIBLE
+            binding.saveUsernameButton.visibility = View.VISIBLE
+        }
+
+        binding.saveUsernameButton.setOnClickListener {
+            val newName = binding.editUsernameField.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                binding.username.text = newName
+                sharedPreferences.edit().putString("username", newName).apply()
+            }
+            binding.username.visibility = View.VISIBLE
+            binding.editUsernameField.visibility = View.GONE
+            binding.saveUsernameButton.visibility = View.GONE
         }
     }
+
+    private fun setupThemeSpinner() {
+        val themes = arrayOf("Light", "Dark")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, themes)
+        binding.themeSpinner.adapter = adapter
+
+
+        val savedTheme = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO)
+        binding.themeSpinner.setSelection(if (savedTheme == AppCompatDelegate.MODE_NIGHT_YES) 1 else 0)
+
+        binding.themeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedTheme = if (position == 1) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                saveTheme(selectedTheme)
+                applyTheme(selectedTheme)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    private fun saveTheme(mode: Int) {
+        sharedPreferences.edit().putInt("theme_mode", mode).apply()
+    }
+
+    private fun applyTheme(mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun saveImageUri(uri: String) {
+        sharedPreferences.edit().putString("profile_image", uri).apply()
+    }
+
+
 }

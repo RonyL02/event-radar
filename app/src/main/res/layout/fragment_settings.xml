@@ -5,7 +5,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/logoutButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:contentDescription="Logout"
+        android:src="@drawable/vector__1_"
+        android:padding="4dp"
+        app:tint="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="0dp"
+    android:layout_marginEnd="8dp" />
+
+
+    <EditText
+        android:id="@+id/editUsernameField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name"
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/profile_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:id="@+id/saveUsernameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/editUsernameField"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -35,6 +73,9 @@
         app:layout_constraintEnd_toEndOf="@+id/profile_image"/>
 
 
+
+
+
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
@@ -59,6 +100,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/username"
         app:layout_constraintStart_toEndOf="@id/username"
         app:layout_constraintTop_toTopOf="@id/username" />
+
+
 
 
 
@@ -97,7 +140,7 @@
 
 
         <Spinner
-            android:id="@+id/theme_spinner"
+            android:id="@+id/themeSpinner"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="12dp"
