@@ -5,7 +5,7 @@ data class User(
     var id: String = "",
     val username: String = "",
     val imageUri: String? = null,
-    val locations: Array<AreaOfInterest> = emptyArray()
+    val areasOfInterest: Array<AreaOfInterest> = emptyArray()
 ) {
 
     companion object {
