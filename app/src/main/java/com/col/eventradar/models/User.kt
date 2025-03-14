@@ -1,7 +1,12 @@
 package com.col.eventradar.models
 
-data class User(var id: String, val username: String, val imageUri: String?) {
-    constructor() : this("", "", "")
+
+data class User(
+    var id: String = "",
+    val username: String = "",
+    val imageUri: String? = null,
+    val locations: Array<UserLocation> = emptyArray()
+) {
 
     companion object {
         const val USERNAME_KEY = "username"
@@ -16,3 +21,9 @@ data class User(var id: String, val username: String, val imageUri: String?) {
             )
         }
 }
+
+data class UserLocation(
+    val placeId: String,
+    val name: String,
+    val country: String
+)
