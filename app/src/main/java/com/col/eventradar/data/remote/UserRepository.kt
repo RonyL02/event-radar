@@ -51,18 +51,24 @@ class UserRepository(private val context: Context) {
         userId: String,
         field: KProperty1<User, T>,
         value: T,
-        operation: String = "set", // "set", "arrayUnion", or "arrayRemove"
+        operation: UpdateOperations = UpdateOperations.Set, // "set", "arrayUnion", or "arrayRemove"
     ) {
         val fieldName = field.name
 
         val updateValue: Any = when (operation) {
-            "arrayUnion" -> FieldValue.arrayUnion(value)
-            "arrayRemove" -> FieldValue.arrayRemove(value)
+            UpdateOperations.ArrayUnion -> FieldValue.arrayUnion(value)
+            UpdateOperations.ArrayRemove -> FieldValue.arrayRemove(value)
             else -> value
         }
 
         db.collection("users")
             .document(userId)
             .update(fieldName, updateValue).await()
+    }
+
+    enum class UpdateOperations {
+        Set,
+        ArrayUnion,
+        ArrayRemove
     }
 }
