@@ -1,12 +1,15 @@
 package com.col.eventradar.auth
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -51,6 +54,12 @@ class GoogleAuthClient(
             )
         } catch (e: CancellationException) {
             throw e
+        } catch (e: NoCredentialException) {
+            val intent = Intent(Settings.ACTION_SYNC_SETTINGS).apply {
+                putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf("com.google"))
+            }
+            context.startActivity(intent)
+            Log.w(TAG, "Sign-in failed: ${e.message}. Going to Manage Accounts Settings", e)
         } catch (e: Exception) {
             Log.e(TAG, "Sign-in failed: ${e.message}", e)
         }
