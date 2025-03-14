@@ -1,4 +1,4 @@
-package com.col.eventradar.api.dto
+package com.col.eventradar.api.locations.dto
 
 import com.google.gson.JsonElement
 
@@ -18,12 +18,12 @@ data class LocationDetailsResultDTO(
     val isarea: Boolean,
     val centroid: Centroid,
     val geometry: Geometry,
-    val icon: String
+    val icon: String,
 )
 
 data class Names(
     val name: String,
-    val nameEn: String
+    val nameEn: String,
 )
 
 data class FullAddress(
@@ -34,7 +34,7 @@ data class FullAddress(
     val class_: String,
     val type: String,
     val distance: Double,
-    val isaddress: Boolean
+    val isaddress: Boolean,
 )
 
 data class Extratags(
@@ -50,12 +50,10 @@ data class Extratags(
 
 data class Centroid(
     val type: String,
-    val coordinates: List<Double>
+    val coordinates: List<Double>,
 )
 
 data class Geometry(
     val type: String,
-    val coordinates: JsonElement
+    val coordinates: JsonElement,
 )
-
-

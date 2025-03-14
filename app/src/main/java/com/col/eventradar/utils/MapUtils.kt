@@ -1,10 +1,10 @@
 import android.content.Context
 import android.util.Log
 import android.view.View
+import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
+import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.api.OpenStreetMapService
-import com.col.eventradar.api.dto.LocationDetailsResultDTO
 import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.utils.ThemeUtils
 import com.google.gson.Gson
@@ -43,17 +43,22 @@ object MapUtils {
 
     private const val TAG = "MapUtils"
 
-    fun addMapSourcesAndLayers(map: MapLibreMap, context: Context) {
+    fun addMapSourcesAndLayers(
+        map: MapLibreMap,
+        context: Context,
+    ) {
         val style = map.style ?: return
 
-        val rasterSource = RasterSource(
-            RASTER_SOURCE_NAME,
-            TileSet(TileJSON_VERSION, "${DEFAULT_MAP_RASTER_URL}/{z}/{x}/{y}.png")
-        )
-        val rasterLayer = RasterLayer(
-            RASTER_LAYER_ID,
-            RASTER_SOURCE_NAME
-        ).withProperties(PropertyFactory.rasterSaturation(-1f))
+        val rasterSource =
+            RasterSource(
+                RASTER_SOURCE_NAME,
+                TileSet(TileJSON_VERSION, "${DEFAULT_MAP_RASTER_URL}/{z}/{x}/{y}.png"),
+            )
+        val rasterLayer =
+            RasterLayer(
+                RASTER_LAYER_ID,
+                RASTER_SOURCE_NAME,
+            ).withProperties(PropertyFactory.rasterSaturation(-1f))
 
         style.addSource(rasterSource)
         style.addLayer(rasterLayer)
@@ -61,77 +66,100 @@ object MapUtils {
         style.addSource(GeoJsonSource(SEARCH_RESULT_AREA_SOURCE_NAME))
         val themeColor = ThemeUtils.getThemeColor(context)
 
-        val fillLayer = FillLayer(
-            SEARCH_RESULT_AREA_LAYER_NAME,
-            SEARCH_RESULT_AREA_SOURCE_NAME
-        ).apply {
-            withProperties(
-                PropertyFactory.fillColor(themeColor),
-                PropertyFactory.fillOpacity(0.3f)
-            )
-        }
+        val fillLayer =
+            FillLayer(
+                SEARCH_RESULT_AREA_LAYER_NAME,
+                SEARCH_RESULT_AREA_SOURCE_NAME,
+            ).apply {
+                withProperties(
+                    PropertyFactory.fillColor(themeColor),
+                    PropertyFactory.fillOpacity(0.3f),
+                )
+            }
         style.addLayer(fillLayer)
     }
 
-    fun setupInitialCameraPosition(map: MapLibreMap, lat: Double, lon: Double, zoom: Double) {
-        map.cameraPosition = CameraPosition.Builder()
-            .target(LatLng(lat, lon))
-            .zoom(zoom)
-            .build()
+    fun setupInitialCameraPosition(
+        map: MapLibreMap,
+        lat: Double,
+        lon: Double,
+        zoom: Double,
+    ) {
+        map.cameraPosition =
+            CameraPosition
+                .Builder()
+                .target(LatLng(lat, lon))
+                .zoom(zoom)
+                .build()
     }
 
-    fun handleMapClick(map: MapLibreMap, point: LatLng, toastFragment: ToastFragment) {
-        val features = map.queryRenderedFeatures(
-            map.projection.toScreenLocation(point),
-            SEARCH_RESULT_AREA_LAYER_NAME
-        )
+    fun handleMapClick(
+        map: MapLibreMap,
+        point: LatLng,
+        toastFragment: ToastFragment,
+    ) {
+        val features =
+            map.queryRenderedFeatures(
+                map.projection.toScreenLocation(point),
+                SEARCH_RESULT_AREA_LAYER_NAME,
+            )
         if (features.isNotEmpty()) {
             val feature = features.first()
             showFeatureContextMenu(toastFragment, feature)
         }
     }
 
-    private fun showFeatureContextMenu(toastFragment: ToastFragment, feature: Feature) {
+    private fun showFeatureContextMenu(
+        toastFragment: ToastFragment,
+        feature: Feature,
+    ) {
         toastFragment("Clicked on: ${feature.getStringProperty("localname")}")
     }
 
     private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
-        val feature = when (geometry.type) {
-            "Polygon" -> {
-                val coordinates = Gson().fromJson<List<List<List<Double>>>>(
-                    geometry.coordinates,
-                    object : TypeToken<List<List<List<Double>>>>() {}.type
-                )
+        val feature =
+            when (geometry.type) {
+                "Polygon" -> {
+                    val coordinates =
+                        Gson().fromJson<List<List<List<Double>>>>(
+                            geometry.coordinates,
+                            object : TypeToken<List<List<List<Double>>>>() {}.type,
+                        )
 
-                val polygonCoordinates = coordinates[0].map { point -> Point.fromLngLat(point[0], point[1]) }
+                    val polygonCoordinates =
+                        coordinates[0].map { point -> Point.fromLngLat(point[0], point[1]) }
 
-                val polygon = Polygon.fromLngLats(listOf(polygonCoordinates))
-                Feature.fromGeometry(polygon)
-            }
-
-            "MultiPolygon" -> {
-                val coordinates = Gson().fromJson<List<List<List<List<Double>>>>>(
-                    geometry.coordinates,
-                    object : TypeToken<List<List<List<List<Double>>>>>() {}.type
-                )
-
-                val multiPolygonCoordinates = coordinates.map { polygon ->
-                    polygon.map { ring ->
-                        ring.map { point -> Point.fromLngLat(point[0], point[1]) }
-                    }
+                    val polygon = Polygon.fromLngLats(listOf(polygonCoordinates))
+                    Feature.fromGeometry(polygon)
                 }
 
-                val multiPolygon = org.maplibre.geojson.MultiPolygon.fromLngLats(multiPolygonCoordinates)
-                Feature.fromGeometry(multiPolygon)
-            }
+                "MultiPolygon" -> {
+                    val coordinates =
+                        Gson().fromJson<List<List<List<List<Double>>>>>(
+                            geometry.coordinates,
+                            object : TypeToken<List<List<List<List<Double>>>>>() {}.type,
+                        )
 
-            else -> {
-                val centroidCoordinates = result.centroid.coordinates
-                val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
-                Feature.fromGeometry(point)
+                    val multiPolygonCoordinates =
+                        coordinates.map { polygon ->
+                            polygon.map { ring ->
+                                ring.map { point -> Point.fromLngLat(point[0], point[1]) }
+                            }
+                        }
+
+                    val multiPolygon =
+                        org.maplibre.geojson.MultiPolygon
+                            .fromLngLats(multiPolygonCoordinates)
+                    Feature.fromGeometry(multiPolygon)
+                }
+
+                else -> {
+                    val centroidCoordinates = result.centroid.coordinates
+                    val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
+                    Feature.fromGeometry(point)
+                }
             }
-        }
 
         feature.apply {
             addStringProperty("placeId", result.placeId.toString())
@@ -148,7 +176,7 @@ object MapUtils {
         map: MapLibreMap,
         searchResult: LocationSearchResult,
         toastFragment: ToastFragment,
-        binding: FragmentMapBinding
+        binding: FragmentMapBinding,
     ) {
         try {
             val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
@@ -167,7 +195,6 @@ object MapUtils {
                     mapAddLocationButton.visibility = View.GONE
                 }
             }
-
         } catch (e: retrofit2.HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             Log.e(TAG, "Error body: $errorBody")
@@ -176,10 +203,12 @@ object MapUtils {
             Log.e(TAG, "General error: ${e.message}")
         }
 
-        val bounds = LatLngBounds.Builder()
-            .include(LatLng(searchResult.southLat, searchResult.westLon))
-            .include(LatLng(searchResult.northLat, searchResult.eastLon))
-            .build()
+        val bounds =
+            LatLngBounds
+                .Builder()
+                .include(LatLng(searchResult.southLat, searchResult.westLon))
+                .include(LatLng(searchResult.northLat, searchResult.eastLon))
+                .build()
 
         map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 250), 500)
     }
