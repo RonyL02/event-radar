@@ -17,13 +17,14 @@ class UserRepository(private val context: Context) {
     }
 
     suspend fun getUser(userId: String): User? {
-        val user = db.collection(USERS_COLLECTION)
+        val document = db.collection(USERS_COLLECTION)
             .document(userId)
             .get()
             .await()
-            .toObject(User::class.java)
 
-        user?.id = userId
+        val user = document.toObject(User::class.java)?.apply {
+            id = document.id
+        }
 
         return user
     }
