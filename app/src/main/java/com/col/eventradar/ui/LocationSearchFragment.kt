@@ -14,8 +14,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
+import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.databinding.FragmentSearchBinding
-import com.col.eventradar.models.LocationSearchResult
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
@@ -36,26 +36,28 @@ class LocationSearchFragment : Fragment() {
     private var gpsFragment: GpsLocationSearchFragment? = null
     private var toastFragment: ToastFragment = ToastFragment()
 
-    private val searchResultsAdapter = LocationSearchResultsAdapter { result ->
-        listener?.onLocationSelected(result)
-        isResultChosen = true
-        binding.apply {
-            searchEditText.setText(result.name)
-            searchResultsRecyclerView.visibility = View.GONE
-            searchEditText.clearFocus()
-            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+    private val searchResultsAdapter =
+        LocationSearchResultsAdapter { result ->
+            listener?.onLocationSelected(result)
+            isResultChosen = true
+            binding.apply {
+                searchEditText.setText(result.name)
+                searchResultsRecyclerView.visibility = View.GONE
+                searchEditText.clearFocus()
+                KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+            }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentSearchBinding.inflate(inflater, container, false)
         gpsFragment = GpsLocationSearchFragment()
 
-        childFragmentManager.beginTransaction()
+        childFragmentManager
+            .beginTransaction()
             .add(R.id.gpsContainer, gpsFragment!!, GpsLocationSearchFragment.TAG)
             .commit()
 
@@ -65,31 +67,46 @@ class LocationSearchFragment : Fragment() {
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)
             }
-            searchEditText.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(searchValue: Editable?) {
-                    if (isResultChosen) {
-                        isResultChosen = false
-                        return
-                    }
-                    searchRunnable?.let {
-                        handler.removeCallbacks(it)
-                    }
+            searchEditText.addTextChangedListener(
+                object : TextWatcher {
+                    override fun afterTextChanged(searchValue: Editable?) {
+                        if (isResultChosen) {
+                            isResultChosen = false
+                            return
+                        }
+                        searchRunnable?.let {
+                            handler.removeCallbacks(it)
+                        }
 
-                    searchRunnable = Runnable {
-                        val query = searchValue.toString()
-                        if (query.isNotEmpty()) {
-                            viewModel.searchLocation(query)
+                        searchRunnable =
+                            Runnable {
+                                val query = searchValue.toString()
+                                if (query.isNotEmpty()) {
+                                    viewModel.searchLocation(query)
+                                }
+                            }
+                        searchRunnable?.let {
+                            val debounceDelayMillis = 500L
+                            handler.postDelayed(it, debounceDelayMillis)
                         }
                     }
-                    searchRunnable?.let {
-                        val debounceDelayMillis = 500L
-                        handler.postDelayed(it, debounceDelayMillis)
-                    }
-                }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            })
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int,
+                    ) {
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int,
+                    ) {}
+                },
+            )
         }
 
         observeViewModel()
@@ -124,7 +141,6 @@ class LocationSearchFragment : Fragment() {
             }
         }
     }
-
 
     override fun onDetach() {
         super.onDetach()

@@ -1,7 +1,7 @@
-package com.col.eventradar.api
+package com.col.eventradar.api.locations
 
-import com.col.eventradar.api.dto.LocationDetailsResultDTO
-import com.col.eventradar.api.dto.LocationSearchResultDTO
+import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
+import com.col.eventradar.api.locations.dto.LocationSearchResultDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,7 +12,7 @@ interface LocationApi {
         @Query("format") format: String = "json",
         @Query("addressdetails") addressDetails: Int = 1,
         @Query("accept-language") lang: String = "en",
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
     ): List<LocationSearchResultDTO>
 
     @GET("details")
@@ -20,7 +20,7 @@ interface LocationApi {
         @Query("place_id") placeId: Long,
         @Query("polygon_geojson") polygonGeoJson: Int = 1,
         @Query("format") format: String = "json",
-        @Query("accept-language") lang: String = "en"
+        @Query("accept-language") lang: String = "en",
     ): LocationDetailsResultDTO
 
     @GET("reverse")
@@ -29,6 +29,6 @@ interface LocationApi {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("zoom") zoom: Int = 14,
-        @Query("accept-language") lang: String = "en"
+        @Query("accept-language") lang: String = "en",
     ): LocationSearchResultDTO
 }

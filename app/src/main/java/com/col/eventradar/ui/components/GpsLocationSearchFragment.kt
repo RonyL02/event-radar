@@ -4,15 +4,15 @@ import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.api.locations.dto.toModel
 import com.col.eventradar.databinding.FragmentGpsLocationSearchBinding
-import com.col.eventradar.models.LocationSearchResult
-import com.col.eventradar.api.OpenStreetMapService
-import com.col.eventradar.api.dto.toModel
 import com.col.eventradar.ui.views.MapFragment
 import kotlinx.coroutines.launch
 
@@ -20,22 +20,27 @@ interface SearchBarEventListener {
     fun onFocusChange(value: Boolean)
 }
 
-class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
+class GpsLocationSearchFragment :
+    Fragment(),
+    SearchBarEventListener {
     private var bindingInternal: FragmentGpsLocationSearchBinding? = null
     private val binding get() = bindingInternal!!
     private val toastFragment: ToastFragment = ToastFragment()
 
     interface GpsLocationListener {
         fun onLocationReceived(location: LocationSearchResult)
+
         fun onGetLocation(): Location?
+
         fun onGPSLocationClick()
     }
 
     private var locationListener: GpsLocationListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentGpsLocationSearchBinding.inflate(inflater, container, false)
 
@@ -51,10 +56,11 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
 
                 lifecycleScope.launch {
                     try {
-                        val receivedLocationResult = OpenStreetMapService.api.reverseGeocode(
-                            latitude = it.latitude,
-                            longitude = it.longitude
-                        )
+                        val receivedLocationResult =
+                            OpenStreetMapService.api.reverseGeocode(
+                                latitude = it.latitude,
+                                longitude = it.longitude,
+                            )
                         locationListener?.onLocationReceived(receivedLocationResult.toModel())
                     } catch (e: retrofit2.HttpException) {
                         val errorBody = e.response()?.errorBody()?.string()
@@ -70,7 +76,6 @@ class GpsLocationSearchFragment : Fragment(), SearchBarEventListener {
         binding.root.visibility = View.GONE
         return binding.root
     }
-
 
     private fun findMapFragment(): MapFragment? {
         var currentFragment: Fragment? = this

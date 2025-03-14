@@ -1,5 +1,7 @@
 package com.col.eventradar.models
 
+import com.col.eventradar.models.Event.Companion.DESCRIPTION_PREVIEW_LENGTH
+import com.col.eventradar.models.Event.Companion.TITLE_PREVIEW_LENGTH
 import java.time.LocalDateTime
 
 /**
@@ -8,25 +10,31 @@ import java.time.LocalDateTime
 data class Event(
     val id: String,
     val title: String,
-    val content: String,
     val location: Location?,
-    val city: String,
-    val date: String,
-    val type: String,
-    val details: String,
-) {
-    override fun toString(): String = content
-}
-
-enum class EventType {
-    EarthQuake
-}
-
-data class EventDetails(
-    val type: EventType,
-    val name: String,
     val locationName: String,
     val time: LocalDateTime,
+    val type: EventType,
     val description: String,
-    val commentsAmount: Int,
-)
+    val comments: List<Comment> = emptyList(),
+) {
+    override fun toString(): String = description
+
+    companion object {
+        const val DESCRIPTION_PREVIEW_LENGTH = 50
+        const val TITLE_PREVIEW_LENGTH = 14
+    }
+}
+
+fun Event.getDescriptionPreview() =
+    if (description.length > DESCRIPTION_PREVIEW_LENGTH) {
+        description.take(DESCRIPTION_PREVIEW_LENGTH) + "..."
+    } else {
+        description
+    }
+
+fun Event.getTitlePreview() =
+    if (title.length > TITLE_PREVIEW_LENGTH) {
+        title.take(TITLE_PREVIEW_LENGTH) + "..."
+    } else {
+        title
+    }
