@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.views.LoginFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logo_icon"
+            android:layout_width="72dp"
+            android:layout_height="49dp"
+            android:layout_marginStart="5dp"
+            android:contentDescription="EventRadar logo"
+            android:src="@drawable/tabler_radar_2"
+            app:layout_constraintBottom_toBottomOf="@+id/logo_text"
+            app:layout_constraintStart_toEndOf="@+id/logo_text"
+            app:layout_constraintTop_toTopOf="@+id/logo_text"
+            app:layout_constraintVertical_bias="0.198" />
+
+        <TextView
+            android:id="@+id/logo_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logo_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="320dp"
+            android:fontFamily="sans-serif"
+            android:text="EventRadar"
+            android:textColor="@color/red_600"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.435"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tagline_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logo_text"
+            android:fontFamily="sans-serif-light"
+            android:text="Welcome to"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/logo_text"
+            app:layout_constraintStart_toStartOf="@+id/logo_text" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:drawableLeft="@drawable/devicon_google"
+        android:drawablePadding="24dp"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="0.05"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="15dp"
+        android:shadowColor="@color/grey_dark"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:text="Sign in with Google"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
