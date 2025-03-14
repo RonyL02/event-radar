@@ -51,7 +51,7 @@ class UserRepository(private val context: Context) {
         userId: String,
         field: KProperty1<User, T>,
         value: T,
-        operation: UpdateOperations = UpdateOperations.Set, // "set", "arrayUnion", or "arrayRemove"
+        operation: UpdateOperations = UpdateOperations.Set,
     ) {
         val fieldName = field.name
 
