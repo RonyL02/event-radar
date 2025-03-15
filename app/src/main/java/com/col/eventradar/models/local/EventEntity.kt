@@ -26,8 +26,8 @@ fun Event.toEntity() =
         id = id,
         title = title,
         locationName = locationName,
-        locationLat = location?.latitude ?: 0.0,
-        locationLon = location?.longitude ?: 0.0,
+        locationLat = location.latitude,
+        locationLon = location.longitude,
         time = time.toInstant(ZoneOffset.UTC).toEpochMilli(),
         type = type.name,
         description = description,
@@ -42,5 +42,5 @@ fun EventEntity.toDomain() =
         time = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneOffset.UTC),
         type = EventType.fromCode(type),
         description = description,
-        comments = emptyList(), // Room does not store comments
+        comments = emptyList(),
     )

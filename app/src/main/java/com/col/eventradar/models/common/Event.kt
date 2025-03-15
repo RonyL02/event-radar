@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 data class Event(
     val id: String,
     val title: String,
-    val location: Location?,
+    val location: Location,
     val locationName: String,
     val time: LocalDateTime,
     val type: EventType,
