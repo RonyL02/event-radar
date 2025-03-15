@@ -168,19 +168,28 @@ object MapUtils {
     }
 
     private fun showFeatureContextMenu(toastFragment: ToastFragment, feature: Feature) {
-        val eventDetails = Event(
-            title = feature.getStringProperty("title"),
-            locationName = feature.getStringProperty("locationName"),
-            description = feature.getStringProperty("description"),
-            time = LocalDateTime.parse(feature.getStringProperty("time"), DateTimeFormatter.ISO_DATE_TIME),
-            type = EventType.valueOf(feature.getStringProperty("type")),
-            id = feature.getStringProperty("id"),
-            location = Location(latitude= 0.0, longitude= 0.0)
-        )
+        val geometry = feature.geometry()
+        if (geometry is Point) {
+            val coordinates = geometry.coordinates()
+            val location = Location(longitude = coordinates[0], latitude = coordinates[1])
 
-        val bottomSheet = EventDetailsBottomSheet(eventDetails)
-        bottomSheet.show(toastFragment.parentFragmentManager, EventDetailsBottomSheet.TAG)
-    }
+            val eventDetails = Event(
+                title = feature.getStringProperty("title"),
+                locationName = feature.getStringProperty("locationName"),
+                description = feature.getStringProperty("description"),
+                time = LocalDateTime.parse(
+                    feature.getStringProperty("time"),
+                    DateTimeFormatter.ISO_DATE_TIME
+                ),
+                type = EventType.valueOf(feature.getStringProperty("type")),
+                id = feature.getStringProperty("id"),
+                location = location
+            )
+
+            val bottomSheet = EventDetailsBottomSheet(eventDetails)
+            bottomSheet.show(toastFragment.parentFragmentManager, EventDetailsBottomSheet.TAG)
+        }
+        }
 
     private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
