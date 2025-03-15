@@ -1,10 +1,14 @@
 import android.content.Context
 import android.util.Log
 import android.view.View
-import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.databinding.FragmentMapBinding
+import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.models.Event
+import com.col.eventradar.models.EventType
+import com.col.eventradar.models.Location
+import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.utils.ThemeUtils
 import com.google.gson.Gson
@@ -14,9 +18,11 @@ import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.RasterLayer
+import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.android.style.sources.RasterSource
 import org.maplibre.android.style.sources.TileSet
@@ -24,6 +30,9 @@ import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
+import retrofit2.HttpException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object MapUtils {
     const val DEFAULT_LAT = 32.0
@@ -36,12 +45,16 @@ object MapUtils {
     private const val RASTER_SOURCE_NAME = "osm-raster-source"
     private const val RASTER_LAYER_ID = "osm-raster-layer-id"
 
+    const val EVENT_SOURCE_NAME = "events-source"
+    private const val EVENTS_LAYER_ID = "events-layer-id"
+    private const val EVENTS_BG_LAYER_ID = "events-background-layer-id"
+
     const val DEFAULT_MAP_STYLE_URL = "https://demotiles.maplibre.org/style.json"
     private const val DEFAULT_MAP_RASTER_URL = "https://tile.openstreetmap.org"
 
     private const val TileJSON_VERSION = "2.1.0"
-
     private const val TAG = "MapUtils"
+
 
     fun addMapSourcesAndLayers(
         map: MapLibreMap,
@@ -77,6 +90,33 @@ object MapUtils {
                 )
             }
         style.addLayer(fillLayer)
+
+        val eventSource = GeoJsonSource(
+            EVENT_SOURCE_NAME,
+            "{\"type\": \"FeatureCollection\", \"features\": []}"
+        )
+
+        style.addSource(eventSource)
+
+        val eventLayer = SymbolLayer(EVENTS_LAYER_ID, EVENT_SOURCE_NAME)
+            .withProperties(
+                PropertyFactory.iconImage("{type}"),
+                PropertyFactory.iconAllowOverlap(true),
+                PropertyFactory.iconSize(1.2f),
+                PropertyFactory.iconColor(ThemeUtils.getThemeColor(context)),
+                PropertyFactory.iconKeepUpright(true)
+            )
+
+        val eventBackgroundLayer = CircleLayer(EVENTS_BG_LAYER_ID, EVENT_SOURCE_NAME)
+            .withProperties(
+                PropertyFactory.circleRadius(30f),
+                PropertyFactory.circleColor("#FFFFFF"),
+                PropertyFactory.circleStrokeColor(ThemeUtils.getThemeColor(context)),
+                PropertyFactory.circleStrokeWidth(4f),
+            )
+
+        style.addLayer(eventBackgroundLayer)
+        style.addLayer(eventLayer)
     }
 
     fun setupInitialCameraPosition(
@@ -101,7 +141,7 @@ object MapUtils {
         val features =
             map.queryRenderedFeatures(
                 map.projection.toScreenLocation(point),
-                SEARCH_RESULT_AREA_LAYER_NAME,
+                EVENTS_LAYER_ID,
             )
         if (features.isNotEmpty()) {
             val feature = features.first()
@@ -109,12 +149,47 @@ object MapUtils {
         }
     }
 
-    private fun showFeatureContextMenu(
-        toastFragment: ToastFragment,
-        feature: Feature,
-    ) {
-        toastFragment("Clicked on: ${feature.getStringProperty("localname")}")
+    fun convertEventsToGeoJson(events: List<Event>): FeatureCollection {
+        val features = events.mapNotNull { event ->
+            event.location?.let { location ->
+                Feature.fromGeometry(
+                    Point.fromLngLat(location.longitude, location.latitude)
+                ).apply {
+                    addStringProperty("id", event.id)
+                    addStringProperty("title", event.title)
+                    addStringProperty("locationName",event.locationName)
+                    addStringProperty("time", event.time.format(DateTimeFormatter.ISO_DATE_TIME))
+                    addStringProperty("type", event.type.name)
+                    addStringProperty("description", event.description)
+                }
+            }
+        }
+        return FeatureCollection.fromFeatures(features)
     }
+
+    private fun showFeatureContextMenu(toastFragment: ToastFragment, feature: Feature) {
+        val geometry = feature.geometry()
+        if (geometry is Point) {
+            val coordinates = geometry.coordinates()
+            val location = Location(longitude = coordinates[0], latitude = coordinates[1])
+
+            val eventDetails = Event(
+                title = feature.getStringProperty("title"),
+                locationName = feature.getStringProperty("locationName"),
+                description = feature.getStringProperty("description"),
+                time = LocalDateTime.parse(
+                    feature.getStringProperty("time"),
+                    DateTimeFormatter.ISO_DATE_TIME
+                ),
+                type = EventType.valueOf(feature.getStringProperty("type")),
+                id = feature.getStringProperty("id"),
+                location = location
+            )
+
+            val bottomSheet = EventDetailsBottomSheet(eventDetails)
+            bottomSheet.show(toastFragment.parentFragmentManager, EventDetailsBottomSheet.TAG)
+        }
+        }
 
     private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
@@ -153,7 +228,6 @@ object MapUtils {
                             .fromLngLats(multiPolygonCoordinates)
                     Feature.fromGeometry(multiPolygon)
                 }
-
                 else -> {
                     val centroidCoordinates = result.centroid.coordinates
                     val point = Point.fromLngLat(centroidCoordinates[0], centroidCoordinates[1])
@@ -195,7 +269,8 @@ object MapUtils {
                     mapAddLocationButton.visibility = View.GONE
                 }
             }
-        } catch (e: retrofit2.HttpException) {
+
+        } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             Log.e(TAG, "Error body: $errorBody")
             toastFragment("Error fetching location: ${e.message}")
