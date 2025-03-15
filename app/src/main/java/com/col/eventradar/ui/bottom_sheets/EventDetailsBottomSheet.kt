@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.getTitlePreview
@@ -25,6 +26,8 @@ class EventDetailsBottomSheet(
 
         event.let {
             with(binding) {
+                val iconResId = EventTypeConfig.getIconResId(it.type)
+                eventTypeIcon.setImageResource(iconResId)
                 locationName.text = it.locationName
                 eventTitle.text = it.getTitlePreview()
                 eventDescription.text = it.description

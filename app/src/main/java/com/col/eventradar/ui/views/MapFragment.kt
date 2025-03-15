@@ -7,19 +7,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
+import com.col.eventradar.models.Event
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.GpsLocationMapFragment
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.EventViewModel
+import com.col.eventradar.ui.viewmodels.EventViewModelFactory
+import com.col.eventradar.utils.addEventIconsToMap
 import kotlinx.coroutines.launch
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.sources.GeoJsonSource
 
 class MapFragment :
     Fragment(),
@@ -31,6 +40,12 @@ class MapFragment :
     private lateinit var map: MapLibreMap
     private lateinit var toastFragment: ToastFragment
     private lateinit var locationFragment: GpsLocationMapFragment
+
+
+    private val eventViewModel: EventViewModel by activityViewModels {
+        val repository = EventRepository(requireContext())
+        EventViewModelFactory(repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +83,11 @@ class MapFragment :
                     MapUtils.DEFAULT_LON,
                     MapUtils.DEFAULT_ZOOM,
                 )
-                MapUtils.addMapSourcesAndLayers(map, requireContext())
+                lifecycleScope.launch {
+                    MapUtils.addMapSourcesAndLayers(map, requireContext())
+                    addEventIconsToMap(style, requireContext())
+                }
+                observeViewModel(style)
                 locationFragment.attachToMap(map, style)
             }
 
@@ -76,6 +95,8 @@ class MapFragment :
                 MapUtils.handleMapClick(map, point, toastFragment)
                 true
             }
+
+            fetchEvents()
         }
     }
 
@@ -85,6 +106,27 @@ class MapFragment :
                 MapUtils.handleLocationSelection(map, searchResult, toastFragment, binding)
             }
         }
+    }
+
+    private fun observeViewModel(style: Style) {
+        eventViewModel.events.observe(viewLifecycleOwner) { events ->
+            if (::map.isInitialized) {
+                updateMapWithEvents(events, style)
+            } else {
+                binding.mapView.getMapAsync {
+                    updateMapWithEvents(events, style)
+                }
+            }
+        }
+    }
+
+    private fun fetchEvents() {
+        eventViewModel.fetchFilteredEvents()
+    }
+
+    private fun updateMapWithEvents(events: List<Event>, style: Style) {
+        val geoJson = MapUtils.convertEventsToGeoJson(events)
+        style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
     }
 
     override fun onStart() {
