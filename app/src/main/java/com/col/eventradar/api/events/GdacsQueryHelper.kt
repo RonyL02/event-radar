@@ -1,7 +1,7 @@
 package com.col.eventradar.api.events
 
 import com.col.eventradar.api.events.dto.AlertLevel
-import com.col.eventradar.models.EventType
+import com.col.eventradar.models.common.EventType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

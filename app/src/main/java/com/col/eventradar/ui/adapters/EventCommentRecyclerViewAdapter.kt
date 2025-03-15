@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.databinding.EventCommentRowBinding
-import com.col.eventradar.models.Comment
+import com.col.eventradar.models.common.Comment
 import java.util.Locale
 
 class EventCommentRecyclerViewAdapter(
-    private val comments: List<Comment>,
+    private var comments: MutableList<Comment> = mutableListOf(), // ✅ Allow dynamic updates
 ) : RecyclerView.Adapter<EventCommentRecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -23,6 +23,15 @@ class EventCommentRecyclerViewAdapter(
         holder: ViewHolder,
         position: Int,
     ) = holder.bind(comments[position])
+
+    /**
+     * ✅ Updates the list and refreshes UI
+     */
+    fun updateComments(newComments: List<Comment>) {
+        comments.clear()
+        comments.addAll(newComments)
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(
         private val binding: EventCommentRowBinding,

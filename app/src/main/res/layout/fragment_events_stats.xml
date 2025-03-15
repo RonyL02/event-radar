@@ -19,7 +19,7 @@
         <View
             android:id="@+id/shimmerBanner"
             android:layout_width="match_parent"
-            android:layout_height="235dp"
+            android:layout_height="200dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/banner_background" />
@@ -32,9 +32,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/banner_background"
-        android:paddingHorizontal="40dp"
+        android:paddingHorizontal="36dp"
         android:paddingVertical="24dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/shimmerContainer">
@@ -53,8 +53,9 @@
                 android:layout_height="wrap_content"
                 android:text="223"
                 android:textColor="@color/red_600"
-                android:textSize="54sp"
+                android:textSize="40sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:text="new events since"
                     android:textColor="@color/grey_darkest"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:layout_editor_absoluteY="0dp" />
 
@@ -82,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:text="5:00 PM"
                     android:textColor="@color/red_600"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvNewEventsSince" />
@@ -95,32 +96,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/headerContainer"
-            tools:layout_editor_absoluteX="17dp">
+            app:layout_constraintStart_toStartOf="@+id/headerContainer"
+            app:layout_constraintTop_toBottomOf="@+id/headerContainer">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/categoryTopContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp">
+                app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
                     android:id="@+id/topEventAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="24dp"
+                    android:paddingLeft="0dp"
                     android:text="20"
                     android:textColor="@color/red_600"
                     android:textFontWeight="700"
-                    android:textSize="32sp"
+                    android:textSize="26sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/topEventIcon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -133,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:text="Suicide"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/topEventIcon"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -144,26 +145,28 @@
                 android:id="@+id/categorySecondContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="@+id/categoryTopContainer"
                 app:layout_constraintTop_toBottomOf="@+id/categoryTopContainer">
 
                 <TextView
                     android:id="@+id/secondEventAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="24dp"
-                    android:text="20"
+                    android:paddingLeft="0dp"
+                    android:text="0"
                     android:textColor="@color/red_600"
                     android:textFontWeight="600"
-                    android:textSize="32sp"
+                    android:textSize="26sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
                     android:id="@+id/secondEventIcon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -176,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:text="Suicide"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/secondEventIcon"
                     app:layout_constraintEnd_toEndOf="parent"

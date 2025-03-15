@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.FragmentEventCardBinding
 import com.col.eventradar.databinding.FragmentEventCardShimmerBinding
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.getDescriptionPreview
-import com.col.eventradar.models.getTitlePreview
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.getDescriptionPreview
+import com.col.eventradar.models.common.getTitlePreview
 import com.col.eventradar.utils.getFormattedDate
 
 class EventCardRecyclerViewAdapter(

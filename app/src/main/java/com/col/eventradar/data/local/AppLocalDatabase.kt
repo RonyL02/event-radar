@@ -5,12 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.col.eventradar.models.EventEntity
+import com.col.eventradar.models.local.CommentEntity
+import com.col.eventradar.models.local.EventEntity
 
-@Database(entities = [EventEntity::class], version = 2, exportSchema = false)
+@Database(entities = [EventEntity::class, CommentEntity::class], version = 2, exportSchema = false)
 @TypeConverters(LocalDateTimeConverter::class)
 abstract class AppLocalDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
+
+    abstract fun commentDao(): CommentDao
 
     companion object {
         @Volatile
@@ -24,7 +27,8 @@ abstract class AppLocalDatabase : RoomDatabase() {
                             context.applicationContext,
                             AppLocalDatabase::class.java,
                             "event_radar_database",
-                        ).build()
+                        ).fallbackToDestructiveMigration()
+                        .build()
                 dbInstance = instance
                 instance
             }

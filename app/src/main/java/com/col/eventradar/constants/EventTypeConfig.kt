@@ -1,7 +1,7 @@
 package com.col.eventradar.constants
 
 import com.col.eventradar.R
-import com.col.eventradar.models.EventType
+import com.col.eventradar.models.common.EventType
 
 object EventTypeConfig {
     private val configMap =

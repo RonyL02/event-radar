@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.EventRepository
 import com.col.eventradar.databinding.FragmentEventsFeedBinding
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory

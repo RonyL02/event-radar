@@ -17,8 +17,8 @@
         <!-- Circular Placeholder for Event Type Icon -->
         <androidx.cardview.widget.CardView
             android:id="@+id/details_header"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:clipToPadding="false"
             android:padding="10dp"
             app:cardCornerRadius="50dp"
@@ -29,9 +29,10 @@
         <!-- Title Placeholder -->
         <View
             android:id="@+id/event_title"
-            android:layout_width="150dp"
-            android:layout_height="20dp"
+            android:layout_width="140dp"
+            android:layout_height="14dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:background="@color/grey_medium"
             app:layout_constraintStart_toEndOf="@+id/details_header"
             app:layout_constraintTop_toTopOf="@+id/details_header" />
@@ -39,8 +40,8 @@
         <!-- Location Icon Placeholder -->
         <View
             android:id="@+id/location_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:background="@color/grey_medium"
             app:layout_constraintBottom_toBottomOf="@+id/location_name"
             app:layout_constraintStart_toStartOf="@+id/event_title"
@@ -50,8 +51,9 @@
         <View
             android:id="@+id/location_name"
             android:layout_width="100dp"
-            android:layout_height="20dp"
+            android:layout_height="12dp"
             android:layout_marginStart="6dp"
+            android:layout_marginBottom="4dp"
             android:background="@color/grey_medium"
             app:layout_constraintBottom_toBottomOf="@+id/details_header"
             app:layout_constraintStart_toEndOf="@+id/location_icon" />
@@ -60,7 +62,7 @@
         <View
             android:id="@+id/event_time"
             android:layout_width="80dp"
-            android:layout_height="20dp"
+            android:layout_height="12dp"
             android:background="@color/grey_medium"
             app:layout_constraintBottom_toBottomOf="@+id/event_title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +72,7 @@
         <View
             android:id="@+id/event_description"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:background="@color/grey_medium"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,8 +82,8 @@
         <!-- Comments Icon Placeholder -->
         <View
             android:id="@+id/comments_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_marginTop="20dp"
             android:background="@color/grey_medium"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -92,8 +94,8 @@
         <View
             android:id="@+id/comments_count"
             android:layout_width="30dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="10dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="6dp"
             android:background="@color/grey_medium"
             app:layout_constraintBottom_toBottomOf="@+id/comments_icon"
             app:layout_constraintEnd_toStartOf="@+id/comments_icon"

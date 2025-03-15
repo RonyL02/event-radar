@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.EventRepository
 import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.viewmodels.EventViewModel

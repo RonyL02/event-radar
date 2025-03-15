@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.col.eventradar.databinding.FragmentEventDetailsBottomSheetBinding
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.getTitlePreview
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.getTitlePreview
 import com.col.eventradar.utils.getFormattedDate
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -36,7 +36,7 @@ class EventDetailsBottomSheet(
                 }
 
                 footer.setOnClickListener {
-                    val modalBottomSheet = EventCommentsBottomSheet(event.comments)
+                    val modalBottomSheet = EventCommentsBottomSheet(event.id)
                     modalBottomSheet.show(parentFragmentManager, EventCommentsBottomSheet.TAG)
                 }
             }

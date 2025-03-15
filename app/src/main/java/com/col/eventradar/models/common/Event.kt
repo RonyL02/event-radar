@@ -1,7 +1,7 @@
-package com.col.eventradar.models
+package com.col.eventradar.models.common
 
-import com.col.eventradar.models.Event.Companion.DESCRIPTION_PREVIEW_LENGTH
-import com.col.eventradar.models.Event.Companion.TITLE_PREVIEW_LENGTH
+import com.col.eventradar.models.common.Event.Companion.DESCRIPTION_PREVIEW_LENGTH
+import com.col.eventradar.models.common.Event.Companion.TITLE_PREVIEW_LENGTH
 import java.time.LocalDateTime
 
 /**

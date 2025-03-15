@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.col.eventradar.constants.EventTypeConfig
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.EventRepository
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
-import com.col.eventradar.models.EventType
+import com.col.eventradar.models.common.EventType
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 import com.col.eventradar.utils.getShortFormattedDate

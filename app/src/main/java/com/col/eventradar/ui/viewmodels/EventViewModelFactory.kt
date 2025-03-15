@@ -2,7 +2,7 @@ package com.col.eventradar.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.EventRepository
 
 class EventViewModelFactory(
     private val repository: EventRepository,
