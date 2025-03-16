@@ -29,7 +29,7 @@ class EventViewModel(
         toDate: LocalDateTime? = null,
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
-        country: String? = null,
+        countries: List<String>? = null,
     ) {
         _isLoading.postValue(true)
 
@@ -41,7 +41,7 @@ class EventViewModel(
                         toDate,
                         alertLevels,
                         eventTypes,
-                        country,
+                        countries,
                     )
 
                 if (eventsList.isEmpty()) {

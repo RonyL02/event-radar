@@ -25,7 +25,7 @@ class EventRepository(
         toDate: LocalDateTime? = null,
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
-        country: String? = null,
+        countries: List<String>? = null,
     ): List<Event> {
         return withContext(Dispatchers.IO) {
             try {
@@ -53,7 +53,7 @@ class EventRepository(
                         actualToDate,
                         alertLevels,
                         eventTypes,
-                        country,
+                        countries,
                     )
 
                 val newEvents =

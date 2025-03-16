@@ -8,16 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.Event
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.GpsLocationMapFragment
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.AreasViewModel
+import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 import com.col.eventradar.utils.addEventIconsToMap
@@ -45,6 +47,11 @@ class MapFragment :
     private val eventViewModel: EventViewModel by activityViewModels {
         val repository = EventRepository(requireContext())
         EventViewModelFactory(repository)
+    }
+
+    private val areasViewModel: AreasViewModel by activityViewModels {
+        val repository = AreasOfInterestRepository(requireContext())
+        AreasViewModelFactory(repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,8 +102,6 @@ class MapFragment :
                 MapUtils.handleMapClick(map, point, toastFragment)
                 true
             }
-
-            fetchEvents()
         }
     }
 
@@ -117,11 +122,20 @@ class MapFragment :
                     updateMapWithEvents(events, style)
                 }
             }
+            areasViewModel.featuresLiveData.observe(viewLifecycleOwner) { features ->
+                MapUtils.setSourceFeatures(style,MapUtils.AREAS_OF_INTEREST_SOURCE_NAME, features)
+
+                val countries = features.features()?.map {
+                    return@map it.getStringProperty("localname")
+                } ?: emptyList()
+
+                fetchEvents(countries)
+            }
         }
     }
 
-    private fun fetchEvents() {
-        eventViewModel.fetchFilteredEvents()
+    private fun fetchEvents(countries: List<String>) {
+        eventViewModel.fetchFilteredEvents(countries = countries)
     }
 
     private fun updateMapWithEvents(events: List<Event>, style: Style) {

@@ -4,6 +4,7 @@ import android.util.Log
 import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.api.events.dto.EventListResponseDTO
 import com.col.eventradar.models.EventType
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -13,42 +14,42 @@ import java.time.temporal.ChronoUnit
 
 class GdacsService private constructor() {
     suspend fun fetchEvents(
-        fromDate: LocalDateTime?,
-        toDate: LocalDateTime?,
-        alertLevels: List<AlertLevel>?,
-        eventTypes: List<EventType>?,
-        country: String?,
-    ): EventListResponseDTO? =
-        coroutineScope {
-            val start = fromDate ?: LocalDateTime.now().minusYears(1)
-            val end = toDate ?: LocalDateTime.now()
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+        countries: List<String>? = null,
+    ): EventListResponseDTO? = coroutineScope {
 
-            val dateRanges = splitDateRange(start, end, REQUEST_BATCHES_AMOUNT)
+        val start = fromDate ?: LocalDateTime.now().minusYears(1)
+        val end = toDate ?: LocalDateTime.now()
 
-            val deferredResults =
-                dateRanges.map { range ->
-                    async(Dispatchers.IO) {
+        val deferredResults =
+                countries?.map { country ->
+                    async {
                         fetchSingleEventBatch(
-                            range.first,
-                            range.second,
+                            start,
+                            end,
                             alertLevels,
                             eventTypes,
                             country,
                         )
                     }
-                }
 
-            val responses = deferredResults.awaitAll().filterNotNull()
+        } ?: emptyList()
 
-            val combinedEvents = responses.flatMap { it.features }
-            val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
+        val responses = deferredResults.awaitAll().filterNotNull()
 
-            return@coroutineScope if (uniqueEvents.isNotEmpty()) {
-                EventListResponseDTO(features = uniqueEvents)
-            } else {
-                null
-            }
+        val combinedEvents = responses.flatMap { it.features }
+        val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
+
+        return@coroutineScope if (uniqueEvents.isNotEmpty()) {
+            EventListResponseDTO(features = uniqueEvents)
+        } else {
+            null
         }
+    }
+
 
     private suspend fun fetchSingleEventBatch(
         fromDate: LocalDateTime,
@@ -109,7 +110,6 @@ class GdacsService private constructor() {
     }
 
     companion object {
-        private const val REQUEST_BATCHES_AMOUNT = 10
         const val TAG = "GdacsService"
 
         @Volatile
