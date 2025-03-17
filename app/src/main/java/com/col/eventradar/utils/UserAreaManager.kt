@@ -5,6 +5,10 @@ import com.col.eventradar.models.AreaOfInterest
 import com.col.eventradar.models.User
 
 class UserAreaManager(private val userRepository: UserRepository) {
+    suspend fun getUser(userId: String): User? {
+        return userRepository.getUser(userId)
+    }
+
     suspend fun addAreaOfInterest(userId: String, area: AreaOfInterest) {
         userRepository.updateUserField(
             userId,

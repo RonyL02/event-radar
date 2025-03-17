@@ -112,9 +112,8 @@ object MapUtils {
                 AREAS_OF_INTEREST_SOURCE_NAME,
             ).apply {
                 withProperties(
-                    PropertyFactory.fillColor("#00FF00"),
-                    PropertyFactory.fillOpacity(0.3f),
-//                    PropertyFactory.
+                    PropertyFactory.fillColor(ThemeUtils.getThemeColor(context)),
+                    PropertyFactory.fillOpacity(0.3f)
                 )
             }
 
@@ -220,7 +219,7 @@ object MapUtils {
         }
     }
 
-    private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
+    fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
         val feature =
             when (geometry.type) {
@@ -282,26 +281,23 @@ object MapUtils {
         searchResult: LocationSearchResult,
         toastFragment: ToastFragment,
         binding: FragmentMapBinding,
+        countries: List<String>
     ) {
         try {
             val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
             val feature = toMapLibreFeature(result)
 
-            map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
-                if (this is GeoJsonSource) {
-                    setGeoJson(FeatureCollection.fromFeature(feature))
-                }
-            }
-
             binding.apply {
+                if (!countries.contains(feature.getStringProperty("placeId"))) {
+                map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
+                    if (this is GeoJsonSource) {
+                        setGeoJson(FeatureCollection.fromFeature(feature))
+                    }
+                }
+
                 mapAddLocationButton.visibility = View.VISIBLE
                 mapAddLocationButton.setOnClickListener {
-                    map.style?.let {
-                        it.getSource(SEARCH_RESULT_AREA_SOURCE_NAME).apply {
-                            if (this is GeoJsonSource)
-                                setGeoJson("{\"type\": \"FeatureCollection\", \"features\": []}")
-                        }
-                    }
+
                     toastFragment("Added ${feature.getStringProperty("localname")} to User")
                     mapAddLocationButton.visibility = View.GONE
 
@@ -311,19 +307,23 @@ object MapUtils {
                     FirebaseAuth.getInstance().addAuthStateListener { auth ->
                         coroutineScope.launch {
                             if (auth.currentUser != null) {
-                                userAreaManager.addAreaOfInterest(
-                                    auth.currentUser!!.uid,
-                                    AreaOfInterest(
-                                        feature.getStringProperty("placeId"),
-                                        feature.getStringProperty("localname"),
-                                        feature.getStringProperty("localname")
+                                val currentUserId = auth.currentUser!!.uid
+                                if (userAreaManager.getUser(currentUserId)?.areasOfInterest?.all {it.placeId != feature.getStringProperty("placeId")} != false){
+                                    userAreaManager.addAreaOfInterest(
+                                        currentUserId,
+                                        AreaOfInterest(
+                                            feature.getStringProperty("placeId"),
+                                            feature.getStringProperty("localname"),
+                                            feature.getStringProperty("localname")
+                                        )
                                     )
-                                )
+                                }
                             }
                             val jsonData = GeoJsonParser.gson.toJson(feature);
                             areaRepository.saveFeature(feature, jsonData);
                         }
                     }
+                }
                 }
             }
 
