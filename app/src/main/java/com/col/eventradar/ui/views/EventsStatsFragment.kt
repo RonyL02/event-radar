@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.col.eventradar.constants.EventTypeConfig
-import com.col.eventradar.data.local.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
 import com.col.eventradar.models.common.EventType
 import com.col.eventradar.ui.viewmodels.EventViewModel
@@ -30,8 +31,9 @@ class EventsStatsFragment : Fragment() {
     private var bindingInternal: FragmentEventsStatsBinding? = null
     private val binding get() = bindingInternal!!
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
 
     override fun onCreateView(

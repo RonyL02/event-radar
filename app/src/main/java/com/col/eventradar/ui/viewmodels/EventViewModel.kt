@@ -1,5 +1,6 @@
 package com.col.eventradar.ui.viewmodels
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.col.eventradar.api.events.dto.AlertLevel
-import com.col.eventradar.data.local.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.models.common.Comment
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.EventType
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class EventViewModel(
-    private val repository: EventRepository,
+    private val eventRepository: EventRepository,
+    private val commentsRepository: CommentsRepository,
 ) : ViewModel() {
     private val _events = MutableLiveData<List<Event>>()
     val events: LiveData<List<Event>> get() = _events
@@ -41,7 +44,7 @@ class EventViewModel(
         viewModelScope.launch {
             try {
                 val eventsList =
-                    repository.fetchAndStoreEvents(
+                    eventRepository.fetchAndStoreEvents(
                         fromDate,
                         toDate,
                         alertLevels,
@@ -65,22 +68,61 @@ class EventViewModel(
 
     fun fetchComments(eventId: String) {
         viewModelScope.launch {
+            // ✅ Step 1: Fetch comments directly from the already loaded events list
+            val eventComments =
+                _events.value
+                    ?.find { it.id == eventId }
+                    ?.comments
+                    .orEmpty()
+            _comments.postValue(eventComments)
+
+            Log.d(TAG, "fetchComments (from _events): $eventComments")
+
             try {
-                repository.syncCommentsFromFirestore(eventId) // 🔥 Try Firestore first
+                // 🔥 Step 2: Fetch latest comments from Firestore and update Room DB
+                commentsRepository.syncCommentsFromFirestore(eventId)
+
+                // 💾 Step 3: Fetch the updated comments from Room again after sync
+                val updatedComments = commentsRepository.getLocalComments(eventId)
+                _comments.postValue(updatedComments)
+
+                Log.d(TAG, "fetchComments (after sync): $updatedComments")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to sync comments from Firestore", e)
             }
-            _comments.postValue(repository.getLocalComments(eventId)) // 💾 Always load from Room
         }
     }
 
     fun addComment(
         eventId: String,
-        comment: Comment,
+        content: String,
+        imageUri: Uri? = null,
     ) {
         viewModelScope.launch {
-            repository.addCommentToEvent(eventId, comment) // 📤 Upload & Save
-            fetchComments(eventId) // 🔄 Refresh UI
+            // 📤 Upload & Save comment (Returns the created Comment)
+            val newComment = commentsRepository.addCommentToEvent(eventId, content, imageUri)
+
+            if (newComment != null) {
+                // 🔄 Refresh comments for this event
+                fetchComments(eventId)
+
+                // 🔄 Update events list with the newly added comment
+                _events.value =
+                    _events.value?.map { event ->
+                        if (event.id == eventId) {
+                            event.copy(comments = event.comments + newComment) // ✅ Append new comment
+                        } else {
+                            event
+                        }
+                    }
+
+                Log.d(
+                    TAG,
+                    "addComment: Successfully added comment to eventId=$eventId | Content=$content",
+                )
+            } else {
+                Log.e(TAG, "addComment: Failed to add comment for eventId=$eventId")
+            }
         }
     }
 

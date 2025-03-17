@@ -17,6 +17,7 @@ constraintlayout = "2.2.0"
 navigationFragmentKtxVersion = "2.8.5"
 navigationSafeArgsGradlePlugin = "2.8.5"
 legacySupportV4 = "1.0.0"
+picasso = "2.8"
 playServicesAuth = "21.3.0"
 recyclerview = "1.4.0"
 googleServices = "4.4.2"
@@ -59,6 +60,7 @@ navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-kt
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayout" }
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -72,5 +74,5 @@ androidx-annotation = { group = "androidx.annotation", name = "annotation", vers
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs" }
-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices"}
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "org-jetbrains-kotlin-android" }

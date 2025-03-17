@@ -29,7 +29,7 @@ fun Event.toEntity() =
         locationLat = location.latitude,
         locationLon = location.longitude,
         time = time.toInstant(ZoneOffset.UTC).toEpochMilli(),
-        type = type.name,
+        type = type.code,
         description = description,
     )
 

@@ -36,7 +36,7 @@
             android:id="@+id/details_header"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="45dp"
             app:cardCornerRadius="50dp"
             app:cardElevation="8dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
             android:text="title"
             android:textAlignment="viewStart"
             android:textColor="@color/red_500"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/details_header"
             app:layout_constraintTop_toTopOf="@+id/details_header" />
@@ -91,6 +91,7 @@
             android:id="@+id/event_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/event_title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -101,10 +102,10 @@
             android:id="@+id/event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="24dp"
             android:text=""
             android:textAlignment="viewStart"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_anchor="@+id/event_details_fragment"
             app:layout_anchorGravity="bottom|center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -116,8 +117,7 @@
             android:id="@+id/materialDivider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
             app:dividerColor="@color/grey_light"
             app:layout_anchor="@+id/event_details_fragment"
             app:layout_anchorGravity="bottom|center"
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:text="View Comments..."
                 android:textColor="@color/grey_dark"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/comments_icon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/comments_icon"
@@ -151,8 +151,8 @@
 
             <ImageView
                 android:id="@+id/comments_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:src="@drawable/mdi_comments_outline"
                 app:layout_constraintBottom_toBottomOf="@+id/comments_count"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -166,9 +166,11 @@
                 android:layout_marginEnd="10dp"
                 android:text="5"
                 android:textColor="@color/grey_darkest"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/comments_icon" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/comments_icon"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

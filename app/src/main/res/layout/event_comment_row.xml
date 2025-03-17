@@ -6,16 +6,15 @@
     android:paddingHorizontal="32dp"
     android:paddingVertical="16dp">
 
+    <!-- User Profile Picture -->
     <androidx.cardview.widget.CardView
         android:id="@+id/user_image_card"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
         android:elevation="0dp"
         app:cardCornerRadius="250dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -27,6 +26,7 @@
             android:src="@drawable/ic_launcher_background" />
     </androidx.cardview.widget.CardView>
 
+    <!-- Username -->
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
@@ -37,24 +37,45 @@
         app:layout_constraintStart_toEndOf="@+id/user_image_card"
         app:layout_constraintTop_toTopOf="@+id/user_image_card" />
 
+    <!-- Comment Time -->
     <TextView
         android:id="@+id/comment_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="@+id/username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/username"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!-- Comment Content -->
     <TextView
         android:id="@+id/content"
         android:layout_width="249dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/user_image_card"
         app:layout_constraintStart_toStartOf="@+id/username"
         app:layout_constraintTop_toBottomOf="@+id/username" />
+
+    <!-- Uploaded Image (If Available) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/comment_image_card"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/content">
+
+        <ImageView
+            android:id="@+id/comment_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+    </com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
