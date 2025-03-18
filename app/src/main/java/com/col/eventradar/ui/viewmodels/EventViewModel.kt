@@ -1,7 +1,6 @@
 package com.col.eventradar.ui.viewmodels
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,11 +51,9 @@ class EventViewModel(
                         country,
                     )
 
+                _events.postValue(eventsList.takeIf { it.isNotEmpty() } ?: emptyList())
                 if (eventsList.isEmpty()) {
                     _errorMessage.postValue("No events found.")
-                    _events.postValue(emptyList())
-                } else {
-                    _events.postValue(eventsList)
                 }
             } catch (e: Exception) {
                 _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
@@ -68,27 +65,18 @@ class EventViewModel(
 
     fun fetchComments(eventId: String) {
         viewModelScope.launch {
-            // ✅ Step 1: Fetch comments directly from the already loaded events list
-            val eventComments =
+            _comments.postValue(
                 _events.value
                     ?.find { it.id == eventId }
                     ?.comments
-                    .orEmpty()
-            _comments.postValue(eventComments)
-
-            Log.d(TAG, "fetchComments (from _events): $eventComments")
+                    .orEmpty(),
+            )
 
             try {
-                // 🔥 Step 2: Fetch latest comments from Firestore and update Room DB
                 commentsRepository.syncCommentsFromFirestore(eventId)
-
-                // 💾 Step 3: Fetch the updated comments from Room again after sync
-                val updatedComments = commentsRepository.getLocalComments(eventId)
-                _comments.postValue(updatedComments)
-
-                Log.d(TAG, "fetchComments (after sync): $updatedComments")
+                _comments.postValue(commentsRepository.getLocalComments(eventId))
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to sync comments from Firestore", e)
+                _errorMessage.postValue("Failed fetch comments for eventId $eventId: ${e.localizedMessage}")
             }
         }
     }
@@ -99,37 +87,34 @@ class EventViewModel(
         imageUri: Uri? = null,
     ) {
         viewModelScope.launch {
-            // 📤 Upload & Save comment (Returns the created Comment)
-            val newComment = commentsRepository.addCommentToEvent(eventId, content, imageUri)
+            _isLoading.postValue(true)
 
-            if (newComment != null) {
-                // 🔄 Refresh comments for this event
-                fetchComments(eventId)
+            try {
+                val newComment = commentsRepository.addCommentToEvent(eventId, content, imageUri)
 
-                // 🔄 Update events list with the newly added comment
-                _events.value =
-                    _events.value?.map { event ->
-                        if (event.id == eventId) {
-                            event.copy(comments = event.comments + newComment) // ✅ Append new comment
-                        } else {
-                            event
+                if (newComment != null) {
+                    fetchComments(eventId)
+
+                    _events.value =
+                        _events.value?.map { event ->
+                            if (event.id == eventId) {
+                                event.copy(comments = event.comments + newComment)
+                            } else {
+                                event
+                            }
                         }
-                    }
-
-                Log.d(
-                    TAG,
-                    "addComment: Successfully added comment to eventId=$eventId | Content=$content",
-                )
-            } else {
-                Log.e(TAG, "addComment: Failed to add comment for eventId=$eventId")
+                } else {
+                    _errorMessage.postValue("Failed to add comment")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Failed to add comment: ${e.localizedMessage}")
+            } finally {
+                _isLoading.postValue(false)
             }
         }
     }
 
-    fun getEventsSince(since: LocalDateTime): LiveData<Int> =
-        events.map { eventsList ->
-            eventsList.count { it.time.isAfter(since) }
-        }
+    fun getEventsSince(since: LocalDateTime): LiveData<Int> = events.map { it.count { event -> event.time.isAfter(since) } }
 
     fun getEventsPerTypeSince(since: LocalDateTime): LiveData<Map<EventType, Int>> =
         events.map { eventsList ->
@@ -138,8 +123,4 @@ class EventViewModel(
                 .groupingBy { it.type }
                 .eachCount()
         }
-
-    companion object {
-        private const val TAG = "EventViewModel"
-    }
 }

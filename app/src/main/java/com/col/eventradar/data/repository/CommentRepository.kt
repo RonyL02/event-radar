@@ -13,6 +13,8 @@ import com.col.eventradar.models.local.toEntity
 import com.col.eventradar.models.remote.CommentFirestore
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -25,7 +27,7 @@ class CommentsRepository(
     private val commentsCollection = firestore.collection(COMMENTS_COLLECTION)
     private val cloudinaryService = CloudinaryService(context)
 
-    suspend fun getCommentsFromFirestore(eventId: String): List<Comment> =
+    private suspend fun getCommentsFromFirestore(eventId: String): List<Comment> =
         withContext(Dispatchers.IO) {
             try {
                 val snapshot =
@@ -37,14 +39,11 @@ class CommentsRepository(
                 val commentsFirestore = snapshot.toObjects(CommentFirestore::class.java)
                 val comments = commentsFirestore.map { it.toDomain() }
 
-                // Fetch user details for each comment
                 val fullComments =
                     comments.map { comment ->
-                        val user = userRepository.getUserById(comment.userId) // ✅ Fetch full user
-                        comment.copy(user = user) // ✅ Attach full user details
+                        val user = userRepository.getUserById(comment.userId)
+                        comment.copy(user = user)
                     }
-
-                Log.d(TAG, "getCommentsFromFirestore: $fullComments")
 
                 Log.d(
                     TAG,
@@ -58,7 +57,7 @@ class CommentsRepository(
         }
 
     /**
-     * ✅ **Adds a comment with an optional image**
+     *  **Adds a comment with an optional image**
      */
     suspend fun addCommentToEvent(
         eventId: String,
@@ -72,15 +71,12 @@ class CommentsRepository(
 
             Log.d(TAG, "addCommentToEvent: $imageUri")
 
-            // If an image is selected, upload to Cloudinary first
             imageUri?.let {
                 uploadedImageUrl = cloudinaryService.uploadImageToCloudinary(it)
             }
 
-            // ✅ Fetch the current user details
             val user = userRepository.getCurrentUser()
 
-            // ✅ Create the Comment object inside the function
             val newComment =
                 Comment(
                     eventId = eventId,
@@ -100,23 +96,53 @@ class CommentsRepository(
         }
     }
 
+    suspend fun getCommentsForEvents(eventIds: List<String>): Map<String, List<Comment>> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                if (eventIds.isEmpty()) return@withContext emptyMap()
+
+                val batchSize = 30
+                val eventIdChunks = eventIds.chunked(batchSize)
+
+                val deferredResults =
+                    eventIdChunks.map { chunk ->
+                        async {
+                            commentsCollection
+                                .whereIn("eventId", chunk)
+                                .get()
+                                .await()
+                                .documents
+                                .mapNotNull {
+                                    it.toObject(CommentFirestore::class.java)?.toDomain()
+                                }
+                        }
+                    }
+
+                deferredResults
+                    .awaitAll()
+                    .flatten()
+                    .groupBy { it.eventId }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching comments for events", e)
+                emptyMap()
+            }
+        }
+
     suspend fun syncCommentsFromFirestore(eventId: String) {
         val comments = getCommentsFromFirestore(eventId)
 
-        Log.d(TAG, "syncCommentsFromFirestore: $comments")
-
         if (comments.isNotEmpty()) {
-            commentDao.deleteCommentsForEvent(eventId) // ✅ Clear old local comments
+            commentDao.deleteCommentsForEvent(eventId)
 
             val localComments =
                 comments.map { comment ->
                     val user =
                         comment.user
-                            ?: userRepository.getUserById(comment.userId) // Fetch user if missing
+                            ?: userRepository.getUserById(comment.userId)
                     comment.copy(user = user).toEntity(eventId)
                 }
 
-            commentDao.insertComments(localComments) // ✅ Save new comments with full user
+            commentDao.insertComments(localComments)
         }
     }
 
@@ -129,8 +155,8 @@ class CommentsRepository(
 
             return@withContext comments.map { commentEntity ->
                 val user =
-                    userRepository.getUserById(commentEntity.userId) // ✅ Fetch user from Firestore
-                commentEntity.toDomain(user) // ✅ Attach user to Comment
+                    userRepository.getUserById(commentEntity.userId)
+                commentEntity.toDomain(user)
             }
         }
 

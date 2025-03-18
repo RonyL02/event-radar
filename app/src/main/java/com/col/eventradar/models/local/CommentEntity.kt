@@ -9,12 +9,12 @@ import java.time.ZoneOffset
 
 @Entity(tableName = "comments")
 data class CommentEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0, // Auto-increment ID
-    val eventId: String, // Foreign Key linking to Event
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val eventId: String,
     val content: String,
     val userId: String,
-    val imageUrl: String? = null, // Optional image attached to the comment
-    val timestamp: Long = System.currentTimeMillis(), // Store as epoch millis
+    val imageUrl: String? = null,
+    val timestamp: Long = System.currentTimeMillis(),
 )
 
 fun CommentEntity.toDomain(user: User?): Comment =
@@ -24,7 +24,7 @@ fun CommentEntity.toDomain(user: User?): Comment =
         userId = userId,
         imageUrl = imageUrl,
         time = LocalDateTime.ofEpochSecond(timestamp / 1000, 0, ZoneOffset.UTC),
-        user = user, // ✅ Attach fetched User (if available)
+        user = user,
     )
 
 fun Comment.toEntity(eventId: String): CommentEntity =

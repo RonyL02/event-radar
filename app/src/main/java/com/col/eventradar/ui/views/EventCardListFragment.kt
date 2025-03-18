@@ -32,9 +32,6 @@ class EventCardListFragment : Fragment() {
     }
     private lateinit var eventAdapter: EventCardRecyclerViewAdapter
 
-    /**
-     * This property is only valid between `onCreateView` and `onDestroyView`.
-     */
     private val binding get() = bindingInternal!!
 
     override fun onCreate(savedInstanceState: Bundle?) {

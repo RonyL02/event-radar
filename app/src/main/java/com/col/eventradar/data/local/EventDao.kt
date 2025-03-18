@@ -13,7 +13,7 @@ interface EventDao {
     suspend fun insertEvent(event: EventEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertEvents(events: List<EventEntity>): List<Long> // ✅ Returns row IDs
+    suspend fun insertEvents(events: List<EventEntity>): List<Long>
 
     @Query("SELECT * FROM events")
     suspend fun getAllEvents(): List<EventEntity>

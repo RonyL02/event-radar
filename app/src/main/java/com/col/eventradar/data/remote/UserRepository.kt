@@ -30,12 +30,12 @@ class UserRepository private constructor() {
     }
 
     /**
-     * 🔥 **Check if a user is logged in**
+     * Check if a user is logged in
      */
     fun isUserLoggedIn(): Boolean = auth.currentUser != null
 
     /**
-     * 🔥 **Get the currently logged-in user**
+     * Get the currently logged-in user
      */
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
 

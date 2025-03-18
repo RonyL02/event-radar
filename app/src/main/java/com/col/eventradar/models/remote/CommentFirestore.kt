@@ -8,11 +8,11 @@ import java.time.ZoneOffset
 import java.util.Date
 
 data class CommentFirestore(
-    val eventId: String = "", // 🔥 Each comment is linked to an event via eventId
+    val eventId: String = "",
     val content: String = "",
     val userId: String = "",
-    val imageUrl: String? = null, // 🔥 Optional image attached to the comment
-    @ServerTimestamp val timestamp: Date? = null, // Firestore auto-generated timestamp
+    val imageUrl: String? = null,
+    @ServerTimestamp val timestamp: Date? = null,
 ) {
     @Exclude
     fun toDomain(): Comment =

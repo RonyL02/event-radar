@@ -6,7 +6,6 @@
     android:paddingHorizontal="32dp"
     android:paddingVertical="16dp">
 
-    <!-- User Profile Picture -->
     <androidx.cardview.widget.CardView
         android:id="@+id/user_image_card"
         android:layout_width="40dp"
@@ -18,15 +17,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ProgressBar
+            android:id="@+id/user_image_loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <ImageView
             android:id="@+id/user_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background" />
+            android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 
-    <!-- Username -->
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
@@ -37,7 +39,6 @@
         app:layout_constraintStart_toEndOf="@+id/user_image_card"
         app:layout_constraintTop_toTopOf="@+id/user_image_card" />
 
-    <!-- Comment Time -->
     <TextView
         android:id="@+id/comment_time"
         android:layout_width="wrap_content"
@@ -48,7 +49,6 @@
         app:layout_constraintTop_toTopOf="@+id/username"
         app:layout_constraintVertical_bias="0.0" />
 
-    <!-- Comment Content -->
     <TextView
         android:id="@+id/content"
         android:layout_width="249dp"
@@ -58,7 +58,6 @@
         app:layout_constraintStart_toStartOf="@+id/username"
         app:layout_constraintTop_toBottomOf="@+id/username" />
 
-    <!-- Uploaded Image (If Available) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/comment_image_card"
         android:layout_width="match_parent"
@@ -69,6 +68,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/content">
+
+        <ProgressBar
+            android:id="@+id/comment_image_loader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <ImageView
             android:id="@+id/comment_image"

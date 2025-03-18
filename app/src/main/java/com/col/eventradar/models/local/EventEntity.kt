@@ -16,7 +16,7 @@ data class EventEntity(
     val locationName: String,
     val locationLat: Double,
     val locationLon: Double,
-    val time: Long, // Stored as epoch millis
+    val time: Long,
     val type: String,
     val description: String,
 )

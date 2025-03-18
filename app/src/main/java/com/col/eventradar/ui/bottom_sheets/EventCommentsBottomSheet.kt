@@ -16,8 +16,9 @@ import com.col.eventradar.databinding.FragmentEventCommentsBottomSheetBinding
 import com.col.eventradar.ui.adapters.EventCommentRecyclerViewAdapter
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
+import com.col.eventradar.utils.ImageUtils
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 
 class EventCommentsBottomSheet(
@@ -31,15 +32,14 @@ class EventCommentsBottomSheet(
 
     private var selectedImageUri: Uri? = null
 
-    // ✅ Register an image picker
     private val imagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
-                Log.d(TAG, "Image Selected: $uri") // ✅ Debugging Log
+                Log.d(TAG, "Image Selected: $uri")
                 selectedImageUri = uri
-                showImagePreview(uri) // ✅ Display the selected image
+                showImagePreview(uri)
             } else {
-                Log.e(TAG, "No image selected") // ❌ If null, log it
+                Log.e(TAG, "No image selected")
             }
         }
 
@@ -64,7 +64,7 @@ class EventCommentsBottomSheet(
         setupSendCommentButton()
 
         binding.previewImageButton.visibility = View.GONE
-        binding.previewImageButtonCard.visibility = View.GONE // Hide Preview
+        binding.previewImageButtonCard.visibility = View.GONE
 
         return binding.root
     }
@@ -74,7 +74,12 @@ class EventCommentsBottomSheet(
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        eventViewModel.fetchComments(eventId) // ✅ Fetch comments when the bottom sheet is opened
+
+        val parentLayout = view.parent as View
+        val bottomSheetBehavior = BottomSheetBehavior.from(parentLayout)
+        bottomSheetBehavior.isDraggable = false
+
+        eventViewModel.fetchComments(eventId)
     }
 
     private fun setupRecyclerView() {
@@ -82,32 +87,34 @@ class EventCommentsBottomSheet(
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             commentRecyclerAdapter =
-                EventCommentRecyclerViewAdapter(mutableListOf()) // Start with empty list
+                EventCommentRecyclerViewAdapter(mutableListOf())
             adapter = commentRecyclerAdapter
         }
     }
 
     private fun observeViewModel() {
         eventViewModel.comments.observe(viewLifecycleOwner) { comments ->
-            commentRecyclerAdapter.updateComments(comments) // ✅ Update RecyclerView when comments change
+            commentRecyclerAdapter.updateComments(comments)
+        }
+
+        eventViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.sendCommentButton.visibility = if (!isLoading) View.VISIBLE else View.GONE
+            binding.loadingProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
 
     /**
-     * ✅ **Handle adding comments & Image Selection**
+     * **Handle adding comments & Image Selection**
      */
     private fun setupSendCommentButton() {
-        // 🔥 Select Image from Gallery
         binding.addImageButton.setOnClickListener {
-            imagePickerLauncher.launch("image/*") // Open gallery
+            imagePickerLauncher.launch("image/*")
         }
 
-        // 🔥 When clicking on the preview image button, open the gallery again
         binding.previewImageButton.setOnClickListener {
-            imagePickerLauncher.launch("image/*") // Open gallery again
+            imagePickerLauncher.launch("image/*")
         }
 
-        // 🔥 Send Comment
         binding.sendCommentButton.setOnClickListener {
             val commentText =
                 binding.commentInput.text
@@ -116,11 +123,8 @@ class EventCommentsBottomSheet(
 
             if (commentText.isNotEmpty() || selectedImageUri != null) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    Log.d(TAG, "setupSendCommentButton: $selectedImageUri")
-
                     eventViewModel.addComment(eventId, commentText, selectedImageUri)
 
-                    // ✅ Reset input field & image preview
                     clearImagePreview()
                     binding.commentInput.text.clear()
                     selectedImageUri = null
@@ -130,28 +134,22 @@ class EventCommentsBottomSheet(
     }
 
     private fun showImagePreview(imageUri: Uri) {
-        binding.addImageButton.visibility = View.INVISIBLE // Hide Add Image Button (Keep space)
-        binding.previewImageButtonCard.visibility = View.VISIBLE // Hide Preview
-        binding.previewImageButton.visibility = View.VISIBLE // Show Preview Button
-        binding.previewImageButton.isClickable = true // Enable Re-selection
+        binding.addImageButton.visibility = View.INVISIBLE
+        binding.previewImageButtonCard.visibility = View.VISIBLE
+        binding.previewImageButton.visibility = View.VISIBLE
+        binding.previewImageButton.isClickable = true
 
-        // Load selected image into preview button
-        Picasso
-            .get()
-            .load(imageUri)
-            .resize(100, 100)
-            .centerCrop()
-            .into(binding.previewImageButton)
+        ImageUtils.loadImage(imageUri, binding.previewImageButton)
     }
 
     /**
-     * ✅ **Clear Image Preview and Restore Add Button**
+     * **Clear Image Preview and Restore Add Button**
      */
     private fun clearImagePreview() {
-        binding.previewImageButtonCard.visibility = View.GONE // Hide Preview
-        binding.previewImageButton.visibility = View.GONE // Hide Preview
-        binding.previewImageButton.isClickable = false // Disable Click
-        binding.addImageButton.visibility = View.VISIBLE // Restore Add Button
+        binding.previewImageButtonCard.visibility = View.GONE
+        binding.previewImageButton.visibility = View.GONE
+        binding.previewImageButton.isClickable = false
+        binding.addImageButton.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
