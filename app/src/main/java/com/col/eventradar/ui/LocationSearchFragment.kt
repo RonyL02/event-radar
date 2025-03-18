@@ -10,19 +10,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.local.AreasOfInterestRepository
+import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
+import com.col.eventradar.models.AreaOfInterest
+import com.col.eventradar.models.User
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.AreasViewModel
+import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModelFactory
+import com.col.eventradar.ui.views.MapFragment
 import com.col.eventradar.utils.KeyboardUtils
+import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.maplibre.android.style.sources.GeoJsonSource
 
 class LocationSearchFragment : Fragment() {
     private var bindingInternal: FragmentSearchBinding? = null
@@ -35,18 +47,60 @@ class LocationSearchFragment : Fragment() {
     private var isResultChosen = false
     private var gpsFragment: GpsLocationSearchFragment? = null
     private var toastFragment: ToastFragment = ToastFragment()
+    private var currentUser: User? = null
 
-    private val searchResultsAdapter =
-        LocationSearchResultsAdapter { result ->
-            listener?.onLocationSelected(result)
-            isResultChosen = true
-            binding.apply {
-                searchEditText.setText(result.name)
-                searchResultsRecyclerView.visibility = View.GONE
-                searchEditText.clearFocus()
-                KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+    private fun findMapFragment(): MapFragment? {
+        var currentFragment: Fragment? = this
+        while (currentFragment != null) {
+            currentFragment = currentFragment.parentFragment
+            if (currentFragment is MapFragment) {
+                return currentFragment
             }
         }
+        return null
+    }
+
+    private val areasViewModel: AreasViewModel by activityViewModels {
+        val repository = AreasOfInterestRepository(requireContext())
+        AreasViewModelFactory(repository)
+    }
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val repository = UserRepository(requireContext())
+        UserViewModelFactory(repository)
+    }
+
+    private val searchResultsAdapter =
+        LocationSearchResultsAdapter(
+            onClick = { result ->
+                listener?.onLocationSelected(result)
+                isResultChosen = true
+                binding.apply {
+                    searchEditText.setText(result.name)
+                    searchResultsRecyclerView.visibility = View.GONE
+                    searchEditText.clearFocus()
+                    KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+                }
+            },
+            onRemove = { result ->
+
+                lifecycleScope.launch {
+                    if (currentUser != null) {
+                        UserAreaManager(UserRepository(requireContext())).removeAreaOfInterest(currentUser!!.id,
+                            AreaOfInterest(
+                                result.placeId.toString(),result.name,result.name
+                            )
+                        )
+                        AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString());
+                        binding.apply {
+                            searchResultsRecyclerView.visibility = View.GONE
+                            searchEditText.clearFocus()
+                            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+                        }
+                    }
+                }
+            }
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,7 +158,8 @@ class LocationSearchFragment : Fragment() {
                         start: Int,
                         before: Int,
                         count: Int,
-                    ) {}
+                    ) {
+                    }
                 },
             )
         }
@@ -121,6 +176,15 @@ class LocationSearchFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
+            userViewModel.user.collect { user ->
+                if (user != currentUser && user != null) {
+                    currentUser = user
+                }
+
+            }
+        }
+
+        lifecycleScope.launch {
             viewModel.searchResults.collectLatest { results ->
                 if (results.isNotEmpty()) {
                     searchResultsAdapter.submitList(results)
@@ -132,6 +196,10 @@ class LocationSearchFragment : Fragment() {
                     }
                 }
             }
+
+        }
+        areasViewModel.featuresLiveData.observe(viewLifecycleOwner) { features ->
+            searchResultsAdapter.updateCountries(features.features()?.map {it.getStringProperty("localname")} ?: emptyList())
         }
 
         lifecycleScope.launch {

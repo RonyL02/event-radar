@@ -158,6 +158,7 @@ class MapFragment :
                     MapUtils.AREAS_OF_INTEREST_SOURCE_NAME,
                     features
                 )
+                fetchEvents(features.features()?.map { it.getStringProperty("localname")} ?: emptyList())
             }
         }
 
@@ -199,16 +200,15 @@ class MapFragment :
                         }
                     }
 
-                    val missingCountriesFromUser = countries.filterNot { it in (user.areasOfInterest ?: emptyList()) }
+                    val missingCountriesFromUser = countries.filterNot { it in (user.areasOfInterest) }
 
                     missingCountriesFromUser.filter { it.name.isNotEmpty() }.forEach {
                         areasRepo.deleteFeature(it.placeId)
                     }
 
-                    if (countries != (user.areasOfInterest ?: emptyList<String>())) {
-                        fetchEvents(user.areasOfInterest.map { it.country })
-                        Log.d("Fetching","Fetch!")
-                    }
+//                    if (countries != (user.areasOfInterest)) {
+//                        fetchEvents(user.areasOfInterest.map { it.country })
+//                    }
                 }
             }
         }
