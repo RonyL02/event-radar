@@ -7,7 +7,7 @@ import java.util.Date
 
 data class Comment(
     val eventId: String = "",
-    val content: String = "",
+    val content: String? = "",
     val time: LocalDateTime = LocalDateTime.now(),
     val imageUrl: String? = null,
     val userId: String = "",
@@ -15,6 +15,11 @@ data class Comment(
 ) {
     fun hasImage() = !imageUrl.isNullOrBlank()
 }
+
+data class PopulatedComment(
+    val comment: Comment,
+    val event: Event,
+)
 
 fun Comment.toFirestore(eventId: String): CommentFirestore =
     CommentFirestore(

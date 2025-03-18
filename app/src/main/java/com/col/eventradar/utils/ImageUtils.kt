@@ -103,9 +103,9 @@ object ImageUtils {
         imageUri: String,
         imageView: ImageView,
         progressBar: ProgressBar,
-        defaultImageRes: Int = R.mipmap.ic_launcher,
-        width: Int = 300,
         height: Int = 300,
+        width: Int = 300,
+        defaultImageRes: Int = R.mipmap.ic_launcher,
     ) {
         progressBar.visibility = ProgressBar.VISIBLE
 

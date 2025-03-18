@@ -17,6 +17,9 @@ interface CommentDao {
     @Query("SELECT * FROM comments WHERE eventId = :eventId ORDER BY timestamp DESC")
     suspend fun getCommentsForEvent(eventId: String): List<CommentEntity>
 
+    @Query("SELECT * FROM comments WHERE userId = :userId ORDER BY timestamp DESC")
+    suspend fun getCommentsForUser(userId: String): List<CommentEntity>
+
     @Query("DELETE FROM comments WHERE eventId = :eventId")
     suspend fun deleteCommentsForEvent(eventId: String)
 }

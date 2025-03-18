@@ -7,6 +7,7 @@ import com.col.eventradar.api.cloudinary.CloudinaryService
 import com.col.eventradar.data.local.AppLocalDatabase
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.models.common.Comment
+import com.col.eventradar.models.common.PopulatedComment
 import com.col.eventradar.models.common.toFirestore
 import com.col.eventradar.models.local.toDomain
 import com.col.eventradar.models.local.toEntity
@@ -23,6 +24,7 @@ class CommentsRepository(
 ) {
     private val firestore = FirebaseFirestore.getInstance()
     private val userRepository = UserRepository.getInstance()
+    private val eventRepository = EventRepository(context)
     private val commentDao = AppLocalDatabase.getDatabase(context).commentDao()
     private val commentsCollection = firestore.collection(COMMENTS_COLLECTION)
     private val cloudinaryService = CloudinaryService(context)
@@ -118,10 +120,21 @@ class CommentsRepository(
                         }
                     }
 
-                deferredResults
-                    .awaitAll()
-                    .flatten()
-                    .groupBy { it.eventId }
+                val commentsMap =
+                    deferredResults
+                        .awaitAll()
+                        .flatten()
+                        .groupBy { it.eventId }
+
+                val comments =
+                    commentsMap.values
+                        .flatten()
+                        .toList()
+                        .map { it.toEntity() }
+
+                commentDao.insertComments(comments)
+
+                commentsMap
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching comments for events", e)
                 emptyMap()
@@ -157,6 +170,33 @@ class CommentsRepository(
                 val user =
                     userRepository.getUserById(commentEntity.userId)
                 commentEntity.toDomain(user)
+            }
+        }
+
+    /**
+     * **Fetch Comments for the Logged-in User**
+     */
+    suspend fun getCommentsForLoggedInUser(): List<PopulatedComment> =
+        withContext(Dispatchers.IO) {
+            val user = userRepository.getCurrentUser() ?: return@withContext emptyList()
+
+            Log.d(TAG, "getCommentsForLoggedInUser: $user")
+            try {
+                val userComments = commentDao.getCommentsForUser(user.uid) // ✅ Fetch from DAO
+
+                val populatedComments =
+                    userComments.mapNotNull { commentEntity ->
+                        val event = eventRepository.getLocalEventById(commentEntity.eventId)
+                        event?.let { PopulatedComment(commentEntity.toDomain(), it) }
+                    }
+
+                Log.d(TAG, "Fetched ${populatedComments.size} user comments from local DB.")
+
+                Log.d(TAG, "comments: $userComments")
+                return@withContext populatedComments
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching user comments from local DB", e)
+                return@withContext emptyList()
             }
         }
 

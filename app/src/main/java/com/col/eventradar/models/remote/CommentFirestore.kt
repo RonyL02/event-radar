@@ -9,7 +9,7 @@ import java.util.Date
 
 data class CommentFirestore(
     val eventId: String = "",
-    val content: String = "",
+    val content: String? = "",
     val userId: String = "",
     val imageUrl: String? = null,
     @ServerTimestamp val timestamp: Date? = null,

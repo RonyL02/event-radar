@@ -44,9 +44,6 @@ class EventDetailsBottomSheet(
                 eventTime.text =
                     it.time.getFormattedDate()
                 commentsCount.text = event.comments.size.toString()
-                closeButton.setOnClickListener {
-                    dismiss()
-                }
 
                 footer.setOnClickListener {
                     val modalBottomSheet = EventCommentsBottomSheet(event.id)

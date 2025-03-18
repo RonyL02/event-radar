@@ -108,6 +108,11 @@ class EventRepository(
         }
     }
 
+    suspend fun getLocalEventById(eventId: String): Event? =
+        withContext(Dispatchers.IO) {
+            return@withContext eventDao.getEventById(eventId)?.toDomain() // ✅ Fetch from local DB
+        }
+
     companion object {
         const val TAG = "EventRepository"
     }

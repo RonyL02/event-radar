@@ -79,7 +79,7 @@ class EventCommentsBottomSheet(
         val bottomSheetBehavior = BottomSheetBehavior.from(parentLayout)
         bottomSheetBehavior.isDraggable = false
 
-        eventViewModel.fetchComments(eventId)
+        eventViewModel.fetchCommentsForEvent(eventId)
     }
 
     private fun setupRecyclerView() {

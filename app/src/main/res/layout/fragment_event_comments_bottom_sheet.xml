@@ -16,10 +16,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Bottom Input & Image Preview Section -->
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
-                android:layout_marginTop="40dp">
+                android:layout_marginTop="20dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/commentsList"
@@ -27,7 +28,6 @@
                     android:layout_height="0dp" />
             </androidx.core.widget.NestedScrollView>
 
-            <!-- Bottom Input & Image Preview Section -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"

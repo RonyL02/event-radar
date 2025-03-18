@@ -32,12 +32,7 @@ class EventCommentRecyclerViewAdapter(
         private const val TAG = "EventCommentRecyclerViewAdapter"
     }
 
-    override fun getItemViewType(position: Int): Int {
-        val comment = comments[position]
-        val type = if (comment.hasImage()) TYPE_IMAGE else TYPE_TEXT
-
-        return type
-    }
+    override fun getItemViewType(position: Int): Int = if (comments[position].hasImage()) TYPE_IMAGE else TYPE_TEXT
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -45,6 +40,7 @@ class EventCommentRecyclerViewAdapter(
     ): BaseViewHolder {
         val binding =
             EventCommentRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
         return when (viewType) {
             TYPE_IMAGE -> BaseViewHolder.ImageCommentViewHolder(binding)
             else -> BaseViewHolder.TextCommentViewHolder(binding)
@@ -63,27 +59,38 @@ class EventCommentRecyclerViewAdapter(
         }
     }
 
+    /**
+     * ✅ **Bind Common Fields for Both Text & Image Comments**
+     */
+    private fun bindCommonFields(
+        binding: EventCommentRowBinding,
+        comment: Comment,
+    ) {
+        val user = comment.user
+        binding.username.text = user?.username ?: "Unknown User"
+        binding.content.text = comment.content
+        binding.commentTime.text = comment.time.getTimeAgo()
+
+        val userImageUrl = user?.imageUri
+        if (!userImageUrl.isNullOrBlank()) {
+            ImageUtils.showImgInViewFromUrl(
+                userImageUrl,
+                binding.userImage,
+                binding.userImageLoader,
+            )
+        } else {
+            Log.e(TAG, "❌ User image is null, using default avatar")
+            binding.userImage.setImageResource(R.mipmap.ic_launcher_round)
+        }
+    }
+
     private fun bindTextComment(
         holder: BaseViewHolder.TextCommentViewHolder,
         comment: Comment,
     ) {
         with(holder.binding) {
-            val user = comment.user
-            username.text = user?.username ?: "Unknown User"
-            content.text = comment.content
-            commentTime.text =
-                comment.time.getTimeAgo()
-
-            val userImageUrl = user?.imageUri
-            if (!userImageUrl.isNullOrBlank()) {
-                ImageUtils.showImgInViewFromUrl(userImageUrl, userImage, userImageLoader)
-            } else {
-                Log.e(TAG, "❌ User image is null, using default avatar")
-                userImage.setImageResource(R.mipmap.ic_launcher_round)
-            }
-
-            commentImage.visibility = View.GONE
-            commentImageCard.visibility = View.GONE
+            bindCommonFields(this, comment)
+            commentImageCard.visibility = View.GONE // Hide image container for text comments
         }
     }
 
@@ -92,24 +99,14 @@ class EventCommentRecyclerViewAdapter(
         comment: Comment,
     ) {
         with(holder.binding) {
-            val user = comment.user
-            username.text = user?.username ?: "Unknown User"
-            content.text = comment.content
-            commentTime.text =
-                comment.time.getTimeAgo()
-
-            val userImageUrl = user?.imageUri
-            if (!userImageUrl.isNullOrBlank()) {
-                ImageUtils.showImgInViewFromUrl(userImageUrl, userImage, userImageLoader)
-            }
+            bindCommonFields(this, comment)
 
             if (!comment.imageUrl.isNullOrBlank()) {
-                commentImage.visibility = View.VISIBLE
+                commentImageCard.visibility = View.VISIBLE
                 ImageUtils.showImgInViewFromUrl(comment.imageUrl, commentImage, commentImageLoader)
             } else {
                 Log.e(TAG, "❌ Comment image is null, hiding image view.")
-                commentImage.setImageResource(R.mipmap.ic_launcher_round)
-                commentImage.visibility = View.GONE
+                commentImageCard.visibility = View.GONE
             }
         }
     }

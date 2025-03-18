@@ -12,6 +12,7 @@ import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.models.common.Comment
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.EventType
+import com.col.eventradar.models.common.PopulatedComment
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -30,6 +31,17 @@ class EventViewModel(
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
+
+    private val _userComments = MutableLiveData<List<PopulatedComment>>()
+    val userComments: LiveData<List<PopulatedComment>> get() = _userComments
+
+    fun fetchUserComments() {
+        viewModelScope.launch {
+            val comments = commentsRepository.getCommentsForLoggedInUser()
+
+            _userComments.postValue(comments)
+        }
+    }
 
     fun fetchFilteredEvents(
         fromDate: LocalDateTime? = null,
@@ -63,7 +75,7 @@ class EventViewModel(
         }
     }
 
-    fun fetchComments(eventId: String) {
+    fun fetchCommentsForEvent(eventId: String) {
         viewModelScope.launch {
             _comments.postValue(
                 _events.value
@@ -93,7 +105,7 @@ class EventViewModel(
                 val newComment = commentsRepository.addCommentToEvent(eventId, content, imageUri)
 
                 if (newComment != null) {
-                    fetchComments(eventId)
+                    fetchCommentsForEvent(eventId)
 
                     _events.value =
                         _events.value?.map { event ->
