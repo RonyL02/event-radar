@@ -96,7 +96,7 @@ class EventCardListFragment : Fragment() {
     }
 
     private fun fetchEvents() {
-        eventViewModel.fetchFilteredEvents()
+        eventViewModel.fetchFilteredEvents(withLocalEvent = true)
     }
 
     companion object {

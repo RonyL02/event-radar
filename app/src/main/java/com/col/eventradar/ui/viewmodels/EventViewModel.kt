@@ -30,6 +30,7 @@ class EventViewModel(
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
         countries: List<String>? = null,
+        withLocalEvent: Boolean
     ) {
         _isLoading.postValue(true)
 
@@ -42,6 +43,7 @@ class EventViewModel(
                         alertLevels,
                         eventTypes,
                         countries,
+                        withLocalEvent
                     )
 
                 if (eventsList.isEmpty()) {

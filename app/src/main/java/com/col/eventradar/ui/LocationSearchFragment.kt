@@ -34,7 +34,6 @@ import com.col.eventradar.utils.KeyboardUtils
 import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.maplibre.android.style.sources.GeoJsonSource
 
 class LocationSearchFragment : Fragment() {
     private var bindingInternal: FragmentSearchBinding? = null
@@ -83,7 +82,6 @@ class LocationSearchFragment : Fragment() {
                 }
             },
             onRemove = { result ->
-
                 lifecycleScope.launch {
                     if (currentUser != null) {
                         UserAreaManager(UserRepository(requireContext())).removeAreaOfInterest(currentUser!!.id,
@@ -121,6 +119,7 @@ class LocationSearchFragment : Fragment() {
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)
             }
+
             searchEditText.addTextChangedListener(
                 object : TextWatcher {
                     override fun afterTextChanged(searchValue: Editable?) {
@@ -128,6 +127,7 @@ class LocationSearchFragment : Fragment() {
                             isResultChosen = false
                             return
                         }
+
                         searchRunnable?.let {
                             handler.removeCallbacks(it)
                         }
@@ -180,7 +180,6 @@ class LocationSearchFragment : Fragment() {
                 if (user != currentUser && user != null) {
                     currentUser = user
                 }
-
             }
         }
 

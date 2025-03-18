@@ -43,11 +43,7 @@ class GdacsService private constructor() {
         val combinedEvents = responses.flatMap { it.features }
         val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
 
-        return@coroutineScope if (uniqueEvents.isNotEmpty()) {
-            EventListResponseDTO(features = uniqueEvents)
-        } else {
-            null
-        }
+        return@coroutineScope EventListResponseDTO(features = uniqueEvents)
     }
 
 
@@ -69,7 +65,7 @@ class GdacsService private constructor() {
                         AlertLevel.GREEN,
                     ),
                 eventTypes = eventTypes ?: EventType.allExceptUnknown,
-                country = country ?: "United States",
+                country = country ?: "",
             )
 
         return try {

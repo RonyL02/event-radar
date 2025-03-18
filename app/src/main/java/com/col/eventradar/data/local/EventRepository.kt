@@ -26,6 +26,7 @@ class EventRepository(
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
         countries: List<String>? = null,
+        withLocalEvents: Boolean,
     ): List<Event> {
         return withContext(Dispatchers.IO) {
             try {
@@ -76,8 +77,16 @@ class EventRepository(
                         emptyList()
                     }
 
+                var list: List<Event> = emptyList<Event>()
+
+                if (withLocalEvents) {
+                    list = newEvents + localEvents
+                } else {
+                    list = newEvents
+                }
+
                 val uniqueEvents =
-                    (newEvents + localEvents).distinctBy { it.id }.sortedByDescending { it.time }
+                    list.distinctBy { it.id }.sortedByDescending { it.time }
 
                 // Return combined list of local and new events
                 return@withContext uniqueEvents
