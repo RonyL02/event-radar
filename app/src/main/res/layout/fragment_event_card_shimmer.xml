@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:padding="24dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="24dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="2dp">
 
