@@ -14,6 +14,9 @@ interface CommentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComments(comments: List<CommentEntity>)
 
+    @Query("SELECT * FROM comments")
+    suspend fun getAllComments(): List<CommentEntity> // ✅ Fetch all comments
+
     @Query("SELECT * FROM comments WHERE eventId = :eventId ORDER BY timestamp DESC")
     suspend fun getCommentsForEvent(eventId: String): List<CommentEntity>
 
@@ -22,4 +25,7 @@ interface CommentDao {
 
     @Query("DELETE FROM comments WHERE eventId = :eventId")
     suspend fun deleteCommentsForEvent(eventId: String)
+
+    @Query("DELETE FROM comments WHERE id = :commentId")
+    suspend fun deleteCommentById(commentId: String)
 }

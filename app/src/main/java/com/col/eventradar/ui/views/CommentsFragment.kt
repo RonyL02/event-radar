@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentCommentsBinding
 import com.col.eventradar.ui.adapters.UserCommentsRecyclerViewAdapter
+import com.col.eventradar.ui.bottom_sheets.EditCommentBottomSheetFragment
+import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
 
 class CommentsFragment : Fragment() {
     private var bindingInternal: FragmentCommentsBinding? = null
     private val binding get() = bindingInternal!!
+    private lateinit var toastFragment: ToastFragment
 
     private val userViewModel: UserViewModel by activityViewModels {
         val commentRepository = CommentsRepository(requireContext())
@@ -30,6 +33,8 @@ class CommentsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentCommentsBinding.inflate(inflater, container, false)
+        toastFragment = ToastFragment()
+        childFragmentManager.beginTransaction().add(toastFragment, ToastFragment.TAG).commit()
 
         setupRecyclerView()
         observeViewModel()
@@ -43,7 +48,15 @@ class CommentsFragment : Fragment() {
             UserCommentsRecyclerViewAdapter(
                 mutableListOf(),
                 onEditClick = { populatedComment ->
-                    // Handle edit action
+                    val modalBottomSheet =
+                        EditCommentBottomSheetFragment(populatedComment) {
+                            toastFragment("Comment Updated")
+                            fetchUserComments()
+                        }
+                    modalBottomSheet.show(parentFragmentManager, EditCommentBottomSheetFragment.TAG)
+                },
+                onDeleteClick = { populatedComment ->
+                    userViewModel.deleteCommentById(populatedComment.comment.id)
                 },
             )
 
@@ -70,8 +83,5 @@ class CommentsFragment : Fragment() {
 
     companion object {
         const val TAG = "CommentsFragment"
-
-        @JvmStatic
-        fun newInstance() = CommentsFragment()
     }
 }

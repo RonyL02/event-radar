@@ -101,7 +101,7 @@
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/white"
         android:clipToPadding="false"
-        android:elevation="2dp"
+        android:elevation="10dp"
         android:padding="10dp"
         app:cardCornerRadius="8dp"
         app:layout_constraintTop_toBottomOf="@+id/event_type_card"
@@ -142,7 +142,8 @@
                 android:id="@+id/editButton"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:backgroundTint="@color/red_600"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/grey_lightest"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
@@ -150,12 +151,28 @@
                 app:icon="@drawable/ic_edit"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
+                app:iconTint="@color/red_600"
+                app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:rippleColor="@color/grey_light" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:backgroundTint="@color/red_600"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
                 app:iconTint="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:rippleColor="@color/red_500" />
 
-            <!-- Comment Image (Optional) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/comment_image_card"
                 android:layout_width="match_parent"

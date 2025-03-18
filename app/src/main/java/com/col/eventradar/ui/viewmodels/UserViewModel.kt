@@ -1,5 +1,6 @@
 package com.col.eventradar.ui.viewmodels
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -72,6 +73,42 @@ class UserViewModel(
                 Log.d(TAG, "User comments fetched: ${userCommentsList.size}")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching user comments", e)
+            }
+        }
+    }
+
+    /**
+     *  **Update a Comment**
+     */
+    fun updateComment(
+        commentId: String,
+        updatedContent: String?,
+        newImageUri: Uri?,
+    ) {
+        viewModelScope.launch {
+            try {
+                commentsRepository.updateComment(
+                    commentId = commentId,
+                    updatedContent = updatedContent,
+                    newImageUri = newImageUri,
+                )
+                fetchLoggedInUserComments()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating comment", e)
+            }
+        }
+    }
+
+    /**
+     * **Delete a Comment**
+     */
+    fun deleteCommentById(commentId: String) {
+        viewModelScope.launch {
+            try {
+                commentsRepository.deleteComment(commentId)
+                fetchLoggedInUserComments()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting comment", e)
             }
         }
     }

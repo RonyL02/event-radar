@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.constants.EventTypeConfig
 import com.col.eventradar.databinding.UserCommentRowBinding
@@ -27,6 +28,7 @@ sealed class BaseUserCommentViewHolder(
 class UserCommentsRecyclerViewAdapter(
     private var comments: MutableList<PopulatedComment> = mutableListOf(),
     private val onEditClick: (PopulatedComment) -> Unit,
+    private val onDeleteClick: (PopulatedComment) -> Unit,
 ) : RecyclerView.Adapter<BaseUserCommentViewHolder>() {
     companion object {
         private const val TYPE_TEXT_COMMENT = 1
@@ -83,7 +85,10 @@ class UserCommentsRecyclerViewAdapter(
         binding.commentContent.text = comment.content ?: "(Image)"
         binding.commentTime.text = comment.time.getLongTimeAgo()
 
-        binding.editButton.visibility = View.VISIBLE
+        binding.deleteButton.setOnClickListener {
+            onDeleteClick(populatedComment)
+            Toast.makeText(binding.root.context, "Comment Deleted", Toast.LENGTH_SHORT).show()
+        }
         binding.editButton.setOnClickListener { onEditClick(populatedComment) }
     }
 

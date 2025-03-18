@@ -52,8 +52,13 @@ class EventCardListFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         fetchEvents()
+        syncAllComments()
 
         return binding.root
+    }
+
+    private fun syncAllComments() {
+        eventViewModel.syncAllComments()
     }
 
     private fun setupRecyclerView() {

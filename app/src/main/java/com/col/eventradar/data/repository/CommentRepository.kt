@@ -58,15 +58,12 @@ class CommentsRepository(
             }
         }
 
-    /**
-     *  **Adds a comment with an optional image**
-     */
     suspend fun addCommentToEvent(
         eventId: String,
         content: String,
         imageUri: Uri? = null,
     ): Comment? {
-        val commentRef = commentsCollection.document()
+        val commentRef = commentsCollection.document() // 🔥 Firestore generates a unique ID
 
         try {
             var uploadedImageUrl: String? = null
@@ -81,6 +78,7 @@ class CommentsRepository(
 
             val newComment =
                 Comment(
+                    id = commentRef.id,
                     eventId = eventId,
                     content = content,
                     imageUrl = uploadedImageUrl,
@@ -88,13 +86,53 @@ class CommentsRepository(
                 )
 
             commentRef.set(newComment.toFirestore(eventId)).await()
-            commentDao.insertComment(newComment.toEntity(eventId))
+
+            commentDao.insertComment(newComment.toEntity())
 
             Log.d(TAG, "Comment added successfully with image: $uploadedImageUrl")
             return newComment
         } catch (e: Exception) {
             Log.e(TAG, "Error adding comment", e)
             return null
+        }
+    }
+
+    suspend fun updateComment(
+        commentId: String,
+        updatedContent: String?,
+        newImageUri: Uri? = null,
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val docRef = commentsCollection.document(commentId)
+                val existingCommentSnapshot = docRef.get().await()
+                val existingComment = existingCommentSnapshot.toObject(CommentFirestore::class.java)
+
+                if (existingComment == null) {
+                    Log.e(TAG, "Comment not found in Firestore: $commentId")
+                    return@withContext
+                }
+
+                var updatedImageUrl: String? = existingComment.imageUrl
+
+                newImageUri?.let {
+                    updatedImageUrl = cloudinaryService.uploadImageToCloudinary(it)
+                }
+
+                val updatedComment =
+                    existingComment.copy(
+                        content = updatedContent ?: existingComment.content,
+                        imageUrl = updatedImageUrl,
+                    )
+
+                docRef.set(updatedComment).await()
+
+                commentDao.insertComment(updatedComment.toDomain().toEntity())
+
+                Log.d(TAG, "Comment updated successfully: $commentId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating comment", e)
+            }
         }
     }
 
@@ -141,7 +179,7 @@ class CommentsRepository(
             }
         }
 
-    suspend fun syncCommentsFromFirestore(eventId: String) {
+    suspend fun syncCommentsOfEvent(eventId: String) {
         val comments = getCommentsFromFirestore(eventId)
 
         if (comments.isNotEmpty()) {
@@ -159,8 +197,42 @@ class CommentsRepository(
         }
     }
 
+    suspend fun syncAllComments() =
+        withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "🔄 Syncing all comments on app load...")
+
+                // Fetch all comments from Firestore
+                val snapshot = commentsCollection.get().await()
+                val remoteComments =
+                    snapshot.toObjects(CommentFirestore::class.java).map { it.toDomain() }
+
+                // Fetch all comments stored in Room
+                val localComments = commentDao.getAllComments()
+
+                // Prepare comments for update in Room
+                val commentsToUpdate = remoteComments.map { it.toEntity() }
+
+                // Find comments that exist in Room but were deleted from Firestore
+                val remoteCommentIds = remoteComments.map { it.id }.toSet()
+                val localCommentIds = localComments.map { it.id }.toSet()
+                val commentsToDelete = localCommentIds - remoteCommentIds
+
+                // Apply changes to local database
+                commentDao.insertComments(commentsToUpdate) // Insert or update Firestore comments
+                commentsToDelete.forEach { commentDao.deleteCommentById(it) } // Delete missing comments
+
+                Log.d(
+                    TAG,
+                    "Comments sync complete. Updated: ${commentsToUpdate.size}, Deleted: ${commentsToDelete.size}",
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Error syncing comments on app load", e)
+            }
+        }
+
     /**
-     * 💾 Fetch Comments from Local Database (Room)
+     * Fetch Comments from Local Database (Room)
      */
     suspend fun getLocalComments(eventId: String): List<Comment> =
         withContext(Dispatchers.IO) {
@@ -199,6 +271,18 @@ class CommentsRepository(
                 return@withContext emptyList()
             }
         }
+
+    suspend fun deleteComment(commentId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                commentsCollection.document(commentId).delete().await()
+                commentDao.deleteCommentById(commentId)
+                Log.d(TAG, "Comment deleted: $commentId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting comment: $commentId", e)
+            }
+        }
+    }
 
     companion object {
         const val COMMENTS_COLLECTION = "comments"

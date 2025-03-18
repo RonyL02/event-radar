@@ -35,11 +35,9 @@ class EventViewModel(
     private val _userComments = MutableLiveData<List<PopulatedComment>>()
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
 
-    fun fetchUserComments() {
+    fun syncAllComments() {
         viewModelScope.launch {
-            val comments = commentsRepository.getCommentsForLoggedInUser()
-
-            _userComments.postValue(comments)
+            commentsRepository.syncAllComments()
         }
     }
 
@@ -85,7 +83,7 @@ class EventViewModel(
             )
 
             try {
-                commentsRepository.syncCommentsFromFirestore(eventId)
+                commentsRepository.syncCommentsOfEvent(eventId)
                 _comments.postValue(commentsRepository.getLocalComments(eventId))
             } catch (e: Exception) {
                 _errorMessage.postValue("Failed fetch comments for eventId $eventId: ${e.localizedMessage}")

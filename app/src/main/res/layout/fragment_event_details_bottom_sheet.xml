@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_sheet_background">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -10,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-
         android:clipToPadding="false"
         android:paddingHorizontal="24dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +35,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="Icon"
                 android:src="@drawable/earthquake"
-                app:tint="@color/black" />
+                app:tint="?attr/colorOnSurface" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -60,7 +60,8 @@
             android:layout_marginBottom="2dp"
             android:src="@drawable/typcn_pin_outline"
             app:layout_constraintBottom_toBottomOf="@+id/details_header"
-            app:layout_constraintStart_toEndOf="@+id/details_header" />
+            app:layout_constraintStart_toEndOf="@+id/details_header"
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/location_name"
@@ -91,6 +92,7 @@
             android:layout_marginTop="24dp"
             android:text=""
             android:textAlignment="viewStart"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="14sp"
             app:layout_anchor="@+id/event_details_fragment"
             app:layout_anchorGravity="bottom|center"

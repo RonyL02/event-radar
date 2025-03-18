@@ -6,6 +6,7 @@ import java.time.ZoneOffset
 import java.util.Date
 
 data class Comment(
+    val id: String = "",
     val eventId: String = "",
     val content: String? = "",
     val time: LocalDateTime = LocalDateTime.now(),

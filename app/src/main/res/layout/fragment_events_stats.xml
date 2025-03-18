@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="223"
-                android:textColor="@color/red_600"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -72,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="new events since"
-                    android:textColor="@color/grey_darkest"
+                    android:textColor="?attr/colorOnSecondary"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:layout_editor_absoluteY="0dp" />
@@ -82,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5:00 PM"
-                    android:textColor="@color/red_600"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="0dp"
                     android:text="20"
-                    android:textColor="@color/red_600"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textFontWeight="700"
                     android:textSize="26sp"
                     android:textStyle="bold"
@@ -124,16 +124,18 @@
                     android:layout_height="26dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/earthquake"
+                    android:textColor="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/topEventTitle"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/topEventTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Suicide"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/topEventIcon"
@@ -154,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="0dp"
                     android:text="0"
-                    android:textColor="@color/red_600"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textFontWeight="600"
                     android:textSize="26sp"
                     android:textStyle="bold"
@@ -171,14 +173,15 @@
                     android:src="@drawable/earthquake"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/secondEventTitle"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/secondEventTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Suicide"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/secondEventIcon"

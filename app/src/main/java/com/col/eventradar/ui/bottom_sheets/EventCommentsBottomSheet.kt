@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -124,7 +125,9 @@ class EventCommentsBottomSheet(
             if (commentText.isNotEmpty() || selectedImageUri != null) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     eventViewModel.addComment(eventId, commentText, selectedImageUri)
-
+                    Toast
+                        .makeText(binding.root.context, "Comment Added", Toast.LENGTH_SHORT)
+                        .show()
                     clearImagePreview()
                     binding.commentInput.text.clear()
                     selectedImageUri = null

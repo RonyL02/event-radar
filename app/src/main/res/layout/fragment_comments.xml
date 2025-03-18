@@ -7,7 +7,6 @@
     android:layout_height="fill_parent"
     tools:context=".ui.views.CommentsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_comments_list"
         android:name="com.col.eventradar.EventCardFragment"
@@ -17,6 +16,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:paddingHorizontal="8dp"
+        android:paddingBottom="70dp"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.views.EventCardListFragment"
         tools:listitem="@layout/fragment_event_card" />
