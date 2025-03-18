@@ -82,7 +82,8 @@ class UserCommentsRecyclerViewAdapter(
         binding.locationName.text = event.locationName
         binding.eventTime.text = event.time.getFormattedDate()
 
-        binding.commentContent.text = comment.content ?: "(Image)"
+        binding.commentContent.text =
+            if (comment.content.isNullOrBlank()) "(Image)" else comment.content
         binding.commentTime.text = comment.time.getLongTimeAgo()
 
         binding.deleteButton.setOnClickListener {
