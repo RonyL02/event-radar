@@ -15,3 +15,7 @@ data class AreaEntity(
 fun AreaEntity.toFeature(): Feature {
     return Feature.fromJson(this.geojson)
 }
+
+fun AreaEntity.toAreaOfInterest(): AreaOfInterest {
+    return AreaOfInterest(this.placeId,this.name,this.country)
+}

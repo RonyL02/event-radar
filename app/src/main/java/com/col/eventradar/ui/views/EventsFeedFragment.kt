@@ -54,7 +54,7 @@ class EventsFeedFragment : Fragment() {
 
     private fun refreshData() {
         binding.swipeRefreshLayout.isRefreshing = true
-        eventViewModel.fetchFilteredEvents(withLocalEvent = false)
+        eventViewModel.fetchFilteredEvents(withLocalEvent = true)
     }
 
     override fun onDestroyView() {

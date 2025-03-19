@@ -1,5 +1,6 @@
 package com.col.eventradar.ui
 
+import MapManager
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -16,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
@@ -29,7 +31,6 @@ import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
-import com.col.eventradar.ui.views.MapFragment
 import com.col.eventradar.utils.KeyboardUtils
 import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
@@ -47,17 +48,6 @@ class LocationSearchFragment : Fragment() {
     private var gpsFragment: GpsLocationSearchFragment? = null
     private var toastFragment: ToastFragment = ToastFragment()
     private var currentUser: User? = null
-
-    private fun findMapFragment(): MapFragment? {
-        var currentFragment: Fragment? = this
-        while (currentFragment != null) {
-            currentFragment = currentFragment.parentFragment
-            if (currentFragment is MapFragment) {
-                return currentFragment
-            }
-        }
-        return null
-    }
 
     private val areasViewModel: AreasViewModel by activityViewModels {
         val repository = AreasOfInterestRepository(requireContext())
@@ -82,13 +72,15 @@ class LocationSearchFragment : Fragment() {
                 }
             },
             onRemove = { result ->
+                        MapManager.getMapAsync {
+                            map ->
                 lifecycleScope.launch {
                     if (currentUser != null) {
-                        UserAreaManager(UserRepository(requireContext())).removeAreaOfInterest(currentUser!!.id,
-                            AreaOfInterest(
-                                result.placeId.toString(),result.name,result.name
-                            )
-                        )
+                                UserAreaManager(UserRepository(requireContext()), EventRepository(requireContext()), style = map.style).removeAreaOfInterest(currentUser!!.id,
+                                    AreaOfInterest(
+                                        result.placeId.toString(),result.name,result.name
+                                    )
+                                )
                         AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString());
                         binding.apply {
                             searchResultsRecyclerView.visibility = View.GONE
@@ -97,6 +89,7 @@ class LocationSearchFragment : Fragment() {
                         }
                     }
                 }
+                        }
             }
         )
 

@@ -29,6 +29,7 @@ import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
 import com.col.eventradar.utils.GeoJsonParser
+
 import com.col.eventradar.utils.addEventIconsToMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -84,6 +85,7 @@ class MapFragment :
     ): View {
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
+        MapManager.initialize(binding.mapView)
         locationFragment = GpsLocationMapFragment()
         childFragmentManager
             .beginTransaction()
@@ -159,65 +161,66 @@ class MapFragment :
                     MapUtils.AREAS_OF_INTEREST_SOURCE_NAME,
                     features
                 )
-                fetchEvents(features.features()?.map { it.getStringProperty("localname") }
-                    ?: emptyList())
+//
+//                fetchEvents(features.features()?.map { it.getStringProperty("localname") }
+//                    ?: emptyList())
             }
         }
 
-        lifecycleScope.launch {
-            userViewModel.user.collect { user ->
-                if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
-                    currentUser = user
-
-                    val countries = areasOfInterest?.features()?.map {
-                        AreaOfInterest(
-                            it.getStringProperty("placeId"),
-                            it.getStringProperty("localname"),
-                            it.getStringProperty("localname")
-                        )
-                    } ?: emptyList()
-
-                    val areasRepo = AreasOfInterestRepository(requireContext())
-                    val missingCountries =
-                        user?.areasOfInterest?.filterNot { it in countries } ?: emptyList()
-
-                    if (missingCountries.isNotEmpty()) {
-                        withContext(Dispatchers.IO) {
-                            val deferredRequests = missingCountries.map { area ->
-                                async {
-                                    area.placeId.toLongOrNull()?.let { placeIdLong ->
-                                        try {
-                                            val result =
-                                                OpenStreetMapService.api.getLocationDetails(
-                                                    placeIdLong
-                                                )
-                                            val feature = MapUtils.toMapLibreFeature(result)
-                                            val jsonData = GeoJsonParser.gson.toJson(feature)
-                                            areasRepo.saveFeature(feature, jsonData)
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
-                                        }
-                                    }
-                                }
-                            }
-                            deferredRequests.awaitAll()
-                        }
-
-                    }
-
-                    val missingCountriesFromUser =
-                        countries.filterNot { it in (user?.areasOfInterest ?: emptyList()) }
-
-                    missingCountriesFromUser.filter { it.name.isNotEmpty() }.forEach {
-                        areasRepo.deleteFeature(it.placeId)
-                    }
-                }
-            }
-        }
+//        lifecycleScope.launch {
+//            userViewModel.user.collect { user ->
+//                if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
+//                    currentUser = user
+//
+//                    val countries = areasOfInterest?.features()?.map {
+//                        AreaOfInterest(
+//                            it.getStringProperty("placeId"),
+//                            it.getStringProperty("localname"),
+//                            it.getStringProperty("localname")
+//                        )
+//                    } ?: emptyList()
+//
+//                    val areasRepo = AreasOfInterestRepository(requireContext())
+//                    val missingCountries =
+//                        user?.areasOfInterest?.filterNot { it in countries } ?: emptyList()
+//
+//                    if (missingCountries.isNotEmpty()) {
+//                        withContext(Dispatchers.IO) {
+//                            val deferredRequests = missingCountries.map { area ->
+//                                async {
+//                                    area.placeId.toLongOrNull()?.let { placeIdLong ->
+//                                        try {
+//                                            val result =
+//                                                OpenStreetMapService.api.getLocationDetails(
+//                                                    placeIdLong
+//                                                )
+//                                            val feature = MapUtils.toMapLibreFeature(result)
+//                                            val jsonData = GeoJsonParser.gson.toJson(feature)
+//                                            areasRepo.saveFeature(feature, jsonData)
+//                                        } catch (e: Exception) {
+//                                            e.printStackTrace()
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            deferredRequests.awaitAll()
+//                        }
+//                    }
+//
+//                    val missingCountriesFromUser =
+//                        countries.filterNot { it in (user?.areasOfInterest ?: emptyList()) }
+//
+//                    missingCountriesFromUser.filter { it.name.isNotEmpty() }.forEach {
+//                        areasRepo.deleteFeature(it.placeId)
+//                        eventViewModel.removeAreaEvents(it)
+//                    }
+//                }
+//            }
+//        }
     }
 
-    private fun fetchEvents(countries: List<String>) {
-        eventViewModel.fetchFilteredEvents(countries = countries, withLocalEvent = false)
+    private fun fetchEvents(country: String) {
+        eventViewModel.fetchEventsByCountry(country = country)
     }
 
     private fun updateMapWithEvents(events: List<Event>, style: Style) {

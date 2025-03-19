@@ -6,6 +6,8 @@ import com.col.eventradar.api.events.GdacsService
 import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.api.events.dto.toDomain
 import com.col.eventradar.data.local.AppLocalDatabase
+import com.col.eventradar.models.AreaEntity
+import com.col.eventradar.models.AreaOfInterest
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
 import com.col.eventradar.models.toDomain
@@ -20,13 +22,28 @@ class EventRepository(
     private val eventDao = AppLocalDatabase.getDatabase(context).eventDao()
     private val gdacsService = GdacsService.getInstance()
 
+    suspend fun deleteAreaEvents(area: AreaOfInterest) {
+        eventDao.deleteEventsByCountry(area.country);
+    }
+
+    suspend fun addAreaEvents(area: AreaEntity) {
+        val response =
+            gdacsService.fetchEvents(
+                countries = listOf(area.country)
+            )
+
+        val events = response?.toDomain()?.map {it.toEntity()}
+
+        eventDao.insertEvents(events ?: emptyList());
+    }
+
     suspend fun fetchAndStoreEvents(
         fromDate: LocalDateTime? = null,
         toDate: LocalDateTime? = null,
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
         countries: List<String>? = null,
-        withLocalEvents: Boolean,
+        withLocalEvents: Boolean = true,
     ): List<Event> {
         return withContext(Dispatchers.IO) {
             try {

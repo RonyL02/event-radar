@@ -7,6 +7,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.data.EventRepository
+import com.col.eventradar.models.AreaOfInterest
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
 import kotlinx.coroutines.launch
@@ -57,6 +58,46 @@ class EventViewModel(
             } finally {
                 _isLoading.postValue(false)
             }
+        }
+    }
+
+    fun fetchEventsByCountry(
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+        country: String,
+    ) {
+
+        viewModelScope.launch {
+            try {
+                val eventsList =
+                    repository.fetchAndStoreEvents(
+                        fromDate,
+                        toDate,
+                        alertLevels,
+                        eventTypes,
+                        listOf(country),
+                        true
+                    )
+
+                if (eventsList.isEmpty()) {
+                    _errorMessage.postValue("No events found.")
+                    _events.postValue(emptyList())
+                } else {
+                    _events.postValue(eventsList)
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun removeAreaEvents(area: AreaOfInterest) {
+        viewModelScope.launch {
+            repository.deleteAreaEvents(area);
         }
     }
 
