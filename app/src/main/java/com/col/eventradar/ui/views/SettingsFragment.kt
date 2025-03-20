@@ -2,113 +2,113 @@ package com.col.eventradar.ui.views
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSettingsBinding
+import com.col.eventradar.ui.bottom_sheets.EditProfileBottomSheetFragment
+import com.col.eventradar.ui.viewmodels.UserViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModelFactory
+import com.col.eventradar.utils.ImageUtils
 
 class SettingsFragment : Fragment() {
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var binding: FragmentSettingsBinding
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var pickImageLauncher: ActivityResultLauncher<String>
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val commentRepository = CommentsRepository(requireContext())
+        val userRepository = UserRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository)
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         sharedPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
-
-        pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            uri?.let {
-                binding.profileImage.setImageURI(it)
-                saveImageUri(it.toString())
-            }
-        }
-
+        observeViewModel()
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun observeViewModel() =
+        userViewModel.loggedInUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                with(binding) {
+                    username.text = it.username
 
+                    it.imageUri?.let { imageUri ->
+                        profileImage.visibility = View.VISIBLE
+                        ImageUtils.showImgInViewFromUrl(imageUri, profileImage, profileImageLoader)
+                    }
+                }
+            }
+        }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
         setupThemeSpinner()
         setupUI()
     }
-    private fun setupUI() {
-        binding.logoutButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed() // חזרה למסך הקודם
-        }
 
-
-
-        val savedImageUri = sharedPreferences.getString("profile_image", null)
-        savedImageUri?.let {
-            binding.profileImage.setImageURI(Uri.parse(it))
-        }
-
-
-        binding.cameraIcon.setOnClickListener {
-            pickImageLauncher.launch("image/*")
-        }
-
-
-        val savedUsername = sharedPreferences.getString("username", "Shiran")
-        binding.username.text = savedUsername
-        binding.editUsernameField.setText(savedUsername)
-
-
-        binding.editUsernameField.visibility = View.GONE
-        binding.saveUsernameButton.visibility = View.GONE
-
-
-        binding.editUsername.setOnClickListener {
-            binding.username.visibility = View.GONE
-            binding.editUsernameField.visibility = View.VISIBLE
-            binding.saveUsernameButton.visibility = View.VISIBLE
-        }
-
-        binding.saveUsernameButton.setOnClickListener {
-            val newName = binding.editUsernameField.text.toString().trim()
-            if (newName.isNotEmpty()) {
-                binding.username.text = newName
-                sharedPreferences.edit().putString("username", newName).apply()
+    private fun setupUI() =
+        with(binding) {
+            editButton.setOnClickListener {
+                val editProfileModal =
+                    EditProfileBottomSheetFragment {
+                        Toast
+                            .makeText(binding.root.context, "Profile Updated", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                editProfileModal.show(parentFragmentManager, EditProfileBottomSheetFragment.TAG)
             }
-            binding.username.visibility = View.VISIBLE
-            binding.editUsernameField.visibility = View.GONE
-            binding.saveUsernameButton.visibility = View.GONE
         }
-    }
 
-    private fun setupThemeSpinner() {
-        val themes = arrayOf("Light", "Dark")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, themes)
-        binding.themeSpinner.adapter = adapter
+    private fun setupThemeSpinner() =
+        with(binding) {
+            val themes = arrayOf("Light", "Dark")
+            themeSpinner.adapter =
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    themes,
+                )
 
+            val savedTheme = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO)
+            themeSpinner.setSelection(if (savedTheme == AppCompatDelegate.MODE_NIGHT_YES) 1 else 0)
 
-        val savedTheme = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO)
-        binding.themeSpinner.setSelection(if (savedTheme == AppCompatDelegate.MODE_NIGHT_YES) 1 else 0)
+            themeSpinner.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long,
+                    ) {
+                        val selectedTheme =
+                            if (position == 1) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                        saveTheme(selectedTheme)
+                        applyTheme(selectedTheme)
+                    }
 
-        binding.themeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedTheme = if (position == 1) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-                saveTheme(selectedTheme)
-                applyTheme(selectedTheme)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
         }
-    }
 
     private fun saveTheme(mode: Int) {
         sharedPreferences.edit().putInt("theme_mode", mode).apply()
@@ -118,9 +118,12 @@ class SettingsFragment : Fragment() {
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    private fun saveImageUri(uri: String) {
-        sharedPreferences.edit().putString("profile_image", uri).apply()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-
+    companion object {
+        const val TAG = "SettingsFragment"
+    }
 }

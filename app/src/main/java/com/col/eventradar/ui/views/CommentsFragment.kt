@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentCommentsBinding
 import com.col.eventradar.ui.adapters.UserCommentsRecyclerViewAdapter
@@ -22,7 +23,8 @@ class CommentsFragment : Fragment() {
 
     private val userViewModel: UserViewModel by activityViewModels {
         val commentRepository = CommentsRepository(requireContext())
-        UserViewModelFactory(commentRepository)
+        val userRepository = UserRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository)
     }
 
     private lateinit var commentsAdapter: UserCommentsRecyclerViewAdapter

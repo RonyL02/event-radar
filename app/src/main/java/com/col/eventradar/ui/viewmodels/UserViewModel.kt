@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 
 class UserViewModel(
     private val commentsRepository: CommentsRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     private val _loggedInUser = MutableLiveData<User?>()
     val loggedInUser: LiveData<User?> get() = _loggedInUser
-    val userRepository: UserRepository = UserRepository.getInstance()
 
     private val _authState = MutableLiveData<Boolean>()
     val authState: LiveData<Boolean> get() = _authState
@@ -113,15 +113,24 @@ class UserViewModel(
         }
     }
 
-    /**
-     * 🔥 **Update the current user's profile in Firestore**
-     */
-    fun updateUserProfile(updatedUser: User) {
+    fun updateUserProfile(
+        updatedUsername: String? = null,
+        newProfileImageUri: Uri? = null,
+    ) {
         viewModelScope.launch {
             try {
-                userRepository.saveUser(updatedUser)
-                _loggedInUser.postValue(updatedUser)
-                Log.d(TAG, "User profile updated successfully")
+                val currentUser = _loggedInUser.value ?: return@launch
+                Log.d(TAG, "updateUserProfile: $currentUser")
+                userRepository.updateUser(
+                    userId = currentUser.id,
+                    updatedUsername = updatedUsername,
+                    newProfileImageUri = newProfileImageUri,
+                )
+
+                val refreshedUser = userRepository.getUserById(currentUser.id)
+                _loggedInUser.postValue(refreshedUser)
+
+                Log.d(TAG, "User profile updated successfully: $refreshedUser")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating user profile", e)
             }

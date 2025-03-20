@@ -23,7 +23,7 @@ class CommentsRepository(
     private val context: Context,
 ) {
     private val firestore = FirebaseFirestore.getInstance()
-    private val userRepository = UserRepository.getInstance()
+    private val userRepository = UserRepository(context)
     private val eventRepository = EventRepository(context)
     private val commentDao = AppLocalDatabase.getDatabase(context).commentDao()
     private val commentsCollection = firestore.collection(COMMENTS_COLLECTION)
