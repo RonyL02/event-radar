@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
@@ -84,12 +85,19 @@ class LocationSearchFragment : Fragment() {
             onRemove = { result ->
                 lifecycleScope.launch {
                     if (currentUser != null) {
-                        UserAreaManager(UserRepository(requireContext())).removeAreaOfInterest(currentUser!!.id,
+                        UserAreaManager(
+                            UserRepository(requireContext()),
+                            EventRepository(requireContext()),
+                            AreasOfInterestRepository(requireContext()),
+                        ).removeAreaOfInterest(
+                            currentUser!!.id,
                             AreaOfInterest(
-                                result.placeId.toString(),result.name,result.name
-                            )
+                                result.placeId.toString(),
+                                result.name,
+                                result.name,
+                            ),
                         )
-                        AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString());
+                        AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString())
                         binding.apply {
                             searchResultsRecyclerView.visibility = View.GONE
                             searchEditText.clearFocus()
@@ -97,7 +105,7 @@ class LocationSearchFragment : Fragment() {
                         }
                     }
                 }
-            }
+            },
         )
 
     override fun onCreateView(
@@ -195,10 +203,11 @@ class LocationSearchFragment : Fragment() {
                     }
                 }
             }
-
         }
         areasViewModel.featuresLiveData.observe(viewLifecycleOwner) { features ->
-            searchResultsAdapter.updateCountries(features.features()?.map {it.getStringProperty("localname")} ?: emptyList())
+            searchResultsAdapter.updateCountries(
+                features.features()?.map { it.getStringProperty("localname") } ?: emptyList(),
+            )
         }
 
         lifecycleScope.launch {

@@ -9,9 +9,7 @@ data class AreaEntity(
     @PrimaryKey val placeId: String,
     val name: String,
     val country: String,
-    val geojson: String
+    val geojson: String,
 )
 
-fun AreaEntity.toFeature(): Feature {
-    return Feature.fromJson(this.geojson)
-}
+fun AreaEntity.toFeature(): Feature = Feature.fromJson(this.geojson)

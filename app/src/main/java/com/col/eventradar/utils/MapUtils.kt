@@ -1,12 +1,13 @@
 import android.content.Context
 import android.util.Log
 import android.view.View
+import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.AreaOfInterest
 import com.col.eventradar.models.Event
 import com.col.eventradar.models.EventType
@@ -113,35 +114,38 @@ object MapUtils {
             ).apply {
                 withProperties(
                     PropertyFactory.fillColor(ThemeUtils.getThemeColor(context)),
-                    PropertyFactory.fillOpacity(0.3f)
+                    PropertyFactory.fillOpacity(0.3f),
                 )
             }
 
         style.addLayer(areasLayer)
 
-        val eventSource = GeoJsonSource(
-            EVENT_SOURCE_NAME,
-            "{\"type\": \"FeatureCollection\", \"features\": []}"
-        )
+        val eventSource =
+            GeoJsonSource(
+                EVENT_SOURCE_NAME,
+                "{\"type\": \"FeatureCollection\", \"features\": []}",
+            )
 
         style.addSource(eventSource)
 
-        val eventLayer = SymbolLayer(EVENTS_LAYER_ID, EVENT_SOURCE_NAME)
-            .withProperties(
-                PropertyFactory.iconImage("{type}"),
-                PropertyFactory.iconAllowOverlap(true),
-                PropertyFactory.iconSize(1.2f),
-                PropertyFactory.iconColor(ThemeUtils.getThemeColor(context)),
-                PropertyFactory.iconKeepUpright(true)
-            )
+        val eventLayer =
+            SymbolLayer(EVENTS_LAYER_ID, EVENT_SOURCE_NAME)
+                .withProperties(
+                    PropertyFactory.iconImage("{type}"),
+                    PropertyFactory.iconAllowOverlap(true),
+                    PropertyFactory.iconSize(1.2f),
+                    PropertyFactory.iconColor(ThemeUtils.getThemeColor(context)),
+                    PropertyFactory.iconKeepUpright(true),
+                )
 
-        val eventBackgroundLayer = CircleLayer(EVENTS_BG_LAYER_ID, EVENT_SOURCE_NAME)
-            .withProperties(
-                PropertyFactory.circleRadius(30f),
-                PropertyFactory.circleColor("#FFFFFF"),
-                PropertyFactory.circleStrokeColor(ThemeUtils.getThemeColor(context)),
-                PropertyFactory.circleStrokeWidth(4f),
-            )
+        val eventBackgroundLayer =
+            CircleLayer(EVENTS_BG_LAYER_ID, EVENT_SOURCE_NAME)
+                .withProperties(
+                    PropertyFactory.circleRadius(30f),
+                    PropertyFactory.circleColor("#FFFFFF"),
+                    PropertyFactory.circleStrokeColor(ThemeUtils.getThemeColor(context)),
+                    PropertyFactory.circleStrokeWidth(4f),
+                )
 
         style.addLayer(eventBackgroundLayer)
         style.addLayer(eventLayer)
@@ -178,41 +182,51 @@ object MapUtils {
     }
 
     fun convertEventsToGeoJson(events: List<Event>): FeatureCollection {
-        val features = events.mapNotNull { event ->
-            event.location.let { location ->
-                Feature.fromGeometry(
-                    Point.fromLngLat(location.longitude, location.latitude)
-                ).apply {
-                    addStringProperty("id", event.id)
-                    addStringProperty("title", event.title)
-                    addStringProperty("locationName", event.locationName)
-                    addStringProperty("time", event.time.format(DateTimeFormatter.ISO_DATE_TIME))
-                    addStringProperty("type", event.type.name)
-                    addStringProperty("description", event.description)
+        val features =
+            events.mapNotNull { event ->
+                event.location.let { location ->
+                    Feature
+                        .fromGeometry(
+                            Point.fromLngLat(location.longitude, location.latitude),
+                        ).apply {
+                            addStringProperty("id", event.id)
+                            addStringProperty("title", event.title)
+                            addStringProperty("locationName", event.locationName)
+                            addStringProperty(
+                                "time",
+                                event.time.format(DateTimeFormatter.ISO_DATE_TIME),
+                            )
+                            addStringProperty("type", event.type.name)
+                            addStringProperty("description", event.description)
+                        }
                 }
             }
-        }
         return FeatureCollection.fromFeatures(features)
     }
 
-    private fun showFeatureContextMenu(toastFragment: ToastFragment, feature: Feature) {
+    private fun showFeatureContextMenu(
+        toastFragment: ToastFragment,
+        feature: Feature,
+    ) {
         val geometry = feature.geometry()
         if (geometry is Point) {
             val coordinates = geometry.coordinates()
             val location = Location(longitude = coordinates[0], latitude = coordinates[1])
 
-            val eventDetails = Event(
-                title = feature.getStringProperty("title"),
-                locationName = feature.getStringProperty("locationName"),
-                description = feature.getStringProperty("description"),
-                time = LocalDateTime.parse(
-                    feature.getStringProperty("time"),
-                    DateTimeFormatter.ISO_DATE_TIME
-                ),
-                type = EventType.valueOf(feature.getStringProperty("type")),
-                id = feature.getStringProperty("id"),
-                location = location
-            )
+            val eventDetails =
+                Event(
+                    title = feature.getStringProperty("title"),
+                    locationName = feature.getStringProperty("locationName"),
+                    description = feature.getStringProperty("description"),
+                    time =
+                        LocalDateTime.parse(
+                            feature.getStringProperty("time"),
+                            DateTimeFormatter.ISO_DATE_TIME,
+                        ),
+                    type = EventType.valueOf(feature.getStringProperty("type")),
+                    id = feature.getStringProperty("id"),
+                    location = location,
+                )
 
             val bottomSheet = EventDetailsBottomSheet(eventDetails)
             bottomSheet.show(toastFragment.parentFragmentManager, EventDetailsBottomSheet.TAG)
@@ -281,7 +295,7 @@ object MapUtils {
         searchResult: LocationSearchResult,
         toastFragment: ToastFragment,
         binding: FragmentMapBinding,
-        countries: List<String>
+        countries: List<String>,
     ) {
         try {
             val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
@@ -289,44 +303,54 @@ object MapUtils {
 
             binding.apply {
                 if (!countries.contains(feature.getStringProperty("placeId"))) {
-                map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
-                    if (this is GeoJsonSource) {
-                        setGeoJson(FeatureCollection.fromFeature(feature))
+                    map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
+                        if (this is GeoJsonSource) {
+                            setGeoJson(FeatureCollection.fromFeature(feature))
+                        }
                     }
-                }
 
-                mapAddLocationButton.visibility = View.VISIBLE
-                mapAddLocationButton.setOnClickListener {
+                    mapAddLocationButton.visibility = View.VISIBLE
+                    mapAddLocationButton.setOnClickListener {
+                        toastFragment("Added ${feature.getStringProperty("localname")} to User")
+                        mapAddLocationButton.visibility = View.GONE
 
-                    toastFragment("Added ${feature.getStringProperty("localname")} to User")
-                    mapAddLocationButton.visibility = View.GONE
-
-                    val userAreaManager =
-                        UserAreaManager(userRepository = UserRepository(binding.root.context))
-                    val areaRepository = AreasOfInterestRepository(binding.root.context)
-                    FirebaseAuth.getInstance().addAuthStateListener { auth ->
-                        coroutineScope.launch {
-                            if (auth.currentUser != null) {
-                                val currentUserId = auth.currentUser!!.uid
-                                if (userAreaManager.getUser(currentUserId)?.areasOfInterest?.all {it.placeId != feature.getStringProperty("placeId")} != false){
-                                    userAreaManager.addAreaOfInterest(
-                                        currentUserId,
-                                        AreaOfInterest(
-                                            feature.getStringProperty("placeId"),
-                                            feature.getStringProperty("localname"),
-                                            feature.getStringProperty("localname")
+                        val userAreaManager =
+                            UserAreaManager(
+                                userRepository = UserRepository(binding.root.context),
+                                eventRepository = EventRepository(binding.root.context),
+                                areaOfInterestRepository = AreasOfInterestRepository(binding.root.context),
+                            )
+                        val areaRepository = AreasOfInterestRepository(binding.root.context)
+                        val jsonData = GeoJsonParser.gson.toJson(feature)
+                        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+                            coroutineScope.launch {
+                                if (auth.currentUser != null) {
+                                    val currentUserId = auth.currentUser!!.uid
+                                    if (userAreaManager.getUser(currentUserId)?.areasOfInterest?.all {
+                                            it.placeId !=
+                                                feature.getStringProperty(
+                                                    "placeId",
+                                                )
+                                        } != false
+                                    ) {
+                                        userAreaManager.addAreaOfInterest(
+                                            currentUserId,
+                                            AreaOfInterest(
+                                                feature.getStringProperty("placeId"),
+                                                feature.getStringProperty("localname"),
+                                                feature.getStringProperty("localname"),
+                                            ),
+                                            jsonData,
                                         )
-                                    )
+                                    }
                                 }
+                                val jsonData = GeoJsonParser.gson.toJson(feature)
+                                areaRepository.saveFeature(feature, jsonData)
                             }
-                            val jsonData = GeoJsonParser.gson.toJson(feature);
-                            areaRepository.saveFeature(feature, jsonData);
                         }
                     }
                 }
-                }
             }
-
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             Log.e(TAG, "Error body: $errorBody")
@@ -345,7 +369,11 @@ object MapUtils {
         map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 250), 500)
     }
 
-    fun setSourceFeatures(style: Style, sourceId: String, newFeatures: FeatureCollection) {
+    fun setSourceFeatures(
+        style: Style,
+        sourceId: String,
+        newFeatures: FeatureCollection,
+    ) {
         style.getSourceAs<GeoJsonSource>(sourceId)?.setGeoJson(newFeatures)
     }
 }

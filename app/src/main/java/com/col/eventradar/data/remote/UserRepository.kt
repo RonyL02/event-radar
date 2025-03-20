@@ -2,35 +2,55 @@ package com.col.eventradar.data.remote
 
 import android.content.Context
 import com.col.eventradar.models.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import kotlin.reflect.KProperty1
 
-class UserRepository(private val context: Context) {
+class UserRepository(
+    private val context: Context,
+) {
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     companion object {
         const val USERS_COLLECTION = "users"
     }
 
     suspend fun saveUser(user: User) {
-        db.collection(USERS_COLLECTION).document(user.id).set(user.json).await()
+        db
+            .collection(USERS_COLLECTION)
+            .document(user.id)
+            .set(user.json)
+            .await()
+    }
+
+    suspend fun getLoggedInUser(): User? {
+        val loggedInUserId = auth.currentUser?.uid
+
+        if (loggedInUserId != null) {
+            return getUser(loggedInUserId)
+        }
+
+        return null
     }
 
     suspend fun getUser(userId: String): User? {
-        val document = db.collection(USERS_COLLECTION)
-            .document(userId)
-            .get()
-            .await()
+        val document =
+            db
+                .collection(USERS_COLLECTION)
+                .document(userId)
+                .get()
+                .await()
 
-        val user = document.toObject(User::class.java)?.apply {
-            id = document.id
-        }
+        val user =
+            document.toObject(User::class.java)?.apply {
+                id = document.id
+            }
 
         return user
     }
-
 
     /**
      *
@@ -55,20 +75,23 @@ class UserRepository(private val context: Context) {
     ) {
         val fieldName = field.name
 
-        val updateValue: Any = when (operation) {
-            UpdateOperations.ArrayUnion -> FieldValue.arrayUnion(value)
-            UpdateOperations.ArrayRemove -> FieldValue.arrayRemove(value)
-            else -> value
-        }
+        val updateValue: Any =
+            when (operation) {
+                UpdateOperations.ArrayUnion -> FieldValue.arrayUnion(value)
+                UpdateOperations.ArrayRemove -> FieldValue.arrayRemove(value)
+                else -> value
+            }
 
-        db.collection("users")
+        db
+            .collection("users")
             .document(userId)
-            .update(fieldName, updateValue).await()
+            .update(fieldName, updateValue)
+            .await()
     }
 
     enum class UpdateOperations {
         Set,
         ArrayUnion,
-        ArrayRemove
+        ArrayRemove,
     }
 }

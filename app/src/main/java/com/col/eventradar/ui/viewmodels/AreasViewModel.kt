@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.maplibre.geojson.FeatureCollection
 
-class AreasViewModel(private val repository: AreasOfInterestRepository) : ViewModel() {
-
+class AreasViewModel(
+    private val repository: AreasOfInterestRepository,
+) : ViewModel() {
     private val _featuresLiveData = MutableLiveData<FeatureCollection>()
     val featuresLiveData: LiveData<FeatureCollection> = _featuresLiveData
 

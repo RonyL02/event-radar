@@ -126,14 +126,16 @@ class MapFragment :
     override fun onLocationSelected(searchResult: LocationSearchResult) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
-                currentUser?.areasOfInterest?.map { areaOfInterest -> areaOfInterest.placeId }
+                currentUser
+                    ?.areasOfInterest
+                    ?.map { areaOfInterest -> areaOfInterest.placeId }
                     ?.let {
                         MapUtils.handleLocationSelection(
                             map,
                             searchResult,
                             toastFragment,
                             binding,
-                            countries = it
+                            countries = it,
                         )
                     }
             }
@@ -157,10 +159,9 @@ class MapFragment :
                 MapUtils.setSourceFeatures(
                     style,
                     MapUtils.AREAS_OF_INTEREST_SOURCE_NAME,
-                    features
+                    features,
                 )
-                fetchEvents(features.features()?.map { it.getStringProperty("localname") }
-                    ?: emptyList())
+                fetchEvents()
             }
         }
 
@@ -169,13 +170,14 @@ class MapFragment :
                 if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
                     currentUser = user
 
-                    val countries = areasOfInterest?.features()?.map {
-                        AreaOfInterest(
-                            it.getStringProperty("placeId"),
-                            it.getStringProperty("localname"),
-                            it.getStringProperty("localname")
-                        )
-                    } ?: emptyList()
+                    val countries =
+                        areasOfInterest?.features()?.map {
+                            AreaOfInterest(
+                                it.getStringProperty("placeId"),
+                                it.getStringProperty("localname"),
+                                it.getStringProperty("localname"),
+                            )
+                        } ?: emptyList()
 
                     val areasRepo = AreasOfInterestRepository(requireContext())
                     val missingCountries =
@@ -183,26 +185,26 @@ class MapFragment :
 
                     if (missingCountries.isNotEmpty()) {
                         withContext(Dispatchers.IO) {
-                            val deferredRequests = missingCountries.map { area ->
-                                async {
-                                    area.placeId.toLongOrNull()?.let { placeIdLong ->
-                                        try {
-                                            val result =
-                                                OpenStreetMapService.api.getLocationDetails(
-                                                    placeIdLong
-                                                )
-                                            val feature = MapUtils.toMapLibreFeature(result)
-                                            val jsonData = GeoJsonParser.gson.toJson(feature)
-                                            areasRepo.saveFeature(feature, jsonData)
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
+                            val deferredRequests =
+                                missingCountries.map { area ->
+                                    async {
+                                        area.placeId.toLongOrNull()?.let { placeIdLong ->
+                                            try {
+                                                val result =
+                                                    OpenStreetMapService.api.getLocationDetails(
+                                                        placeIdLong,
+                                                    )
+                                                val feature = MapUtils.toMapLibreFeature(result)
+                                                val jsonData = GeoJsonParser.gson.toJson(feature)
+                                                areasRepo.saveFeature(feature, jsonData)
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                            }
                                         }
                                     }
                                 }
-                            }
                             deferredRequests.awaitAll()
                         }
-
                     }
 
                     val missingCountriesFromUser =
@@ -216,11 +218,14 @@ class MapFragment :
         }
     }
 
-    private fun fetchEvents(countries: List<String>) {
-        eventViewModel.fetchFilteredEvents(countries = countries, withLocalEvent = false)
+    private fun fetchEvents() {
+        eventViewModel.fetchFilteredEvents()
     }
 
-    private fun updateMapWithEvents(events: List<Event>, style: Style) {
+    private fun updateMapWithEvents(
+        events: List<Event>,
+        style: Style,
+    ) {
         val geoJson = MapUtils.convertEventsToGeoJson(events)
         style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
     }

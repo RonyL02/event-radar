@@ -4,8 +4,6 @@ import android.util.Log
 import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.api.events.dto.EventListResponseDTO
 import com.col.eventradar.models.EventType
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -19,12 +17,12 @@ class GdacsService private constructor() {
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
         countries: List<String>? = null,
-    ): EventListResponseDTO? = coroutineScope {
+    ): EventListResponseDTO =
+        coroutineScope {
+            val start = fromDate ?: LocalDateTime.now().minusYears(1)
+            val end = toDate ?: LocalDateTime.now()
 
-        val start = fromDate ?: LocalDateTime.now().minusYears(1)
-        val end = toDate ?: LocalDateTime.now()
-
-        val deferredResults =
+            val deferredResults =
                 countries?.map { country ->
                     async {
                         fetchSingleEventBatch(
@@ -33,19 +31,23 @@ class GdacsService private constructor() {
                             alertLevels,
                             eventTypes,
                             country,
-                        )
+                        )?.let { response -> country to response }
                     }
+                } ?: emptyList()
 
-        } ?: emptyList()
+            val responses = deferredResults.awaitAll().filterNotNull()
 
-        val responses = deferredResults.awaitAll().filterNotNull()
+            val combinedEvents =
+                responses.flatMap { (country, response) ->
+                    response.features.map { it to country }
+                }
+            val uniqueEvents = combinedEvents.distinctBy { (event, _) -> event.properties.eventId }
 
-        val combinedEvents = responses.flatMap { it.features }
-        val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
-
-        return@coroutineScope EventListResponseDTO(features = uniqueEvents)
-    }
-
+            return@coroutineScope EventListResponseDTO(
+                features = uniqueEvents.map { it.first },
+                searchedCountries = uniqueEvents.map { it.second },
+            )
+        }
 
     private suspend fun fetchSingleEventBatch(
         fromDate: LocalDateTime,
