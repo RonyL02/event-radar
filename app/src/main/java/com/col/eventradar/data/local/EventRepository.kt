@@ -112,9 +112,9 @@ class EventRepository(
                 countries = listOf(area.country),
             )
 
-        val events = response.toDomain()?.map { it.toEntity() }
+        val events = response.toDomain().map { it.toEntity() }
 
-        if (events.isNullOrEmpty()) {
+        if (events.isEmpty()) {
             Log.d(TAG, "No new events found for area: ${area.country}")
         } else {
             Log.d(
