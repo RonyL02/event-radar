@@ -295,6 +295,7 @@ object MapUtils {
         searchResult: LocationSearchResult,
         toastFragment: ToastFragment,
         binding: FragmentMapBinding,
+        onFinish: () -> Unit,
         countries: List<String>,
     ) {
         try {
@@ -311,9 +312,15 @@ object MapUtils {
 
                     mapAddLocationButton.visibility = View.VISIBLE
                     mapAddLocationButton.setOnClickListener {
+                        map.style?.let {
+                            it.getSource(SEARCH_RESULT_AREA_SOURCE_NAME).apply {
+                                if (this is GeoJsonSource)
+                                    setGeoJson("{\"type\": \"FeatureCollection\", \"features\": []}")
+                            }
+                        }
                         toastFragment("Added ${feature.getStringProperty("localname")} to User")
                         mapAddLocationButton.visibility = View.GONE
-
+                        onFinish()
                         val userAreaManager =
                             UserAreaManager(
                                 userRepository = UserRepository(binding.root.context),

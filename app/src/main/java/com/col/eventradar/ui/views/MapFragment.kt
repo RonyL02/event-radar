@@ -3,6 +3,7 @@ package com.col.eventradar.ui.views
 import MapUtils
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -123,7 +124,7 @@ class MapFragment :
         }
     }
 
-    override fun onLocationSelected(searchResult: LocationSearchResult) {
+    override fun onLocationSelected(searchResult: LocationSearchResult, onFinish: () -> Unit) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
                 currentUser
@@ -135,6 +136,7 @@ class MapFragment :
                             searchResult,
                             toastFragment,
                             binding,
+                            onFinish = onFinish,
                             countries = it,
                         )
                     }
@@ -261,8 +263,8 @@ class MapFragment :
         binding.mapView.onSaveInstanceState(outState)
     }
 
-    override fun onLocationReceived(location: LocationSearchResult) {
-        onLocationSelected(location)
+    override fun onLocationReceived(location: LocationSearchResult, onFinish: () -> Unit) {
+        onLocationSelected(location, onFinish)
     }
 
     override fun onGPSLocationClick() {

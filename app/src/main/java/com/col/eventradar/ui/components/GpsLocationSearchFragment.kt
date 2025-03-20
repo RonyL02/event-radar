@@ -28,7 +28,7 @@ class GpsLocationSearchFragment :
     private val toastFragment: ToastFragment = ToastFragment()
 
     interface GpsLocationListener {
-        fun onLocationReceived(location: LocationSearchResult)
+        fun onLocationReceived(location: LocationSearchResult, onFinish: () -> Unit)
 
         fun onGetLocation(): Location?
 
@@ -61,7 +61,7 @@ class GpsLocationSearchFragment :
                                 latitude = it.latitude,
                                 longitude = it.longitude,
                             )
-                        locationListener?.onLocationReceived(receivedLocationResult.toModel())
+                        locationListener?.onLocationReceived(receivedLocationResult.toModel(),{})
                     } catch (e: retrofit2.HttpException) {
                         val errorBody = e.response()?.errorBody()?.string()
                         Log.e(TAG, "Error body: $errorBody")

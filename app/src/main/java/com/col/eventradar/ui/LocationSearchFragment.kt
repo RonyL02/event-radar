@@ -49,17 +49,6 @@ class LocationSearchFragment : Fragment() {
     private var toastFragment: ToastFragment = ToastFragment()
     private var currentUser: User? = null
 
-    private fun findMapFragment(): MapFragment? {
-        var currentFragment: Fragment? = this
-        while (currentFragment != null) {
-            currentFragment = currentFragment.parentFragment
-            if (currentFragment is MapFragment) {
-                return currentFragment
-            }
-        }
-        return null
-    }
-
     private val areasViewModel: AreasViewModel by activityViewModels {
         val repository = AreasOfInterestRepository(requireContext())
         AreasViewModelFactory(repository)
@@ -73,7 +62,9 @@ class LocationSearchFragment : Fragment() {
     private val searchResultsAdapter =
         LocationSearchResultsAdapter(
             onClick = { result ->
-                listener?.onLocationSelected(result)
+                listener?.onLocationSelected(result) {
+                    binding.searchEditText.setText("")
+                }
                 isResultChosen = true
                 binding.apply {
                     searchEditText.setText(result.name)
@@ -232,7 +223,7 @@ class LocationSearchFragment : Fragment() {
     }
 
     interface MapFragmentListener {
-        fun onLocationSelected(searchResult: LocationSearchResult)
+        fun onLocationSelected(searchResult: LocationSearchResult, onFinish: () -> Unit)
     }
 
     companion object {
