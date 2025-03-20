@@ -4,7 +4,7 @@ data class User(
     var id: String = "",
     val username: String = "",
     val imageUri: String? = null,
-    val areasOfInterest: Array<AreaOfInterest> = emptyArray(),
+    val areasOfInterest: List<AreaOfInterest> = emptyList(),
 ) {
     companion object {
         const val USERNAME_KEY = "username"

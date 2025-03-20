@@ -20,19 +20,19 @@ class EventViewModel(
     private val eventRepository: EventRepository,
     private val commentsRepository: CommentsRepository,
 ) : ViewModel() {
-    private val _events = MutableLiveData<List<Event>>()
+    private val _events = MutableLiveData<List<Event>>(emptyList())
     val events: LiveData<List<Event>> get() = _events
 
-    private val _comments = MutableLiveData<List<Comment>>()
+    private val _comments = MutableLiveData<List<Comment>>(emptyList())
     val comments: LiveData<List<Comment>> get() = _comments
 
-    private val _isLoading = MutableLiveData<Boolean>()
+    private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-    private val _errorMessage = MutableLiveData<String>()
+    private val _errorMessage = MutableLiveData<String>("")
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    private val _userComments = MutableLiveData<List<PopulatedComment>>()
+    private val _userComments = MutableLiveData<List<PopulatedComment>>(emptyList()) // ✅ Initialize
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
 
     fun syncAllComments() {
