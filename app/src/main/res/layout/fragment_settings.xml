@@ -3,28 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="56dp"
     android:clipToPadding="false"
     android:padding="12dp">
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/logoutButton"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:contentDescription="Logout"
-        android:padding="4dp"
-        android:src="@drawable/vector__1_"
+        android:backgroundTint="@color/off_white"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/vector__1_"
+        app:iconGravity="textStart"
+
+        app:iconPadding="0dp"
+        app:iconTint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+        app:rippleColor="@color/grey_light" />
 
 
     <androidx.cardview.widget.CardView
         android:id="@+id/profile_image_card"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="160dp"
         android:layout_marginEnd="6dp"
         android:clipToPadding="false"
         app:cardCornerRadius="100dp"
@@ -100,6 +108,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -154,12 +163,13 @@
         android:id="@+id/areas_section"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:clipToPadding="false"
         android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/theme_section">
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent">
 
 
         <ImageView
@@ -194,10 +204,12 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="4dp"
             android:background="@drawable/outlined_background"
+            android:clipToPadding="false"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
             android:paddingVertical="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/areas_icon"
             app:layout_constraintTop_toBottomOf="@id/areas_label">
@@ -211,14 +223,23 @@
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/edit_areas"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="Edit Areas"
-                android:src="@drawable/ic_edit"
-                app:tint="@color/red_600" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editAreas"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:backgroundTint="@color/off_white"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/ic_edit"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/red_600"
+                app:layout_constraintBottom_toBottomOf="@id/username"
+                app:layout_constraintStart_toEndOf="@id/username"
+                app:layout_constraintTop_toTopOf="@id/username"
+                app:rippleColor="@color/grey_light" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.col.eventradar.NavGraphDirections
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSettingsBinding
@@ -40,6 +39,7 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         sharedPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
         observeViewModel()
+        userViewModel.checkUserStatus()
         return binding.root
     }
 
@@ -62,12 +62,18 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setupThemeSpinner()
         setupUI()
     }
 
     private fun setupUI() =
         with(binding) {
+            logoutButton.setOnClickListener {
+                userViewModel.logout()
+                Toast
+                    .makeText(binding.root.context, "Logged Out Successfully", Toast.LENGTH_SHORT)
+                    .show()
+                findNavController().navigate(NavGraphDirections.actionGlobalNavigationLogin())
+            }
             editButton.setOnClickListener {
                 val editProfileModal =
                     EditProfileBottomSheetFragment {
@@ -78,45 +84,6 @@ class SettingsFragment : Fragment() {
                 editProfileModal.show(parentFragmentManager, EditProfileBottomSheetFragment.TAG)
             }
         }
-
-    private fun setupThemeSpinner() =
-        with(binding) {
-            val themes = arrayOf("Light", "Dark")
-            themeSpinner.adapter =
-                ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    themes,
-                )
-
-            val savedTheme = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO)
-            themeSpinner.setSelection(if (savedTheme == AppCompatDelegate.MODE_NIGHT_YES) 1 else 0)
-
-            themeSpinner.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long,
-                    ) {
-                        val selectedTheme =
-                            if (position == 1) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-                        saveTheme(selectedTheme)
-                        applyTheme(selectedTheme)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                }
-        }
-
-    private fun saveTheme(mode: Int) {
-        sharedPreferences.edit().putInt("theme_mode", mode).apply()
-    }
-
-    private fun applyTheme(mode: Int) {
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

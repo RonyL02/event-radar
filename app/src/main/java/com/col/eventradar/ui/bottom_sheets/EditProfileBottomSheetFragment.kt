@@ -44,6 +44,7 @@ class EditProfileBottomSheetFragment(
 
         setupUI()
         setupListeners()
+        userViewModel.checkUserStatus()
 
         return binding.root
     }
