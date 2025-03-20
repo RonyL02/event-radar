@@ -8,12 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.Event
+import com.col.eventradar.models.common.Event
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.GpsLocationMapFragment
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
@@ -41,10 +41,10 @@ class MapFragment :
     private lateinit var toastFragment: ToastFragment
     private lateinit var locationFragment: GpsLocationMapFragment
 
-
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +124,10 @@ class MapFragment :
         eventViewModel.fetchFilteredEvents()
     }
 
-    private fun updateMapWithEvents(events: List<Event>, style: Style) {
+    private fun updateMapWithEvents(
+        events: List<Event>,
+        style: Style,
+    ) {
         val geoJson = MapUtils.convertEventsToGeoJson(events)
         style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
     }

@@ -1,13 +1,11 @@
-package com.col.eventradar.models
-
+package com.col.eventradar.models.common
 
 data class User(
     var id: String = "",
     val username: String = "",
     val imageUri: String? = null,
-    val areasOfInterest: Array<AreaOfInterest> = emptyArray()
+    val areasOfInterest: Array<AreaOfInterest> = emptyArray(),
 ) {
-
     companion object {
         const val USERNAME_KEY = "username"
         const val IMAGE_URI_KEY = "imageUri"
@@ -17,7 +15,7 @@ data class User(
         get() {
             return hashMapOf(
                 USERNAME_KEY to username,
-                IMAGE_URI_KEY to imageUri
+                IMAGE_URI_KEY to imageUri,
             )
         }
 }
@@ -25,5 +23,5 @@ data class User(
 data class AreaOfInterest(
     val placeId: String,
     val name: String,
-    val country: String
+    val country: String,
 )

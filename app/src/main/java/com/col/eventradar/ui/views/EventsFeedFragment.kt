@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentEventsFeedBinding
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
@@ -20,8 +21,9 @@ class EventsFeedFragment : Fragment() {
     private var bindingInternal: FragmentEventsFeedBinding? = null
     private val binding get() = bindingInternal!!
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
 
     override fun onCreateView(

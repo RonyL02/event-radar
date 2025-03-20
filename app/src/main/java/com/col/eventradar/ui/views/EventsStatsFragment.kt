@@ -8,18 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.col.eventradar.constants.EventTypeConfig
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentEventsStatsBinding
-import com.col.eventradar.models.EventType
+import com.col.eventradar.models.common.EventType
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
 import com.col.eventradar.utils.getShortFormattedDate
 import java.time.LocalDateTime
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -30,8 +26,9 @@ class EventsStatsFragment : Fragment() {
     private var bindingInternal: FragmentEventsStatsBinding? = null
     private val binding get() = bindingInternal!!
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
 
     override fun onCreateView(

@@ -1,9 +1,8 @@
 package com.col.eventradar.api.events.dto
 
-import android.text.TextUtils.split
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.EventType
-import com.col.eventradar.models.Location
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.EventType
+import com.col.eventradar.models.common.Location
 import com.col.eventradar.utils.toLocalDateTime
 import com.google.gson.annotations.SerializedName
 
@@ -74,7 +73,7 @@ fun EventListResponseDTO.toDomain(): List<Event> =
                     ?.countryName
                     ?: "Unknown Location",
             time = feature.properties.fromDate.toLocalDateTime(),
-            type = EventType.fromString(feature.properties.eventType),
+            type = EventType.fromCode(feature.properties.eventType),
             description = feature.properties.description,
         )
     }
