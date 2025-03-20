@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.views.LoginFragment">
+
+    <TextView
+        android:id="@+id/tagline_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-light"
+        android:text="Welcome to"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/logo_container"
+        app:layout_constraintStart_toStartOf="@+id/logo_container"
+        app:layout_constraintTop_toBottomOf="@id/logo_text" />
+    <!-- Centered Layout for Logo -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/logo_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/loginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.51">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/logo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="EventRadar"
+                android:textColor="@color/red_600"
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/logo_icon"
+                android:layout_width="72dp"
+                android:layout_height="49dp"
+                android:contentDescription="EventRadar logo"
+                android:src="@drawable/tabler_radar_2" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Google Sign-in Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="52dp"
+        android:background="@drawable/button_border"
+        android:drawableLeft="@drawable/devicon_google"
+        android:drawablePadding="24dp"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="0.05"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="15dp"
+        android:text="Sign in with Google"
+        android:textAllCaps="false"
+        android:textColor="@color/grey_darkest"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

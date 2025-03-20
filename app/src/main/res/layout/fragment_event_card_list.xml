@@ -6,8 +6,7 @@
     android:name="com.col.eventradar.EventCardFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_marginHorizontal="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.views.EventCardListFragment"
     tools:listitem="@layout/fragment_event_card" />

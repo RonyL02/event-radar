@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="16dp">
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.8"
+        app:shimmer_direction="left_to_right"
+        app:shimmer_duration="1000"
+        app:shimmer_intensity="0.8">
+
+        <View
+            android:id="@+id/shimmerBanner"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/banner_background" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/banner_background"
+        android:paddingHorizontal="36dp"
+        android:paddingVertical="24dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shimmerContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/totalEventsAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="223"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sinceTimeContainer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvNewEventsSince"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="new events since"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:layout_editor_absoluteY="0dp" />
+
+                <TextView
+                    android:id="@+id/sinceTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5:00 PM"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNewEventsSince" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/categoriesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintStart_toStartOf="@+id/headerContainer"
+            app:layout_constraintTop_toBottomOf="@+id/headerContainer">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/categoryTopContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/topEventAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:text="20"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textFontWeight="700"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/topEventIcon"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/earthquake"
+                    android:textColor="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/topEventTitle"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/topEventTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Suicide"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/topEventIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/topEventIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/categorySecondContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="@+id/categoryTopContainer"
+                app:layout_constraintTop_toBottomOf="@+id/categoryTopContainer">
+
+                <TextView
+                    android:id="@+id/secondEventAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:text="0"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textFontWeight="600"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageView
+                    android:id="@+id/secondEventIcon"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/earthquake"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/secondEventTitle"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/secondEventTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Suicide"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/secondEventIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/secondEventIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

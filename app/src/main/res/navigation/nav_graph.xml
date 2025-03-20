@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_login">
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.col.eventradar.ui.views.EventCardListFragment"
+        android:name="com.col.eventradar.ui.views.EventsFeedFragment"
         android:label="@string/title_home_screen"
-        tools:layout="@layout/fragment_event_card_list" />
+        tools:layout="@layout/fragment_events_feed" />
     <fragment
         android:id="@+id/navigation_comments"
         android:name="com.col.eventradar.ui.views.CommentsFragment"
@@ -28,4 +28,19 @@
         android:name="com.col.eventradar.ui.views.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.col.eventradar.ui.views.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_nav_graph_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_navigation_login"
+        app:destination="@id/navigation_login" />
+    <action
+        android:id="@+id/action_global_navigation_home"
+        app:destination="@id/navigation_home" />
 </navigation>

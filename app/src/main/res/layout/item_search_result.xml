@@ -1,17 +1,15 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="?android:attr/selectableItemBackground"
+    android:padding="12dp">
 
     <TextView
         android:id="@+id/resultName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="result"
+        android:text="@string/result"
         android:textColor="?attr/colorSecondary"
         android:textFontWeight="700"
         android:textSize="16sp"
@@ -25,7 +23,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="3dp"
         android:overScrollMode="never"
-        android:text="country"
+        android:text="@string/country"
         android:textColor="@color/grey_dark"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -38,10 +36,10 @@
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:src="@drawable/ic_location"
-        app:tint="@color/grey_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/grey_darkest" />
 
     <ImageView
         android:id="@+id/addButton"

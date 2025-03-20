@@ -10,4 +10,6 @@
     <string name="enter_location">Enter location</string>
     <string name="comments">Comments</string>
     <string name="add_a_comment">Add a comment…</string>
+    <string name="country">country</string>
+    <string name="result">result</string>
 </resources>

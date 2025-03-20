@@ -5,29 +5,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentCommentsBinding
+import com.col.eventradar.ui.adapters.UserCommentsRecyclerViewAdapter
+import com.col.eventradar.ui.bottom_sheets.EditCommentBottomSheetFragment
+import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.UserViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModelFactory
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CommentsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CommentsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-
     private var bindingInternal: FragmentCommentsBinding? = null
-
-    /**
-     * This property is only valid between `onCreateView` and `onDestroyView`.
-     */
     private val binding get() = bindingInternal!!
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var toastFragment: ToastFragment
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val commentRepository = CommentsRepository(requireContext())
+        UserViewModelFactory(commentRepository)
+    }
+
+    private lateinit var commentsAdapter: UserCommentsRecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,8 +33,47 @@ class CommentsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentCommentsBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        toastFragment = ToastFragment()
+        childFragmentManager.beginTransaction().add(toastFragment, ToastFragment.TAG).commit()
+
+        setupRecyclerView()
+        observeViewModel()
+        fetchUserComments()
+
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        commentsAdapter =
+            UserCommentsRecyclerViewAdapter(
+                mutableListOf(),
+                onEditClick = { populatedComment ->
+                    val modalBottomSheet =
+                        EditCommentBottomSheetFragment(populatedComment) {
+                            toastFragment("Comment Updated")
+                            fetchUserComments()
+                        }
+                    modalBottomSheet.show(parentFragmentManager, EditCommentBottomSheetFragment.TAG)
+                },
+                onDeleteClick = { populatedComment ->
+                    userViewModel.deleteCommentById(populatedComment.comment.id)
+                },
+            )
+
+        with(binding.userCommentsList) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = commentsAdapter
+        }
+    }
+
+    private fun observeViewModel() {
+        userViewModel.userComments.observe(viewLifecycleOwner) { populatedComments ->
+            commentsAdapter.updateComments(populatedComments)
+        }
+    }
+
+    private fun fetchUserComments() {
+        userViewModel.fetchLoggedInUserComments()
     }
 
     override fun onDestroyView() {
@@ -45,25 +82,6 @@ class CommentsFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CommentsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(
-            param1: String,
-            param2: String,
-        ) = CommentsFragment().apply {
-            arguments =
-                Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-        }
+        const val TAG = "CommentsFragment"
     }
 }

@@ -7,21 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import org.maplibre.android.MapLibre
+import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.LocationSearchResult
+import com.col.eventradar.models.common.Event
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.GpsLocationMapFragment
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.EventViewModel
+import com.col.eventradar.ui.viewmodels.EventViewModelFactory
+import com.col.eventradar.utils.addEventIconsToMap
 import kotlinx.coroutines.launch
+import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.sources.GeoJsonSource
 
-class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
+class MapFragment :
+    Fragment(),
+    LocationSearchFragment.MapFragmentListener,
     GpsLocationSearchFragment.GpsLocationListener {
     private var bindingInternal: FragmentMapBinding? = null
     private val binding get() = bindingInternal!!
@@ -29,6 +40,12 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
     private lateinit var map: MapLibreMap
     private lateinit var toastFragment: ToastFragment
     private lateinit var locationFragment: GpsLocationMapFragment
+
+    private val eventViewModel: EventViewModel by activityViewModels {
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +55,14 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentMapBinding.inflate(inflater, container, false)
         binding.mapView.onCreate(savedInstanceState)
         locationFragment = GpsLocationMapFragment()
-        childFragmentManager.beginTransaction().add(locationFragment, GpsLocationMapFragment.TAG)
+        childFragmentManager
+            .beginTransaction()
+            .add(locationFragment, GpsLocationMapFragment.TAG)
             .commit()
 
         toastFragment = ToastFragment()
@@ -62,9 +81,13 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
                     map,
                     MapUtils.DEFAULT_LAT,
                     MapUtils.DEFAULT_LON,
-                    MapUtils.DEFAULT_ZOOM
+                    MapUtils.DEFAULT_ZOOM,
                 )
-                MapUtils.addMapSourcesAndLayers(map, requireContext())
+                lifecycleScope.launch {
+                    MapUtils.addMapSourcesAndLayers(map, requireContext())
+                    addEventIconsToMap(style, requireContext())
+                }
+                observeViewModel(style)
                 locationFragment.attachToMap(map, style)
             }
 
@@ -72,6 +95,8 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
                 MapUtils.handleMapClick(map, point, toastFragment)
                 true
             }
+
+            fetchEvents()
         }
     }
 
@@ -83,28 +108,59 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
         }
     }
 
+    private fun observeViewModel(style: Style) {
+        eventViewModel.events.observe(viewLifecycleOwner) { events ->
+            if (::map.isInitialized) {
+                updateMapWithEvents(events, style)
+            } else {
+                binding.mapView.getMapAsync {
+                    updateMapWithEvents(events, style)
+                }
+            }
+        }
+    }
+
+    private fun fetchEvents() {
+        eventViewModel.fetchFilteredEvents()
+    }
+
+    private fun updateMapWithEvents(
+        events: List<Event>,
+        style: Style,
+    ) {
+        val geoJson = MapUtils.convertEventsToGeoJson(events)
+        style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
+    }
+
     override fun onStart() {
-        super.onStart(); binding.mapView.onStart()
+        super.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onResume() {
-        super.onResume(); binding.mapView.onResume()
+        super.onResume()
+        binding.mapView.onResume()
     }
 
     override fun onPause() {
-        super.onPause(); binding.mapView.onPause()
+        super.onPause()
+        binding.mapView.onPause()
     }
 
     override fun onStop() {
-        super.onStop(); binding.mapView.onStop()
+        super.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView(); binding.mapView.onDestroy(); bindingInternal = null
+        super.onDestroyView()
+        binding.mapView.onDestroy()
+        bindingInternal = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState); binding.mapView.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
     }
 
     override fun onLocationReceived(location: LocationSearchResult) {
@@ -113,14 +169,14 @@ class MapFragment : Fragment(), LocationSearchFragment.MapFragmentListener,
 
     override fun onGPSLocationClick() {
         locationFragment.locationComponent?.lastKnownLocation?.let {
-            val cameraPosition = CameraPosition.Builder()
-                .target(LatLng(it.latitude, it.longitude))
-                .build()
+            val cameraPosition =
+                CameraPosition
+                    .Builder()
+                    .target(LatLng(it.latitude, it.longitude))
+                    .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }
     }
 
-    override fun onGetLocation(): Location? {
-        return locationFragment.getCurrentLocation()
-    }
+    override fun onGetLocation(): Location? = locationFragment.getCurrentLocation()
 }
