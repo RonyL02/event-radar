@@ -15,7 +15,7 @@ class LoginViewModel(
     context: Context,
 ) : ViewModel() {
     private val authClient = GoogleAuthClient(context)
-    private val userRepository = UserRepository.getInstance()
+    private val userRepository = UserRepository(context)
     private val _isSignedIn = MutableLiveData<Boolean?>(null)
     val isSignedIn: LiveData<Boolean?> = _isSignedIn
 

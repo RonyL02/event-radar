@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.circleimageview)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.annotation)
