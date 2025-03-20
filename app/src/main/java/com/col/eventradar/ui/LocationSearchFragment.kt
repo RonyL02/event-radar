@@ -117,6 +117,9 @@ class LocationSearchFragment : Fragment() {
             searchResultsRecyclerView.adapter = searchResultsAdapter
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)
+                if (hasFocus && searchResultsAdapter.itemCount > 0) {
+                    binding.searchResultsRecyclerView.visibility = View.VISIBLE
+                }
             }
 
             searchEditText.addTextChangedListener(

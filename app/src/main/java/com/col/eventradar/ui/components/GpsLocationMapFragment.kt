@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.col.eventradar.databinding.FragmentGpsLocationMapBinding
@@ -102,15 +103,25 @@ class GpsLocationMapFragment : Fragment() {
         if (location != null) {
             return location
         } else if (!isLocationEnabled(requireContext())) {
-            AlertDialog
-                .Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle("Enable Location")
                 .setMessage("Your location is turned off. Please enable it to use this feature.")
                 .setPositiveButton("Enable") { _, _ ->
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     activity?.startActivity(intent)
-                }.setNegativeButton("Cancel", null)
-                .show()
+                }
+                .setNegativeButton("Cancel", null)
+                .create()
+
+            val color = ThemeUtils.getThemeColor(requireContext())
+            dialog.setOnShowListener {
+                dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(color)
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(color)
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(color)
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(color)
+            }
+
+            dialog.show()
         } else if (!PermissionsManager.areLocationPermissionsGranted(context)) {
             toastFragment(
                 "You need to accept location permissions to to use Location based services.",
