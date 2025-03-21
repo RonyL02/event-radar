@@ -88,7 +88,7 @@ class LocationSearchFragment : Fragment() {
                             AreaOfInterest(
                                 result.placeId.toString(),
                                 result.name,
-                                result.name,
+                                result.country,
                             ),
                         )
                         AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString())

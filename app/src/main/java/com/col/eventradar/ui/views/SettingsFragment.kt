@@ -14,6 +14,7 @@ import com.col.eventradar.NavGraphDirections
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSettingsBinding
+import com.col.eventradar.ui.bottom_sheets.AreasOfInterestBottomSheet
 import com.col.eventradar.ui.bottom_sheets.EditProfileBottomSheetFragment
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
@@ -82,6 +83,10 @@ class SettingsFragment : Fragment() {
                             .show()
                     }
                 editProfileModal.show(parentFragmentManager, EditProfileBottomSheetFragment.TAG)
+            }
+            editAreas.setOnClickListener {
+                val areasModal = AreasOfInterestBottomSheet()
+                areasModal.show(parentFragmentManager, AreasOfInterestBottomSheet.TAG)
             }
         }
 

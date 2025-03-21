@@ -10,7 +10,7 @@ import com.col.eventradar.models.AreaEntity
 import com.col.eventradar.models.local.CommentEntity
 import com.col.eventradar.models.local.EventEntity
 
-@Database(entities = [EventEntity::class, CommentEntity::class, AreaEntity::class], version = 2, exportSchema = false)
+@Database(entities = [EventEntity::class, CommentEntity::class, AreaEntity::class], version = 3, exportSchema = false)
 @TypeConverters(LocalDateTimeConverter::class)
 abstract class AppLocalDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
