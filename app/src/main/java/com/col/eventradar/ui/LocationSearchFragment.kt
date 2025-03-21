@@ -9,13 +9,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.data.EventRepository
@@ -33,6 +32,7 @@ import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
+import com.col.eventradar.ui.views.NoLastDividerItemDecoration
 import com.col.eventradar.utils.KeyboardUtils
 import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
@@ -120,11 +120,12 @@ class LocationSearchFragment : Fragment() {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = searchResultsAdapter
                 val divider =
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                ContextCompat.getDrawable(requireContext(), R.drawable.event_list_divider)?.let {
-                    divider.setDrawable(it)
-                }
-                addItemDecoration(divider)
+                    NoLastDividerItemDecoration(
+                        requireContext(),
+                        RecyclerView.VERTICAL,
+                        R.drawable.event_list_divider,
+                    )
+                searchResultsRecyclerView.addItemDecoration(divider)
             }
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)

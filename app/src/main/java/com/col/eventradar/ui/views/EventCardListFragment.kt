@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
 import com.col.eventradar.data.repository.CommentsRepository
@@ -81,10 +80,12 @@ class EventCardListFragment : Fragment() {
                 }
             adapter = eventAdapter
 
-            val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-            ContextCompat.getDrawable(requireContext(), R.drawable.event_list_divider)?.let {
-                divider.setDrawable(it)
-            }
+            val divider =
+                NoLastDividerItemDecoration(
+                    requireContext(),
+                    RecyclerView.VERTICAL,
+                    R.drawable.event_list_divider,
+                )
             addItemDecoration(divider)
         }
     }
