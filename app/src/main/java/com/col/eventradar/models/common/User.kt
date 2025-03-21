@@ -1,5 +1,7 @@
 package com.col.eventradar.models.common
 
+import com.col.eventradar.models.AreaEntity
+
 data class User(
     var id: String = "",
     val username: String = "",
@@ -21,7 +23,9 @@ data class User(
 }
 
 data class AreaOfInterest(
-    val placeId: String,
-    val name: String,
-    val country: String,
+    val placeId: String = "",
+    val name: String = "",
+    val country: String = "",
 )
+
+fun AreaOfInterest.toAreaEntity(geojson: String): AreaEntity = AreaEntity(this.placeId, this.name, this.country, geojson)

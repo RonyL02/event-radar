@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class EditCommentBottomSheetFragment(
     private val populatedComment: PopulatedComment,
-    private val onCommentUpdated: () -> Unit, // Callback to refresh UI
+    private val onCommentUpdated: () -> Unit,
 ) : BottomSheetDialogFragment() {
     private var bindingInternal: FragmentEditCommentBottomSheetBinding? = null
     private val binding get() = bindingInternal!!

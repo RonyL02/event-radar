@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_background"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="13dp">
 
         <TextView
             android:id="@+id/search_your_location"
@@ -20,23 +20,23 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="Your location"
-            android:textSize="16dp"
+            android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/gpsIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/gpsIcon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/ic_location"
+            android:src="@drawable/ic_my_location"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/red_600" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,8 +15,9 @@
             android:id="@+id/searchEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:background="@color/transparent"
             android:hint="@string/enter_location"
@@ -28,8 +29,8 @@
 
         <LinearLayout
             android:id="@+id/endIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -39,15 +40,15 @@
 
             <ImageView
                 android:id="@+id/searchIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_search"
                 android:visibility="visible" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:visibility="gone" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -65,5 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/rounded_background"
+        android:clipToOutline="true"
+        android:padding="2dp"
         android:visibility="gone" />
 </LinearLayout>

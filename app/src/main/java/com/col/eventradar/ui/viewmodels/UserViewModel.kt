@@ -10,7 +10,11 @@ import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.models.common.PopulatedComment
 import com.col.eventradar.models.common.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel(
@@ -25,7 +29,29 @@ class UserViewModel(
 
     private val _userComments = MutableLiveData<List<PopulatedComment>>()
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
 
+    init {
+        observeAuthState()
+    }
+
+    private fun observeAuthState() {
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            viewModelScope.launch {
+                val firebaseUser = auth.currentUser
+                _user.value = firebaseUser?.let { userRepository.getUserById(it.uid) }
+            }
+        }
+    }
+
+    fun refreshUser() {
+        viewModelScope.launch {
+            FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+                _user.value = userRepository.getUserById(uid)
+            }
+        }
+    }
     init {
         checkUserStatus()
     }
@@ -53,8 +79,8 @@ class UserViewModel(
     fun fetchUser(userId: String) {
         viewModelScope.launch {
             try {
-                val user = userRepository.getUserById(userId)
-                _loggedInUser.postValue(user)
+                val newUser = userRepository.getUserById(userId)
+                _loggedInUser.postValue(newUser)
                 Log.d(TAG, "User fetched: $user")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching user data", e)

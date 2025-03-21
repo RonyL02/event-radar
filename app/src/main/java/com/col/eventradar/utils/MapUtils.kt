@@ -4,20 +4,31 @@ import android.view.View
 import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.AreasOfInterestRepository
+import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentMapBinding
+import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.EventType
 import com.col.eventradar.models.common.Location
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.utils.GeoJsonParser
 import com.col.eventradar.utils.ThemeUtils
+import com.col.eventradar.utils.UserAreaManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.PropertyFactory
@@ -39,8 +50,11 @@ object MapUtils {
     const val DEFAULT_LON = 35.0
     const val DEFAULT_ZOOM = 5.0
 
-    private const val SEARCH_RESULT_AREA_SOURCE_NAME = "search-result-area-source"
+    const val SEARCH_RESULT_AREA_SOURCE_NAME = "search-result-area-source"
     private const val SEARCH_RESULT_AREA_LAYER_NAME = "location-fill-layer"
+
+    const val AREAS_OF_INTEREST_SOURCE_NAME = "area-of-interest-source"
+    private const val AREAS_OF_INTEREST_LAYER_NAME = "area-of-interest-layer"
 
     private const val RASTER_SOURCE_NAME = "osm-raster-source"
     private const val RASTER_LAYER_ID = "osm-raster-layer-id"
@@ -54,6 +68,8 @@ object MapUtils {
 
     private const val TileJSON_VERSION = "2.1.0"
     private const val TAG = "MapUtils"
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     fun addMapSourcesAndLayers(
         map: MapLibreMap,
@@ -89,6 +105,20 @@ object MapUtils {
                 )
             }
         style.addLayer(fillLayer)
+
+        style.addSource(GeoJsonSource(AREAS_OF_INTEREST_SOURCE_NAME))
+        val areasLayer =
+            FillLayer(
+                AREAS_OF_INTEREST_LAYER_NAME,
+                AREAS_OF_INTEREST_SOURCE_NAME,
+            ).apply {
+                withProperties(
+                    PropertyFactory.fillColor(ThemeUtils.getThemeColor(context)),
+                    PropertyFactory.fillOpacity(0.3f),
+                )
+            }
+
+        style.addLayer(areasLayer)
 
         val eventSource =
             GeoJsonSource(
@@ -203,7 +233,7 @@ object MapUtils {
         }
     }
 
-    private fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
+    fun toMapLibreFeature(result: LocationDetailsResultDTO): Feature {
         val geometry = result.geometry
         val feature =
             when (geometry.type) {
@@ -249,11 +279,12 @@ object MapUtils {
             }
 
         feature.apply {
+            id()
             addStringProperty("placeId", result.placeId.toString())
             addStringProperty("localname", result.localname)
             addStringProperty("category", result.category)
             addStringProperty("type", result.type)
-            addStringProperty("countryCode", result.countryCode)
+            addStringProperty("countryCode", result.country)
         }
 
         return feature
@@ -264,22 +295,67 @@ object MapUtils {
         searchResult: LocationSearchResult,
         toastFragment: ToastFragment,
         binding: FragmentMapBinding,
+        onFinish: () -> Unit,
+        countries: List<String>,
     ) {
         try {
             val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
             val feature = toMapLibreFeature(result)
 
-            map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
-                if (this is GeoJsonSource) {
-                    setGeoJson(FeatureCollection.fromFeature(feature))
-                }
-            }
-
             binding.apply {
-                mapAddLocationButton.visibility = View.VISIBLE
-                mapAddLocationButton.setOnClickListener {
-                    toastFragment("Added ${feature.getStringProperty("localname")} to User")
-                    mapAddLocationButton.visibility = View.GONE
+                if (!countries.contains(feature.getStringProperty("placeId"))) {
+                    map.style?.getSource(SEARCH_RESULT_AREA_SOURCE_NAME)?.apply {
+                        if (this is GeoJsonSource) {
+                            setGeoJson(FeatureCollection.fromFeature(feature))
+                        }
+                    }
+
+                    mapAddLocationButton.visibility = View.VISIBLE
+                    mapAddLocationButton.setOnClickListener {
+                        map.style?.let {
+                            it.getSource(SEARCH_RESULT_AREA_SOURCE_NAME).apply {
+                                if (this is GeoJsonSource)
+                                    setGeoJson("{\"type\": \"FeatureCollection\", \"features\": []}")
+                            }
+                        }
+                        toastFragment("Added ${feature.getStringProperty("localname")} to User")
+                        mapAddLocationButton.visibility = View.GONE
+                        onFinish()
+                        val userAreaManager =
+                            UserAreaManager(
+                                userRepository = UserRepository(binding.root.context),
+                                eventRepository = EventRepository(binding.root.context),
+                                areaOfInterestRepository = AreasOfInterestRepository(binding.root.context),
+                            )
+                        val areaRepository = AreasOfInterestRepository(binding.root.context)
+                        val jsonData = GeoJsonParser.gson.toJson(feature)
+                        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+                            coroutineScope.launch {
+                                if (auth.currentUser != null) {
+                                    val currentUserId = auth.currentUser!!.uid
+                                    if (userAreaManager.getUser(currentUserId)?.areasOfInterest?.all {
+                                            it.placeId !=
+                                                feature.getStringProperty(
+                                                    "placeId",
+                                                )
+                                        } != false
+                                    ) {
+                                        userAreaManager.addAreaOfInterest(
+                                            currentUserId,
+                                            AreaOfInterest(
+                                                feature.getStringProperty("placeId"),
+                                                feature.getStringProperty("localname"),
+                                                feature.getStringProperty("localname"),
+                                            ),
+                                            jsonData,
+                                        )
+                                    }
+                                }
+                                val jsonData = GeoJsonParser.gson.toJson(feature)
+                                areaRepository.saveFeature(feature, jsonData)
+                            }
+                        }
+                    }
                 }
             }
         } catch (e: HttpException) {
@@ -298,5 +374,13 @@ object MapUtils {
                 .build()
 
         map.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 250), 500)
+    }
+
+    fun setSourceFeatures(
+        style: Style,
+        sourceId: String,
+        newFeatures: FeatureCollection,
+    ) {
+        style.getSourceAs<GeoJsonSource>(sourceId)?.setGeoJson(newFeatures)
     }
 }

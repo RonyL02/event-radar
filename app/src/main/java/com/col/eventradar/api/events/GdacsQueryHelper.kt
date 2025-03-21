@@ -18,7 +18,7 @@ object GdacsQueryHelper {
                 AlertLevel.GREEN,
             ),
         eventTypes: List<EventType>? = EventType.entries,
-        country: String? = "United States",
+        country: String? = "",
     ): Map<String, String> =
         mutableMapOf<String, String>().apply {
             fromDate?.let { put(GdacsQueryParams.FROM_DATE, it.format(dateFormatter)) }

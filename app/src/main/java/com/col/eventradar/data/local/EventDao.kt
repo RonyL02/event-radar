@@ -26,4 +26,7 @@ interface EventDao {
 
     @Delete
     suspend fun deleteEvent(event: EventEntity)
+
+    @Query("DELETE FROM events WHERE locationName = :locationName")
+    suspend fun deleteEventsByCountry(locationName: String)
 }

@@ -54,7 +54,7 @@ class EventRepository(
                         actualToDate,
                         alertLevels,
                         eventTypes,
-                        country,
+                        listOf(country ?: ""),
                     )
                 val newEvents = response?.toDomain() ?: emptyList()
 

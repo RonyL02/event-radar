@@ -12,6 +12,6 @@ interface GdacsApi {
         @Query("toDate") toDate: String,
         @Query("alertlevel") alertLevel: String = "orange;red;green",
         @Query("eventlist") eventList: String = "EQ,TS,TC,FL,VO,DR,WF",
-        @Query("country") country: String = "United States",
+        @Query("country") country: String = "",
     ): Response<EventListResponseDTO>
 }

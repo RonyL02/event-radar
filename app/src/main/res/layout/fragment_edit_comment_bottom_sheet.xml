@@ -10,12 +10,18 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToOutline="false"
+        android:clipToPadding="false"
         android:fillViewport="true"
-        android:padding="20dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToOutline="false"
+            android:clipToPadding="false"
+            android:paddingHorizontal="4dp">
 
             <!-- Comment Input Card (Updated to Match Other Layout) -->
             <androidx.cardview.widget.CardView
@@ -23,6 +29,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:clipToOutline="false"
+                android:clipToPadding="false"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
                 app:layout_constraintBottom_toBottomOf="@+id/edit_add_image_button"
@@ -50,9 +58,10 @@
             <Button
                 android:id="@+id/edit_add_image_button"
                 style="?attr/materialIconButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/red_600"
+                android:gravity="center"
                 app:icon="@drawable/baseline_image_24"
                 app:iconTint="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"

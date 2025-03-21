@@ -1,18 +1,19 @@
 package com.col.eventradar.api.locations.dto
 
 import com.google.gson.JsonElement
+import com.google.gson.annotations.SerializedName
 
 data class LocationDetailsResultDTO(
-    val placeId: Long,
-    val parentPlaceId: Long,
+    @SerializedName("place_id") val placeId: Long,
+    @SerializedName("parent_place_id") val parentPlaceId: Long,
     val osmType: String,
-    val osmId: Long,
+    @SerializedName("osm_id") val osmId: Long,
     val category: String,
     val type: String,
     val localname: String,
     val names: Names,
     val address: List<FullAddress>,
-    val countryCode: String,
+    @SerializedName("country_code") val country: String,
     val extratags: Extratags,
     val calculatedWikipedia: String,
     val isarea: Boolean,
@@ -35,6 +36,7 @@ data class FullAddress(
     val type: String,
     val distance: Double,
     val isaddress: Boolean,
+    val country: String
 )
 
 data class Extratags(

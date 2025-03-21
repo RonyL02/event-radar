@@ -2,17 +2,25 @@ package com.col.eventradar.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.databinding.ItemSearchResultBinding
 
 class LocationSearchResultsAdapter(
     private val onClick: (LocationSearchResult) -> Unit,
+    private val onRemove: (LocationSearchResult) -> Unit,
 ) : RecyclerView.Adapter<LocationSearchResultsAdapter.SearchResultViewHolder>() {
     private var searchResults: List<LocationSearchResult> = emptyList()
+    private var countries: List<String> = emptyList();
 
     fun submitList(results: List<LocationSearchResult>) {
         searchResults = results
+        notifyDataSetChanged()
+    }
+
+    fun updateCountries(newCountries: List<String>) {
+        countries = newCountries
         notifyDataSetChanged()
     }
 
@@ -40,10 +48,17 @@ class LocationSearchResultsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(result: LocationSearchResult) {
             binding.apply {
+                val isExist = countries.contains(result.country)
                 resultName.text = result.name
                 resultCountry.text = result.country
                 root.setOnClickListener {
                     onClick(result)
+                }
+                addButton.isVisible = !isExist
+                removeButton.isVisible = isExist
+
+                removeButton.setOnClickListener {
+                    onRemove(result)
                 }
             }
         }

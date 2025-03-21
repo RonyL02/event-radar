@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 
 data class EventListResponseDTO(
     @SerializedName("features") val features: List<EventFeature>,
+    val searchedCountries: List<String>,
 )
 
 data class EventFeature(
@@ -53,7 +54,7 @@ data class AffectedCountry(
 )
 
 fun EventListResponseDTO.toDomain(): List<Event> =
-    features.map { feature ->
+    features.mapIndexed { index, feature ->
         val titleName =
             if (feature.properties.eventName.isNullOrBlank()) {
                 feature.properties.description
@@ -63,15 +64,14 @@ fun EventListResponseDTO.toDomain(): List<Event> =
                 feature.properties.eventName
             }
 
+        val searchedCountry =
+            searchedCountries.getOrNull(index) ?: "Unknown Country"
+
         Event(
             id = feature.properties.eventId.toString(),
             title = titleName,
             location = feature.geometry.toLocation(),
-            locationName =
-                feature.properties.affectedCountries
-                    ?.firstOrNull()
-                    ?.countryName
-                    ?: "Unknown Location",
+            locationName = searchedCountry,
             time = feature.properties.fromDate.toLocalDateTime(),
             type = EventType.fromCode(feature.properties.eventType),
             description = feature.properties.description,

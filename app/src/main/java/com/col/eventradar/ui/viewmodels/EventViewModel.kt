@@ -46,7 +46,6 @@ class EventViewModel(
         toDate: LocalDateTime? = null,
         alertLevels: List<AlertLevel>? = null,
         eventTypes: List<EventType>? = null,
-        country: String? = null,
     ) {
         _isLoading.postValue(true)
 
@@ -58,7 +57,37 @@ class EventViewModel(
                         toDate,
                         alertLevels,
                         eventTypes,
-                        country,
+                    )
+
+                if (eventsList.isEmpty()) {
+                    _errorMessage.postValue("No events found.")
+                    _events.postValue(emptyList())
+                } else {
+                    _events.postValue(eventsList)
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun fetchEventsByCountry(
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+        country: String,
+    ) {
+        viewModelScope.launch {
+            try {
+                val eventsList =
+                    eventRepository.fetchAndStoreEvents(
+                        fromDate,
+                        toDate,
+                        alertLevels,
+                        eventTypes,
                     )
 
                 _events.postValue(eventsList.takeIf { it.isNotEmpty() } ?: emptyList())

@@ -27,6 +27,16 @@ class UserRepository(
         const val TAG = "UserRepository"
     }
 
+    suspend fun getLoggedInUser(): User? {
+        val loggedInUserId = auth.currentUser?.uid
+
+        if (loggedInUserId != null) {
+            return getUserById(loggedInUserId)
+        }
+
+        return null
+    }
+
     /**
      * Check if a user is logged in
      */

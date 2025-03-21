@@ -10,17 +10,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
+import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.local.AreasOfInterestRepository
+import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
+import com.col.eventradar.models.common.AreaOfInterest
+import com.col.eventradar.models.common.User
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
+import com.col.eventradar.ui.viewmodels.AreasViewModel
+import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModelFactory
+import com.col.eventradar.ui.views.NoLastDividerItemDecoration
 import com.col.eventradar.utils.KeyboardUtils
+import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -35,18 +49,58 @@ class LocationSearchFragment : Fragment() {
     private var isResultChosen = false
     private var gpsFragment: GpsLocationSearchFragment? = null
     private var toastFragment: ToastFragment = ToastFragment()
+    private var currentUser: User? = null
+
+    private val areasViewModel: AreasViewModel by activityViewModels {
+        val repository = AreasOfInterestRepository(requireContext())
+        AreasViewModelFactory(repository)
+    }
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val repository = UserRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        UserViewModelFactory(commentRepository, repository)
+    }
 
     private val searchResultsAdapter =
-        LocationSearchResultsAdapter { result ->
-            listener?.onLocationSelected(result)
-            isResultChosen = true
-            binding.apply {
-                searchEditText.setText(result.name)
-                searchResultsRecyclerView.visibility = View.GONE
-                searchEditText.clearFocus()
-                KeyboardUtils.hideKeyboard(searchEditText, requireContext())
-            }
-        }
+        LocationSearchResultsAdapter(
+            onClick = { result ->
+                listener?.onLocationSelected(result) {
+                    binding.searchEditText.setText("")
+                }
+                isResultChosen = true
+                binding.apply {
+                    searchEditText.setText(result.name)
+                    searchResultsRecyclerView.visibility = View.GONE
+                    searchEditText.clearFocus()
+                    KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+                }
+            },
+            onRemove = { result ->
+                lifecycleScope.launch {
+                    if (currentUser != null) {
+                        UserAreaManager(
+                            UserRepository(requireContext()),
+                            EventRepository(requireContext()),
+                            AreasOfInterestRepository(requireContext()),
+                        ).removeAreaOfInterest(
+                            currentUser!!.id,
+                            AreaOfInterest(
+                                result.placeId.toString(),
+                                result.name,
+                                result.name,
+                            ),
+                        )
+                        AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString())
+                        binding.apply {
+                            searchResultsRecyclerView.visibility = View.GONE
+                            searchEditText.clearFocus()
+                            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+                        }
+                    }
+                }
+            },
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,11 +116,24 @@ class LocationSearchFragment : Fragment() {
             .commit()
 
         binding.apply {
-            searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            searchResultsRecyclerView.adapter = searchResultsAdapter
+            with(searchResultsRecyclerView) {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = searchResultsAdapter
+                val divider =
+                    NoLastDividerItemDecoration(
+                        requireContext(),
+                        RecyclerView.VERTICAL,
+                        R.drawable.event_list_divider,
+                    )
+                searchResultsRecyclerView.addItemDecoration(divider)
+            }
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)
+                if (hasFocus && searchResultsAdapter.itemCount > 0) {
+                    binding.searchResultsRecyclerView.visibility = View.VISIBLE
+                }
             }
+
             searchEditText.addTextChangedListener(
                 object : TextWatcher {
                     override fun afterTextChanged(searchValue: Editable?) {
@@ -74,6 +141,7 @@ class LocationSearchFragment : Fragment() {
                             isResultChosen = false
                             return
                         }
+
                         searchRunnable?.let {
                             handler.removeCallbacks(it)
                         }
@@ -104,7 +172,8 @@ class LocationSearchFragment : Fragment() {
                         start: Int,
                         before: Int,
                         count: Int,
-                    ) {}
+                    ) {
+                    }
                 },
             )
         }
@@ -121,6 +190,14 @@ class LocationSearchFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
+            userViewModel.user.collect { user ->
+                if (user != currentUser && user != null) {
+                    currentUser = user
+                }
+            }
+        }
+
+        lifecycleScope.launch {
             viewModel.searchResults.collectLatest { results ->
                 if (results.isNotEmpty()) {
                     searchResultsAdapter.submitList(results)
@@ -132,6 +209,11 @@ class LocationSearchFragment : Fragment() {
                     }
                 }
             }
+        }
+        areasViewModel.featuresLiveData.observe(viewLifecycleOwner) { features ->
+            searchResultsAdapter.updateCountries(
+                features.features()?.map { it.getStringProperty("localname") } ?: emptyList(),
+            )
         }
 
         lifecycleScope.launch {
@@ -156,7 +238,10 @@ class LocationSearchFragment : Fragment() {
     }
 
     interface MapFragmentListener {
-        fun onLocationSelected(searchResult: LocationSearchResult)
+        fun onLocationSelected(
+            searchResult: LocationSearchResult,
+            onFinish: () -> Unit,
+        )
     }
 
     companion object {

@@ -13,41 +13,41 @@ import java.time.temporal.ChronoUnit
 
 class GdacsService private constructor() {
     suspend fun fetchEvents(
-        fromDate: LocalDateTime?,
-        toDate: LocalDateTime?,
-        alertLevels: List<AlertLevel>?,
-        eventTypes: List<EventType>?,
-        country: String?,
-    ): EventListResponseDTO? =
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+        countries: List<String>? = null,
+    ): EventListResponseDTO =
         coroutineScope {
             val start = fromDate ?: LocalDateTime.now().minusYears(1)
             val end = toDate ?: LocalDateTime.now()
 
-            val dateRanges = splitDateRange(start, end, REQUEST_BATCHES_AMOUNT)
-
             val deferredResults =
-                dateRanges.map { range ->
-                    async(Dispatchers.IO) {
+                countries?.map { country ->
+                    async {
                         fetchSingleEventBatch(
-                            range.first,
-                            range.second,
+                            start,
+                            end,
                             alertLevels,
                             eventTypes,
                             country,
-                        )
+                        )?.let { response -> country to response }
                     }
-                }
+                } ?: emptyList()
 
             val responses = deferredResults.awaitAll().filterNotNull()
 
-            val combinedEvents = responses.flatMap { it.features }
-            val uniqueEvents = combinedEvents.distinctBy { it.properties.eventId }
+            val combinedEvents =
+                responses.flatMap { (country, response) ->
+                    response.features.map { it to country }
+                }
+            val uniqueEvents = combinedEvents.distinctBy { (event, _) -> event.properties.eventId }
 
-            return@coroutineScope if (uniqueEvents.isNotEmpty()) {
-                EventListResponseDTO(features = uniqueEvents)
-            } else {
-                null
-            }
+            return@coroutineScope EventListResponseDTO(
+                features = uniqueEvents.map { it.first },
+                searchedCountries = uniqueEvents.map { it.second },
+            )
         }
 
     private suspend fun fetchSingleEventBatch(
@@ -68,7 +68,7 @@ class GdacsService private constructor() {
                         AlertLevel.GREEN,
                     ),
                 eventTypes = eventTypes ?: EventType.allExceptUnknown,
-                country = country ?: "United States",
+                country = country ?: "",
             )
 
         return try {
@@ -109,7 +109,6 @@ class GdacsService private constructor() {
     }
 
     companion object {
-        private const val REQUEST_BATCHES_AMOUNT = 10
         const val TAG = "GdacsService"
 
         @Volatile
