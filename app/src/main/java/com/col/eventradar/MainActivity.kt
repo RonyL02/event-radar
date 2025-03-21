@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // ✅ Initialize navController BEFORE using it
         navController = supportFragmentManager
             .findFragmentById(binding.navHostContainer.id)
             ?.findNavController() ?: throw IllegalStateException("NavHostFragment not found")
@@ -57,23 +56,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
-            val destinationId =
+            val direction =
                 when (menuItem.itemId) {
-                    R.id.navigation_home -> R.id.navigation_home
-                    R.id.navigation_comments -> R.id.navigation_comments
-                    R.id.navigation_settings -> R.id.navigation_settings
-                    R.id.navigation_map -> R.id.navigation_map
-
+                    R.id.navigation_home -> NavGraphDirections.actionGlobalNavigationHome()
+                    R.id.navigation_comments -> NavGraphDirections.actionGlobalNavigationComments()
+                    R.id.navigation_settings -> NavGraphDirections.actionGlobalNavigationSettings()
+                    R.id.navigation_map -> NavGraphDirections.actionGlobalNavigationMap()
                     else -> return@setOnItemSelectedListener false
                 }
 
             navController.navigate(
-                destinationId,
-                null,
+                direction,
                 NavOptions
                     .Builder()
                     .setLaunchSingleTop(true)
-                    .setPopUpTo(R.id.navigation_home, false) // 👈 Make sure HOME works
+                    .setPopUpTo(R.id.navigation_home, false)
                     .build(),
             )
 

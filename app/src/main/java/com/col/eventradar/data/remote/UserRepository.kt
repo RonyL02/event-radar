@@ -96,12 +96,10 @@ class UserRepository(
 
                 var updatedImageUrl: String? = existingUser.imageUri
 
-                // Upload new image if provided
                 newProfileImageUri?.let {
                     updatedImageUrl = cloudinaryService.uploadImageToCloudinary(it)
                 }
 
-                // Create updated user data map
                 val updatedFields = mutableMapOf<String, Any>()
                 updatedUsername?.let { updatedFields["username"] = it }
                 updatedImageUrl?.let { updatedFields["imageUri"] = it }

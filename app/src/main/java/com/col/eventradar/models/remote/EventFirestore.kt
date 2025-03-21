@@ -15,7 +15,7 @@ data class EventFirestore(
     val description: String = "",
     val location: Location = Location(0.0, 0.0),
     val locationName: String = "",
-    val time: Long = System.currentTimeMillis(), // Stored as epoch millis
+    val time: Long = System.currentTimeMillis(),
     val comments: List<Comment> = emptyList(),
     val lastUpdated: Long = System.currentTimeMillis(),
 )
@@ -38,7 +38,7 @@ fun Event.toFirestore(): EventFirestore =
         name = title,
         type = type.name,
         description = description,
-        location = location ?: Location(0.0, 0.0),
+        location = location,
         locationName = locationName,
         time = time.toInstant(ZoneOffset.UTC).toEpochMilli(),
         comments = comments,

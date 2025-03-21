@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.col.eventradar.R
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.data.repository.EventRepository
@@ -69,7 +68,8 @@ class EventsFeedFragment : Fragment() {
             }
 
             addInterestAreasButton.setOnClickListener {
-                findNavController().navigate(R.id.action_navigation_home_to_navigation_map)
+                val action = EventsFeedFragmentDirections.actionNavigationHomeToNavigationMap()
+                findNavController().navigate(action)
             }
         }
 

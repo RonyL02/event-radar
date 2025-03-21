@@ -63,7 +63,7 @@ class CommentsRepository(
         content: String,
         imageUri: Uri? = null,
     ): Comment? {
-        val commentRef = commentsCollection.document() // 🔥 Firestore generates a unique ID
+        val commentRef = commentsCollection.document()
 
         try {
             var uploadedImageUrl: String? = null
@@ -202,25 +202,20 @@ class CommentsRepository(
             try {
                 Log.d(TAG, "🔄 Syncing all comments on app load...")
 
-                // Fetch all comments from Firestore
                 val snapshot = commentsCollection.get().await()
                 val remoteComments =
                     snapshot.toObjects(CommentFirestore::class.java).map { it.toDomain() }
 
-                // Fetch all comments stored in Room
                 val localComments = commentDao.getAllComments()
 
-                // Prepare comments for update in Room
                 val commentsToUpdate = remoteComments.map { it.toEntity() }
 
-                // Find comments that exist in Room but were deleted from Firestore
                 val remoteCommentIds = remoteComments.map { it.id }.toSet()
                 val localCommentIds = localComments.map { it.id }.toSet()
                 val commentsToDelete = localCommentIds - remoteCommentIds
 
-                // Apply changes to local database
-                commentDao.insertComments(commentsToUpdate) // Insert or update Firestore comments
-                commentsToDelete.forEach { commentDao.deleteCommentById(it) } // Delete missing comments
+                commentDao.insertComments(commentsToUpdate)
+                commentsToDelete.forEach { commentDao.deleteCommentById(it) }
 
                 Log.d(
                     TAG,
@@ -254,7 +249,7 @@ class CommentsRepository(
 
             Log.d(TAG, "getCommentsForLoggedInUser: $user")
             try {
-                val userComments = commentDao.getCommentsForUser(user.uid) // ✅ Fetch from DAO
+                val userComments = commentDao.getCommentsForUser(user.uid)
 
                 val populatedComments =
                     userComments.mapNotNull { commentEntity ->

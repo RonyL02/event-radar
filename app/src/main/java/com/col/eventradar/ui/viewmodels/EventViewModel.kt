@@ -32,7 +32,7 @@ class EventViewModel(
     private val _errorMessage = MutableLiveData<String>("")
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    private val _userComments = MutableLiveData<List<PopulatedComment>>(emptyList()) // ✅ Initialize
+    private val _userComments = MutableLiveData<List<PopulatedComment>>(emptyList())
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
 
     fun syncAllComments() {

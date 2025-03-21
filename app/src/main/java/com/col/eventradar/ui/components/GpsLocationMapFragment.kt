@@ -78,7 +78,7 @@ class GpsLocationMapFragment : Fragment() {
             locationComponent?.activateLocationComponent(
                 LocationComponentActivationOptions
                     .builder(requireContext(), style)
-                    .locationComponentOptions(locationComponentOptions) // Apply the options
+                    .locationComponentOptions(locationComponentOptions)
                     .build(),
             )
 
@@ -103,15 +103,16 @@ class GpsLocationMapFragment : Fragment() {
         if (location != null) {
             return location
         } else if (!isLocationEnabled(requireContext())) {
-            val dialog = AlertDialog.Builder(context)
-                .setTitle("Enable Location")
-                .setMessage("Your location is turned off. Please enable it to use this feature.")
-                .setPositiveButton("Enable") { _, _ ->
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    activity?.startActivity(intent)
-                }
-                .setNegativeButton("Cancel", null)
-                .create()
+            val dialog =
+                AlertDialog
+                    .Builder(context)
+                    .setTitle("Enable Location")
+                    .setMessage("Your location is turned off. Please enable it to use this feature.")
+                    .setPositiveButton("Enable") { _, _ ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        activity?.startActivity(intent)
+                    }.setNegativeButton("Cancel", null)
+                    .create()
 
             val color = ThemeUtils.getThemeColor(requireContext())
             dialog.setOnShowListener {
