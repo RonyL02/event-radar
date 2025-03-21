@@ -10,7 +10,6 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import org.maplibre.geojson.Feature
 import org.maplibre.geojson.Geometry
 import org.maplibre.geojson.MultiPolygon
 import org.maplibre.geojson.Point
@@ -18,28 +17,34 @@ import org.maplibre.geojson.Polygon
 import java.lang.reflect.Type
 
 object GeoJsonParser {
-    val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(Geometry::class.java, GeometryDeserializer()) // Fix deserialization
-        .registerTypeAdapter(Geometry::class.java, GeometrySerializer()) // Fix serialization
-        .create()
+    val gson: Gson =
+        GsonBuilder()
+            .registerTypeAdapter(Geometry::class.java, GeometryDeserializer())
+            .registerTypeAdapter(Geometry::class.java, GeometrySerializer())
+            .create()
 }
 
 class GeometrySerializer : JsonSerializer<Geometry> {
-    override fun serialize(src: Geometry?, typeOfSrc: Type?, context: JsonSerializationContext): JsonElement {
-        return if (src != null) {
-            JsonParser.parseString(src.toJson()) // Ensures correct GeoJSON structure
+    override fun serialize(
+        src: Geometry?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext,
+    ): JsonElement =
+        if (src != null) {
+            JsonParser.parseString(src.toJson())
         } else {
             JsonNull.INSTANCE
         }
-    }
 }
 
 class GeometryDeserializer : JsonDeserializer<Geometry> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Geometry {
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        context: JsonDeserializationContext,
+    ): Geometry {
         val jsonObject = json.asJsonObject
-        val type = jsonObject.get("type").asString
-
-        return when (type) {
+        return when (val type = jsonObject.get("type").asString) {
             "Point" -> context.deserialize<Point>(json, Point::class.java)
             "Polygon" -> context.deserialize<Polygon>(json, Polygon::class.java)
             "MultiPolygon" -> context.deserialize<MultiPolygon>(json, MultiPolygon::class.java)

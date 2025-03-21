@@ -8,7 +8,11 @@
         android:id="@+id/navigation_home"
         android:name="com.col.eventradar.ui.views.EventsFeedFragment"
         android:label="@string/title_home_screen"
-        tools:layout="@layout/fragment_events_feed" />
+        tools:layout="@layout/fragment_events_feed">
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_map"
+            app:destination="@id/navigation_map" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_comments"
         android:name="com.col.eventradar.ui.views.CommentsFragment"
@@ -18,7 +22,7 @@
         android:id="@+id/navigation_settings"
         android:name="com.col.eventradar.ui.views.SettingsFragment"
         android:label="@string/title_settings_screen"
-        tools:layout="@layout/fragment_settings" >
+        tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_navigation_settings_to_navigation_map"
             app:destination="@id/navigation_map" />
@@ -43,4 +47,13 @@
     <action
         android:id="@+id/action_global_navigation_home"
         app:destination="@id/navigation_home" />
+    <action
+        android:id="@+id/action_global_navigation_comments"
+        app:destination="@id/navigation_comments" />
+    <action
+        android:id="@+id/action_global_navigation_settings"
+        app:destination="@id/navigation_settings" />
+    <action
+        android:id="@+id/action_global_navigation_map"
+        app:destination="@id/navigation_map" />
 </navigation>

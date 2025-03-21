@@ -56,7 +56,7 @@ class EventRepository(
                         eventTypes,
                         listOf(country ?: ""),
                     )
-                val newEvents = response?.toDomain() ?: emptyList()
+                val newEvents = response.toDomain()
 
                 if (newEvents.isEmpty()) {
                     return@withContext updateEventComments(localEvents)
@@ -110,7 +110,7 @@ class EventRepository(
 
     suspend fun getLocalEventById(eventId: String): Event? =
         withContext(Dispatchers.IO) {
-            return@withContext eventDao.getEventById(eventId)?.toDomain() // ✅ Fetch from local DB
+            return@withContext eventDao.getEventById(eventId)?.toDomain()
         }
 
     companion object {

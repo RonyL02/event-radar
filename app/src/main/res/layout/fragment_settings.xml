@@ -32,7 +32,7 @@
         android:id="@+id/profile_image_card"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="80dp"
         android:layout_marginEnd="6dp"
         android:clipToPadding="false"
         app:cardCornerRadius="100dp"
@@ -161,22 +161,21 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/areas_section"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="120dp"
         android:clipToPadding="false"
         android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username_container">
 
 
         <ImageView
             android:id="@+id/areas_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginBottom="32dp"
             android:background="@drawable/circle_background_with_shadow"
             android:elevation="4dp"
             android:padding="8dp"
@@ -190,57 +189,44 @@
             android:id="@+id/areas_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:text="Areas of Interest"
             android:textColor="@color/red_600"
-            android:textStyle="bold"
+            android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@id/areas_icon"
             app:layout_constraintTop_toTopOf="@id/areas_icon" />
 
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/areas_value"
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/outlined_background"
-            android:clipToPadding="false"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/areas_icon"
-            app:layout_constraintTop_toBottomOf="@id/areas_label">
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="3 Countries"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/areas_label"
+            app:layout_constraintTop_toBottomOf="@+id/areas_label" />
 
-            <TextView
-                android:id="@+id/areas_value"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="3 Locations"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/editAreas"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:backgroundTint="@color/off_white"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                app:icon="@drawable/ic_edit"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconTint="@color/red_600"
-                app:layout_constraintBottom_toBottomOf="@id/username"
-                app:layout_constraintStart_toEndOf="@id/username"
-                app:layout_constraintTop_toTopOf="@id/username"
-                app:rippleColor="@color/grey_light" />
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editAreas"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="32dp"
+            android:backgroundTint="@color/red_100"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_edit"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/red_600"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/areas_label"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/off_white" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

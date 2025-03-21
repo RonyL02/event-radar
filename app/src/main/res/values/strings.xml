@@ -12,4 +12,8 @@
     <string name="add_a_comment">Add a comment…</string>
     <string name="country">country</string>
     <string name="result">result</string>
+    <string name="no_areas_of_interest_label">Stay informed — select countries for disaster alerts</string>
+    <string name="no_interest_title">No Countries Selected</string>
+    <string name="no_interest_description">To get real-time disaster alerts, add countries you\'re interested in.</string>
+    <string name="add_areas_of_interest_button_label">Add Country</string>
 </resources>

@@ -52,6 +52,7 @@ class UserViewModel(
             }
         }
     }
+
     init {
         checkUserStatus()
     }
@@ -69,7 +70,7 @@ class UserViewModel(
         } else {
             _authState.postValue(false)
             _loggedInUser.postValue(null)
-            _userComments.postValue(emptyList()) // Clear user comments if logged out
+            _userComments.postValue(emptyList())
         }
     }
 
@@ -164,13 +165,13 @@ class UserViewModel(
     }
 
     /**
-     * 🔥 **Log out the user**
+     * **Log out the user**
      */
     fun logout() {
         userRepository.logoutUser()
         _loggedInUser.postValue(null)
         _authState.postValue(false)
-        _userComments.postValue(emptyList()) // Clear user comments on logout
+        _userComments.postValue(emptyList())
         Log.d(TAG, "User logged out")
     }
 

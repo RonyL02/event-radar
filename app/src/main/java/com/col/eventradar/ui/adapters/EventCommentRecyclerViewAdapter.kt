@@ -90,7 +90,7 @@ class EventCommentRecyclerViewAdapter(
     ) {
         with(holder.binding) {
             bindCommonFields(this, comment)
-            commentImageCard.visibility = View.GONE // Hide image container for text comments
+            commentImageCard.visibility = View.GONE
         }
     }
 

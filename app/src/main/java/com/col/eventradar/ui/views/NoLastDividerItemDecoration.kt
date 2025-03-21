@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class NoLastDividerItemDecoration(
     context: Context,
-    private val orientation: Int, // VERTICAL or HORIZONTAL
+    private val orientation: Int,
     drawableRes: Int,
 ) : RecyclerView.ItemDecoration() {
     private val divider: Drawable? = ContextCompat.getDrawable(context, drawableRes)
@@ -26,7 +26,6 @@ class NoLastDividerItemDecoration(
             val view = parent.getChildAt(i)
             val position = parent.getChildAdapterPosition(view)
 
-            // Skip invalid or last item
             if (position == RecyclerView.NO_POSITION || position == itemCount - 1) continue
 
             val params = view.layoutParams as RecyclerView.LayoutParams

@@ -15,7 +15,7 @@ interface CommentDao {
     suspend fun insertComments(comments: List<CommentEntity>)
 
     @Query("SELECT * FROM comments")
-    suspend fun getAllComments(): List<CommentEntity> // ✅ Fetch all comments
+    suspend fun getAllComments(): List<CommentEntity>
 
     @Query("SELECT * FROM comments WHERE eventId = :eventId ORDER BY timestamp DESC")
     suspend fun getCommentsForEvent(eventId: String): List<CommentEntity>
