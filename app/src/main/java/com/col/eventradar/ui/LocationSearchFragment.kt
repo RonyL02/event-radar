@@ -9,10 +9,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
@@ -31,7 +33,6 @@ import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.LocationSearchViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModel
 import com.col.eventradar.ui.viewmodels.UserViewModelFactory
-import com.col.eventradar.ui.views.MapFragment
 import com.col.eventradar.utils.KeyboardUtils
 import com.col.eventradar.utils.UserAreaManager
 import kotlinx.coroutines.flow.collectLatest
@@ -115,8 +116,16 @@ class LocationSearchFragment : Fragment() {
             .commit()
 
         binding.apply {
-            searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            searchResultsRecyclerView.adapter = searchResultsAdapter
+            with(searchResultsRecyclerView) {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = searchResultsAdapter
+                val divider =
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                ContextCompat.getDrawable(requireContext(), R.drawable.event_list_divider)?.let {
+                    divider.setDrawable(it)
+                }
+                addItemDecoration(divider)
+            }
             searchEditText.setOnFocusChangeListener { _, hasFocus ->
                 gpsFragment?.onFocusChange(hasFocus)
                 if (hasFocus && searchResultsAdapter.itemCount > 0) {
@@ -228,7 +237,10 @@ class LocationSearchFragment : Fragment() {
     }
 
     interface MapFragmentListener {
-        fun onLocationSelected(searchResult: LocationSearchResult, onFinish: () -> Unit)
+        fun onLocationSelected(
+            searchResult: LocationSearchResult,
+            onFinish: () -> Unit,
+        )
     }
 
     companion object {
