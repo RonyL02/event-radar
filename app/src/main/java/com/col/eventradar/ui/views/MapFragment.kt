@@ -3,7 +3,6 @@ package com.col.eventradar.ui.views
 import MapUtils
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.data.repository.CommentsRepository
-import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.Event
@@ -127,7 +126,14 @@ class MapFragment :
         }
     }
 
-    override fun onLocationSelected(searchResult: LocationSearchResult, onFinish: () -> Unit) {
+    private fun syncAllComments() {
+        eventViewModel.syncAllComments()
+    }
+
+    override fun onLocationSelected(
+        searchResult: LocationSearchResult,
+        onFinish: () -> Unit,
+    ) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
                 currentUser
@@ -238,11 +244,13 @@ class MapFragment :
     override fun onStart() {
         super.onStart()
         binding.mapView.onStart()
+        syncAllComments()
     }
 
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+        syncAllComments()
     }
 
     override fun onPause() {
@@ -266,7 +274,10 @@ class MapFragment :
         binding.mapView.onSaveInstanceState(outState)
     }
 
-    override fun onLocationReceived(location: LocationSearchResult, onFinish: () -> Unit) {
+    override fun onLocationReceived(
+        location: LocationSearchResult,
+        onFinish: () -> Unit,
+    ) {
         onLocationSelected(location, onFinish)
     }
 
