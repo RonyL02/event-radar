@@ -1,4 +1,6 @@
-package com.col.eventradar.models
+package com.col.eventradar.models.common
+
+import com.col.eventradar.models.AreaEntity
 
 data class User(
     var id: String = "",

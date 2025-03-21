@@ -1,40 +1,34 @@
 package com.col.eventradar.ui.views
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.col.eventradar.NavGraphDirections
+import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSettingsBinding
+import com.col.eventradar.ui.bottom_sheets.EditProfileBottomSheetFragment
+import com.col.eventradar.ui.viewmodels.UserViewModel
+import com.col.eventradar.ui.viewmodels.UserViewModelFactory
+import com.col.eventradar.utils.ImageUtils
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
 
-    private var bindingInternal: FragmentSettingsBinding? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
-    /**
-     * This property is only valid between `onCreateView` and `onDestroyView`.
-     */
-    private val binding get() = bindingInternal!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private val userViewModel: UserViewModel by activityViewModels {
+        val commentRepository = CommentsRepository(requireContext())
+        val userRepository = UserRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository)
     }
 
     override fun onCreateView(
@@ -42,35 +36,61 @@ class SettingsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        bindingInternal = FragmentSettingsBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        sharedPreferences = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
+        observeViewModel()
+        userViewModel.checkUserStatus()
         return binding.root
     }
 
+    private fun observeViewModel() =
+        userViewModel.loggedInUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                with(binding) {
+                    username.text = it.username
+
+                    it.imageUri?.let { imageUri ->
+                        profileImage.visibility = View.VISIBLE
+                        ImageUtils.showImgInViewFromUrl(imageUri, profileImage, profileImageLoader)
+                    }
+                }
+            }
+        }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        setupUI()
+    }
+
+    private fun setupUI() =
+        with(binding) {
+            logoutButton.setOnClickListener {
+                userViewModel.logout()
+                Toast
+                    .makeText(binding.root.context, "Logged Out Successfully", Toast.LENGTH_SHORT)
+                    .show()
+                findNavController().navigate(NavGraphDirections.actionGlobalNavigationLogin())
+            }
+            editButton.setOnClickListener {
+                val editProfileModal =
+                    EditProfileBottomSheetFragment {
+                        Toast
+                            .makeText(binding.root.context, "Profile Updated", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                editProfileModal.show(parentFragmentManager, EditProfileBottomSheetFragment.TAG)
+            }
+        }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        bindingInternal = null
+        _binding = null
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(
-            param1: String,
-            param2: String,
-        ) = SettingsFragment().apply {
-            arguments =
-                Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-        }
+        const val TAG = "SettingsFragment"
     }
 }

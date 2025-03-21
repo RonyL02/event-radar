@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.col.eventradar.R
 import com.col.eventradar.adapter.EventCardRecyclerViewAdapter
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.viewmodels.EventViewModel
@@ -25,14 +26,12 @@ class EventCardListFragment : Fragment() {
     private var columnCount = 1
     private var bindingInternal: FragmentEventCardListBinding? = null
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
     private lateinit var eventAdapter: EventCardRecyclerViewAdapter
 
-    /**
-     * This property is only valid between `onCreateView` and `onDestroyView`.
-     */
     private val binding get() = bindingInternal!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +52,13 @@ class EventCardListFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         fetchEvents()
+        syncAllComments()
 
         return binding.root
+    }
+
+    private fun syncAllComments() {
+        eventViewModel.syncAllComments()
     }
 
     private fun setupRecyclerView() {

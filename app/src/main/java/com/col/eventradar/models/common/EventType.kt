@@ -1,4 +1,4 @@
-package com.col.eventradar.models
+package com.col.eventradar.models.common
 
 enum class EventType(
     val code: String,
@@ -16,7 +16,7 @@ enum class EventType(
     override fun toString(): String = code
 
     companion object {
-        fun fromString(value: String): EventType =
+        fun fromCode(value: String): EventType =
             when (value.uppercase()) {
                 "EQ" -> EARTHQUAKE
                 "TS" -> TSUNAMI
@@ -25,6 +25,18 @@ enum class EventType(
                 "VO" -> VOLCANO
                 "DR" -> DROUGHT
                 "WF" -> FOREST_FIRE
+                else -> UNKNOWN
+            }
+
+        fun fromString(value: String): EventType =
+            when (value.uppercase()) {
+                "EARTHQUAKE" -> EARTHQUAKE
+                "TSUNAMI" -> TSUNAMI
+                "FLOOD" -> FLOOD
+                "CYCLONE" -> CYCLONE
+                "VOLCANO" -> VOLCANO
+                "DROUGHT" -> DROUGHT
+                "FOREST_FIRE" -> FOREST_FIRE
                 else -> UNKNOWN
             }
 

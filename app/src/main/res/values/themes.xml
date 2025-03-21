@@ -1,17 +1,19 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.EventRadar" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimary">@color/off_white</item>
         <item name="colorPrimaryVariant">@color/grey_light</item>
         <item name="colorOnPrimary">@color/red_600</item>
 
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnBackground">@color/grey_darkest</item>
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/red_600</item>
         <item name="colorSecondaryVariant">@color/red_600</item>
-        <item name="colorOnSecondary">@color/red_100</item>
+        <item name="colorOnSecondary">@color/grey_darkest</item>
+        <item name="colorContainer">@color/red_100</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/grey_dark</item>
         <item name="android:actionMenuTextColor">@color/grey_dark
@@ -20,4 +22,6 @@
     </style>
 
     <style name="Theme.EventRadar" parent="Base.Theme.EventRadar" />
+    <style name="Theme.Light" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+    <style name="Theme.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
 </resources>

@@ -8,11 +8,11 @@ import com.col.eventradar.api.events.dto.toDomain
 import com.col.eventradar.data.local.AppLocalDatabase
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.models.AreaEntity
-import com.col.eventradar.models.AreaOfInterest
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.EventType
-import com.col.eventradar.models.toDomain
-import com.col.eventradar.models.toEntity
+import com.col.eventradar.models.common.AreaOfInterest
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.EventType
+import com.col.eventradar.models.local.toDomain
+import com.col.eventradar.models.local.toEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
@@ -129,7 +129,7 @@ class EventRepository(
     private suspend fun getLatestStoredEventDate(): LocalDateTime? =
         withContext(Dispatchers.IO) {
             Log.d(TAG, "Fetching latest stored event date from local database.")
-            val latestEvent = eventDao.getLatestEvent()
+            val latestEvent = eventDao.getLatestEvent()?.toDomain()
             Log.d(TAG, "Latest stored event date: ${latestEvent?.time}")
             latestEvent?.time
         }

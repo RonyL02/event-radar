@@ -8,10 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.col.eventradar.auth.GoogleAuthClient
 import com.col.eventradar.data.remote.UserRepository
-import com.col.eventradar.models.User
+import com.col.eventradar.models.common.User
 import kotlinx.coroutines.launch
 
-class LoginViewModel(context: Context) : ViewModel() {
+class LoginViewModel(
+    context: Context,
+) : ViewModel() {
     private val authClient = GoogleAuthClient(context)
     private val userRepository = UserRepository(context)
     private val _isSignedIn = MutableLiveData<Boolean?>(null)
@@ -34,18 +36,21 @@ class LoginViewModel(context: Context) : ViewModel() {
     private fun registerUser(newUserId: String) {
         authClient.getCurrentUser()?.let { currentUser ->
             viewModelScope.launch {
-                val newUser = User(
-                    newUserId,
-                    currentUser.displayName!!,
-                    currentUser.photoUrl.toString()
-                )
+                val newUser =
+                    User(
+                        newUserId,
+                        currentUser.displayName!!,
+                        currentUser.photoUrl.toString(),
+                    )
                 userRepository.saveUser(newUser)
             }
         }
     }
 }
 
-class LoginViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class LoginViewModelFactory(
+    private val context: Context,
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

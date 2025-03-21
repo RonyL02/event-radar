@@ -12,13 +12,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.data.EventRepository
+import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.AreaOfInterest
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.User
+import com.col.eventradar.models.common.AreaOfInterest
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.User
 import com.col.eventradar.ui.LocationSearchFragment
 import com.col.eventradar.ui.components.GpsLocationMapFragment
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
@@ -58,19 +59,21 @@ class MapFragment :
     private var areasOfInterest: FeatureCollection? = null
     private var currentUser: User? = null
 
-    private val userViewModel: UserViewModel by activityViewModels {
-        val repository = UserRepository(requireContext())
-        UserViewModelFactory(repository)
-    }
-
     private val eventViewModel: EventViewModel by activityViewModels {
-        val repository = EventRepository(requireContext())
-        EventViewModelFactory(repository)
+        val eventRepository = EventRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        EventViewModelFactory(eventRepository, commentRepository)
     }
 
     private val areasViewModel: AreasViewModel by activityViewModels {
         val repository = AreasOfInterestRepository(requireContext())
         AreasViewModelFactory(repository)
+    }
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val repository = UserRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        UserViewModelFactory(commentRepository, repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

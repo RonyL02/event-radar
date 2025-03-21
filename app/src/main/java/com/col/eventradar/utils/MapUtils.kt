@@ -8,10 +8,10 @@ import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.AreaOfInterest
-import com.col.eventradar.models.Event
-import com.col.eventradar.models.EventType
-import com.col.eventradar.models.Location
+import com.col.eventradar.models.common.AreaOfInterest
+import com.col.eventradar.models.common.Event
+import com.col.eventradar.models.common.EventType
+import com.col.eventradar.models.common.Location
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.components.ToastFragment
 import com.col.eventradar.utils.GeoJsonParser

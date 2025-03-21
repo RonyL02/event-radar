@@ -19,9 +19,10 @@ import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
-import com.col.eventradar.models.AreaOfInterest
-import com.col.eventradar.models.User
+import com.col.eventradar.models.common.AreaOfInterest
+import com.col.eventradar.models.common.User
 import com.col.eventradar.ui.adapters.LocationSearchResultsAdapter
 import com.col.eventradar.ui.components.GpsLocationSearchFragment
 import com.col.eventradar.ui.components.ToastFragment
@@ -56,7 +57,8 @@ class LocationSearchFragment : Fragment() {
 
     private val userViewModel: UserViewModel by activityViewModels {
         val repository = UserRepository(requireContext())
-        UserViewModelFactory(repository)
+        val commentRepository = CommentsRepository(requireContext())
+        UserViewModelFactory(commentRepository, repository)
     }
 
     private val searchResultsAdapter =

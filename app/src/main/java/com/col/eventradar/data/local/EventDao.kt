@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.col.eventradar.models.EventEntity
+import com.col.eventradar.models.local.EventEntity
 
 @Dao
 interface EventDao {
@@ -13,7 +13,7 @@ interface EventDao {
     suspend fun insertEvent(event: EventEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertEvents(events: List<EventEntity>): List<Long> // ✅ Returns row IDs
+    suspend fun insertEvents(events: List<EventEntity>): List<Long>
 
     @Query("SELECT * FROM events")
     suspend fun getAllEvents(): List<EventEntity>

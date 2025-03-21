@@ -3,7 +3,8 @@ package com.col.eventradar.api.events
 import android.util.Log
 import com.col.eventradar.api.events.dto.AlertLevel
 import com.col.eventradar.api.events.dto.EventListResponseDTO
-import com.col.eventradar.models.EventType
+import com.col.eventradar.models.common.EventType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

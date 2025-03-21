@@ -2,21 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <Button
-        android:id="@+id/close_button"
-        style="?attr/materialIconButtonFilledTonalStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/transparent"
-        app:icon="@drawable/baseline_close_24"
-        app:iconSize="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/modal"
-        app:layout_constraintStart_toEndOf="@+id/add_image_button"
-        app:layout_constraintTop_toTopOf="@+id/add_image_button" />
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_sheet_background">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,9 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:paddingHorizontal="50dp"
+        android:paddingHorizontal="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +22,7 @@
             android:id="@+id/details_header"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="24dp"
             app:cardCornerRadius="50dp"
             app:cardElevation="8dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +35,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="Icon"
                 android:src="@drawable/earthquake"
-                app:tint="@color/black" />
+                app:tint="?attr/colorOnSurface" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -61,7 +47,7 @@
             android:text="title"
             android:textAlignment="viewStart"
             android:textColor="@color/red_500"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/details_header"
             app:layout_constraintTop_toTopOf="@+id/details_header" />
@@ -74,7 +60,8 @@
             android:layout_marginBottom="2dp"
             android:src="@drawable/typcn_pin_outline"
             app:layout_constraintBottom_toBottomOf="@+id/details_header"
-            app:layout_constraintStart_toEndOf="@+id/details_header" />
+            app:layout_constraintStart_toEndOf="@+id/details_header"
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/location_name"
@@ -91,6 +78,7 @@
             android:id="@+id/event_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/event_title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -101,10 +89,11 @@
             android:id="@+id/event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="24dp"
             android:text=""
             android:textAlignment="viewStart"
-            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="14sp"
             app:layout_anchor="@+id/event_details_fragment"
             app:layout_anchorGravity="bottom|center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -116,8 +105,7 @@
             android:id="@+id/materialDivider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="24dp"
             app:dividerColor="@color/grey_light"
             app:layout_anchor="@+id/event_details_fragment"
             app:layout_anchorGravity="bottom|center"
@@ -130,7 +118,7 @@
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="24dp"
+            android:paddingVertical="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
@@ -143,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:text="View Comments..."
                 android:textColor="@color/grey_dark"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/comments_icon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/comments_icon"
@@ -151,8 +139,8 @@
 
             <ImageView
                 android:id="@+id/comments_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:src="@drawable/mdi_comments_outline"
                 app:layout_constraintBottom_toBottomOf="@+id/comments_count"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -166,9 +154,11 @@
                 android:layout_marginEnd="10dp"
                 android:text="5"
                 android:textColor="@color/grey_darkest"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/comments_icon" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/comments_icon"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
