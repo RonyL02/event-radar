@@ -34,4 +34,35 @@ class LocationSearchViewModel : ViewModel() {
             _isLoading.value = false
         }
     }
+
+    fun searchCountryLocations(query: String) {
+        viewModelScope.launch {
+            hasSearched = true
+            _isLoading.value = true
+            try {
+                val results =
+                    OpenStreetMapService.api.searchLocation(
+                        query = query,
+                        limit = 10,
+                        extraTags = 1,
+                    )
+
+                val countriesOnly =
+                    results
+                        .filter {
+                            it.className == "boundary" &&
+                                it.type == "administrative" &&
+                                it.extraTags?.get("admin_level") == "2"
+                        }.map { it.toModel() }
+
+                _searchResults.value = countriesOnly
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                println("Error fetching location: $errorBody")
+            } catch (e: Exception) {
+                println("General error: ${e.message}")
+            }
+            _isLoading.value = false
+        }
+    }
 }

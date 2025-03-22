@@ -130,6 +130,11 @@ class MapFragment :
         eventViewModel.syncAllComments()
     }
 
+    override fun onAreaOfInterestChanged() {
+        areasViewModel.refresh()
+        eventViewModel.fetchFilteredEvents()
+    }
+
     override fun onLocationSelected(
         searchResult: LocationSearchResult,
         onFinish: () -> Unit,

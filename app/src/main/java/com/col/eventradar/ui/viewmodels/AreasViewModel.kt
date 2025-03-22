@@ -20,9 +20,25 @@ class AreasViewModel(
     init {
         viewModelScope.launch {
             repository.storedFeaturesFlow.distinctUntilChanged().collectLatest { featureEntities ->
+                if (featureEntities.isEmpty() &&
+                    _featuresLiveData.value
+                        ?.features()
+                        ?.isNotEmpty() == true
+                ) {
+                    return@collectLatest
+                }
+
                 val features = featureEntities.map { it.toFeature() }
                 _featuresLiveData.postValue(FeatureCollection.fromFeatures(features))
             }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            val featureEntities = repository.getStoredFeatures()
+            val features = featureEntities.map { it.toFeature() }
+            _featuresLiveData.postValue(FeatureCollection.fromFeatures(features))
         }
     }
 }

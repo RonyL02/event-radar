@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,42 +65,8 @@ class LocationSearchFragment : Fragment() {
 
     private val searchResultsAdapter =
         LocationSearchResultsAdapter(
-            onClick = { result ->
-                listener?.onLocationSelected(result) {
-                    binding.searchEditText.setText("")
-                }
-                isResultChosen = true
-                binding.apply {
-                    searchEditText.setText(result.name)
-                    searchResultsRecyclerView.visibility = View.GONE
-                    searchEditText.clearFocus()
-                    KeyboardUtils.hideKeyboard(searchEditText, requireContext())
-                }
-            },
-            onRemove = { result ->
-                lifecycleScope.launch {
-                    if (currentUser != null) {
-                        UserAreaManager(
-                            UserRepository(requireContext()),
-                            EventRepository(requireContext()),
-                            AreasOfInterestRepository(requireContext()),
-                        ).removeAreaOfInterest(
-                            currentUser!!.id,
-                            AreaOfInterest(
-                                result.placeId.toString(),
-                                result.name,
-                                result.name,
-                            ),
-                        )
-                        AreasOfInterestRepository(requireContext()).deleteFeature(result.placeId.toString())
-                        binding.apply {
-                            searchResultsRecyclerView.visibility = View.GONE
-                            searchEditText.clearFocus()
-                            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
-                        }
-                    }
-                }
-            },
+            onClick = ::onSearchResultClick,
+            onRemove = ::onSearchResultRemove,
         )
 
     override fun onCreateView(
@@ -211,15 +178,68 @@ class LocationSearchFragment : Fragment() {
             }
         }
         areasViewModel.featuresLiveData.observe(viewLifecycleOwner) { features ->
-            searchResultsAdapter.updateCountries(
-                features.features()?.map { it.getStringProperty("localname") } ?: emptyList(),
-            )
+            val newCountries =
+                features
+                    .features()
+                    ?.filter {
+                        it.getStringProperty("placeId").isNotBlank()
+                    }?.map { it.getStringProperty("placeId").toLong() }
+                    .orEmpty()
+
+            Log.d(TAG, "observeViewModel: $newCountries")
+            searchResultsAdapter.updateCountries(newCountries)
         }
 
         lifecycleScope.launch {
             viewModel.isLoading.collectLatest { isLoading ->
                 binding.searchIcon.visibility = if (isLoading) View.GONE else View.VISIBLE
                 binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+    private fun onSearchResultClick(result: LocationSearchResult) {
+        listener?.onLocationSelected(result) {
+            binding.searchEditText.setText("")
+        }
+        isResultChosen = true
+        binding.apply {
+            searchEditText.setText(result.name)
+            searchResultsAdapter.submitList(emptyList())
+            searchResultsRecyclerView.visibility = View.GONE
+            searchEditText.clearFocus()
+            KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+        }
+    }
+
+    private fun onSearchResultRemove(result: LocationSearchResult) {
+        lifecycleScope.launch {
+            currentUser?.let { user ->
+                try {
+                    UserAreaManager(
+                        UserRepository(requireContext()),
+                        EventRepository(requireContext()),
+                        AreasOfInterestRepository(requireContext()),
+                    ).removeAreaOfInterest(
+                        user.id,
+                        AreaOfInterest(
+                            result.placeId.toString(),
+                            result.name,
+                            result.name,
+                        ),
+                    )
+
+                    listener?.onAreaOfInterestChanged()
+                    binding.apply {
+                        searchResultsAdapter.submitList(emptyList())
+                        searchEditText.setText("")
+                        searchResultsRecyclerView.visibility = View.GONE
+                        searchEditText.clearFocus()
+                        KeyboardUtils.hideKeyboard(searchEditText, requireContext())
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "onRemove: Error removing area of interest", e)
+                }
             }
         }
     }
@@ -242,6 +262,8 @@ class LocationSearchFragment : Fragment() {
             searchResult: LocationSearchResult,
             onFinish: () -> Unit,
         )
+
+        fun onAreaOfInterestChanged()
     }
 
     companion object {
