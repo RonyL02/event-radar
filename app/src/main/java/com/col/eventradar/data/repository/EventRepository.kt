@@ -191,6 +191,11 @@ class EventRepository(
             return@withContext eventDao.getEventById(eventId)?.toDomain()
         }
 
+    suspend fun clearAllEvents() {
+        withContext(Dispatchers.IO) {
+            eventDao.deleteAllEvents()
+        }
+    }
     suspend fun deleteLocalEventsLeftovers() {
         withContext(Dispatchers.IO) {
             try {

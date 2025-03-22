@@ -17,7 +17,6 @@ import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.User
 import com.col.eventradar.ui.LocationSearchFragment
