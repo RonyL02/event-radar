@@ -1,13 +1,11 @@
 package com.col.eventradar.utils
 
-import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
-
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.User
 import com.col.eventradar.models.common.toAreaEntity
-
 
 class UserAreaManager(
     private val userRepository: UserRepository,

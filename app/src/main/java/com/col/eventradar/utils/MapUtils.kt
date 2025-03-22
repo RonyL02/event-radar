@@ -4,9 +4,9 @@ import android.view.View
 import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationDetailsResultDTO
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
 import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.Event
@@ -314,8 +314,9 @@ object MapUtils {
                     mapAddLocationButton.setOnClickListener {
                         map.style?.let {
                             it.getSource(SEARCH_RESULT_AREA_SOURCE_NAME).apply {
-                                if (this is GeoJsonSource)
+                                if (this is GeoJsonSource) {
                                     setGeoJson("{\"type\": \"FeatureCollection\", \"features\": []}")
+                                }
                             }
                         }
                         toastFragment("Added ${feature.getStringProperty("localname")} to User")
@@ -329,31 +330,30 @@ object MapUtils {
                             )
                         val areaRepository = AreasOfInterestRepository(binding.root.context)
                         val jsonData = GeoJsonParser.gson.toJson(feature)
-                        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-                            coroutineScope.launch {
-                                if (auth.currentUser != null) {
-                                    val currentUserId = auth.currentUser!!.uid
-                                    if (userAreaManager.getUser(currentUserId)?.areasOfInterest?.all {
-                                            it.placeId !=
-                                                feature.getStringProperty(
-                                                    "placeId",
-                                                )
-                                        } != false
-                                    ) {
-                                        userAreaManager.addAreaOfInterest(
-                                            currentUserId,
-                                            AreaOfInterest(
-                                                feature.getStringProperty("placeId"),
-                                                feature.getStringProperty("localname"),
-                                                feature.getStringProperty("localname"),
-                                            ),
-                                            jsonData,
-                                        )
-                                    }
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+                        coroutineScope.launch {
+                            if (userId != null) {
+                                if (userAreaManager.getUser(userId)?.areasOfInterest?.all {
+                                        it.placeId !=
+                                            feature.getStringProperty(
+                                                "placeId",
+                                            )
+                                    } != false
+                                ) {
+                                    userAreaManager.addAreaOfInterest(
+                                        userId,
+                                        AreaOfInterest(
+                                            feature.getStringProperty("placeId"),
+                                            feature.getStringProperty("localname"),
+                                            feature.getStringProperty("localname"),
+                                        ),
+                                        jsonData,
+                                    )
                                 }
-                                val jsonData = GeoJsonParser.gson.toJson(feature)
-                                areaRepository.saveFeature(feature, jsonData)
                             }
+                            val jsonData = GeoJsonParser.gson.toJson(feature)
+                            areaRepository.saveFeature(feature, jsonData)
                         }
                     }
                 }

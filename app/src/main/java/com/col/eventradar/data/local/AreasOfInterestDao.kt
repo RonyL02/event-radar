@@ -1,4 +1,5 @@
 package com.col.eventradar.data.local
+
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,6 +17,9 @@ interface AreasOfInterestDao {
 
     @Query("DELETE FROM areas WHERE placeId = :placeId")
     suspend fun deleteFeature(placeId: String)
+
+    @Query("SELECT * FROM areas")
+    suspend fun getAllFeaturesNow(): List<AreaEntity>
 
     @Query("DELETE FROM areas")
     suspend fun clearAllFeatures()
