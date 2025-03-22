@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentEditCommentBottomSheetBinding
@@ -27,9 +28,10 @@ class EditCommentBottomSheetFragment(
     private val binding get() = bindingInternal!!
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val commentRepository = CommentsRepository(requireContext())
         val userRepository = UserRepository(requireContext())
-        UserViewModelFactory(commentRepository, userRepository)
+        val commentRepository = CommentsRepository(requireContext())
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     private var selectedImageUri: Uri? = null

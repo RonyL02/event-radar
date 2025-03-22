@@ -240,30 +240,44 @@ class CommentsRepository(
             }
         }
 
-    /**
-     * **Fetch Comments for the Logged-in User**
-     */
     suspend fun getCommentsForLoggedInUser(): List<PopulatedComment> =
         withContext(Dispatchers.IO) {
             val user = userRepository.getCurrentUser() ?: return@withContext emptyList()
 
-            Log.d(TAG, "getCommentsForLoggedInUser: $user")
             try {
-                val userComments = commentDao.getCommentsForUser(user.uid)
+                Log.d(TAG, "Fetching user comments for UID: ${user.uid}")
+
+                val snapshot =
+                    commentsCollection
+                        .whereEqualTo("userId", user.uid)
+                        .get()
+                        .await()
+
+                val remoteComments =
+                    snapshot
+                        .toObjects(CommentFirestore::class.java)
+                        .map { it.toDomain() }
+
+                Log.d(TAG, "Fetched ${remoteComments.size} comments from Firestore")
+
+                commentDao.insertComments(remoteComments.map { it.toEntity() })
 
                 val populatedComments =
-                    userComments.mapNotNull { commentEntity ->
-                        val event = eventRepository.getLocalEventById(commentEntity.eventId)
-                        event?.let { PopulatedComment(commentEntity.toDomain(), it) }
+                    remoteComments.mapNotNull { comment ->
+                        val event = eventRepository.getLocalEventById(comment.eventId)
+                        event?.let { PopulatedComment(comment, it) }
                     }
 
-                Log.d(TAG, "Fetched ${populatedComments.size} user comments from local DB.")
-
-                Log.d(TAG, "comments: $userComments")
+                Log.d(TAG, "Returning ${populatedComments.size} populated user comments")
                 return@withContext populatedComments
             } catch (e: Exception) {
-                Log.e(TAG, "Error fetching user comments from local DB", e)
-                return@withContext emptyList()
+                Log.e(TAG, "Error fetching user comments from Firestore", e)
+
+                val localComments = commentDao.getCommentsForUser(user.uid)
+                return@withContext localComments.mapNotNull { commentEntity ->
+                    val event = eventRepository.getLocalEventById(commentEntity.eventId)
+                    event?.let { PopulatedComment(commentEntity.toDomain(), it) }
+                }
             }
         }
 

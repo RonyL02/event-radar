@@ -35,10 +35,8 @@ class EventViewModel(
     private val _userComments = MutableLiveData<List<PopulatedComment>>(emptyList())
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
 
-    fun syncAllComments() {
-        viewModelScope.launch {
-            commentsRepository.syncAllComments()
-        }
+    private suspend fun syncAllComments() {
+        commentsRepository.syncAllComments()
     }
 
     fun fetchFilteredEvents(
@@ -48,28 +46,9 @@ class EventViewModel(
         eventTypes: List<EventType>? = null,
     ) {
         _isLoading.postValue(true)
-
         viewModelScope.launch {
-            try {
-                val eventsList =
-                    eventRepository.fetchAndStoreEvents(
-                        fromDate,
-                        toDate,
-                        alertLevels,
-                        eventTypes,
-                    )
-
-                if (eventsList.isEmpty()) {
-                    _errorMessage.postValue("No events found.")
-                    _events.postValue(emptyList())
-                } else {
-                    _events.postValue(eventsList)
-                }
-            } catch (e: Exception) {
-                _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
-            } finally {
-                _isLoading.postValue(false)
-            }
+            fetchFilteredEventsInternal(fromDate, toDate, alertLevels, eventTypes)
+            _isLoading.postValue(false)
         }
     }
 
@@ -134,9 +113,49 @@ class EventViewModel(
                 .eachCount()
         }
 
-    fun deleteLocalEventsLeftovers() {
+    suspend fun deleteLocalEventsLeftovers() {
+        eventRepository.deleteLocalEventsLeftovers()
+    }
+
+    private suspend fun fetchFilteredEventsInternal(
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+    ) {
+        try {
+            val eventsList =
+                eventRepository.fetchAndStoreEvents(
+                    fromDate,
+                    toDate,
+                    alertLevels,
+                    eventTypes,
+                )
+
+            if (eventsList.isEmpty()) {
+                _errorMessage.postValue("No events found.")
+                _events.postValue(emptyList())
+            } else {
+                _events.postValue(eventsList)
+            }
+        } catch (e: Exception) {
+            _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
+        }
+    }
+
+    fun refreshEvents(
+        fromDate: LocalDateTime? = null,
+        toDate: LocalDateTime? = null,
+        alertLevels: List<AlertLevel>? = null,
+        eventTypes: List<EventType>? = null,
+    ) {
+        _isLoading.postValue(true)
+
         viewModelScope.launch {
-            eventRepository.deleteLocalEventsLeftovers()
+            deleteLocalEventsLeftovers()
+            fetchFilteredEventsInternal(fromDate, toDate, alertLevels, eventTypes)
+            syncAllComments()
+            _isLoading.postValue(false)
         }
     }
 }

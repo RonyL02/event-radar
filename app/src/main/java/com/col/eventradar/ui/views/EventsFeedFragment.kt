@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.data.repository.EventRepository
@@ -27,9 +28,10 @@ class EventsFeedFragment : Fragment() {
     }
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val commentRepository = CommentsRepository(requireContext())
         val userRepository = UserRepository(requireContext())
-        UserViewModelFactory(commentRepository, userRepository)
+        val commentRepository = CommentsRepository(requireContext())
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     override fun onCreateView(
@@ -38,6 +40,9 @@ class EventsFeedFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         bindingInternal = FragmentEventsFeedBinding.inflate(inflater, container, false)
+
+        userViewModel.observeAndSyncUserAreas()
+
         return binding.root
     }
 
