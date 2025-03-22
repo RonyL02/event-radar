@@ -228,11 +228,5 @@ class MapFragment :
         }
     }
 
-    private fun deleteLocalEventsLeftovers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            eventViewModel.deleteLocalEventsLeftovers()
-        }
-    }
-
     override fun onGetLocation(): Location? = locationFragment.getCurrentLocation()
 }

@@ -73,6 +73,14 @@ class CommentsFragment : Fragment() {
     private fun observeViewModel() {
         userViewModel.userComments.observe(viewLifecycleOwner) { populatedComments ->
             commentsAdapter.updateComments(populatedComments)
+
+            if (populatedComments.isNullOrEmpty()) {
+                binding.userCommentsList.visibility = View.GONE
+                binding.emptyPlaceholder.visibility = View.VISIBLE
+            } else {
+                binding.userCommentsList.visibility = View.VISIBLE
+                binding.emptyPlaceholder.visibility = View.GONE
+            }
         }
     }
 

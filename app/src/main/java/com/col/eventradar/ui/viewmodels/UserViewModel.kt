@@ -217,6 +217,12 @@ class UserViewModel(
                                                     OpenStreetMapService.api.getLocationDetails(
                                                         placeIdLong,
                                                     )
+
+                                                Log.d(
+                                                    "OpenStreetMapService",
+                                                    "$placeIdLong result: $result",
+                                                )
+
                                                 val feature = MapUtils.toMapLibreFeature(result)
                                                 val jsonData = GeoJsonParser.gson.toJson(feature)
                                                 areasRepository.saveFeature(feature, jsonData)

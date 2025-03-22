@@ -16,4 +16,5 @@
     <string name="no_interest_title">No Countries Selected</string>
     <string name="no_interest_description">To get real-time disaster alerts, add countries you\'re interested in.</string>
     <string name="add_areas_of_interest_button_label">Add Country</string>
+    <string name="no_comments">You have no comments for events in your countries of interest</string>
 </resources>
