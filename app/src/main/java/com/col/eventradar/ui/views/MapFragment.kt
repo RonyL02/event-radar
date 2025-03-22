@@ -142,21 +142,21 @@ class MapFragment :
     ) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
-                currentUser
+                val areas = currentUser
                     ?.areasOfInterest
-                    ?.map { areaOfInterest -> areaOfInterest.placeId }
-                    ?.let {
+                    ?.map { areaOfInterest -> areaOfInterest.placeId } ?: emptyList()
+
                         MapUtils.handleLocationSelection(
                             map,
                             searchResult,
                             toastFragment,
                             binding,
                             onFinish = onFinish,
-                            countries = it,
+                            countries = areas,
                         )
                     }
             }
-        }
+
     }
 
     private fun observeViewModel(style: Style) {
@@ -187,18 +187,11 @@ class MapFragment :
                 if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
                     currentUser = user
 
-                    val countries =
-                        areasOfInterest?.features()?.map {
-                            AreaOfInterest(
-                                it.getStringProperty("placeId"),
-                                it.getStringProperty("localname"),
-                                it.getStringProperty("localname"),
-                            )
-                        } ?: emptyList()
-
                     val areasRepo = AreasOfInterestRepository(requireContext())
+                    val countries = areasRepo.getStoredFeatures().map { it.placeId }
+
                     val missingCountries =
-                        user?.areasOfInterest?.filterNot { it in countries } ?: emptyList()
+                        user?.areasOfInterest?.filterNot { it.placeId in countries } ?: emptyList()
 
                     if (missingCountries.isNotEmpty()) {
                         withContext(Dispatchers.IO) {
@@ -222,13 +215,6 @@ class MapFragment :
                                 }
                             deferredRequests.awaitAll()
                         }
-                    }
-
-                    val missingCountriesFromUser =
-                        countries.filterNot { it in (user?.areasOfInterest ?: emptyList()) }
-
-                    missingCountriesFromUser.filter { it.name.isNotEmpty() }.forEach {
-                        areasRepo.deleteFeature(it.placeId)
                     }
                 }
             }
@@ -260,6 +246,7 @@ class MapFragment :
         deleteLocalEventsLeftovers()
         syncAllComments()
         fetchEvents()
+        areasViewModel.refresh()
     }
 
     override fun onPause() {

@@ -168,7 +168,9 @@ class UserViewModel(
      * **Log out the user**
      */
     fun logout() {
-        userRepository.logoutUser()
+        viewModelScope.launch {
+            userRepository.logoutUser()
+        }
         _loggedInUser.postValue(null)
         _authState.postValue(false)
         _userComments.postValue(emptyList())
