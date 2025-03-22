@@ -70,7 +70,6 @@ class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
         )
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -111,19 +110,17 @@ class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
         }
 
         areasViewModel.areasLiveData.observe(viewLifecycleOwner) { features ->
+            areasOfInterestAdapter.submitList(features)
             if (features.isNotEmpty()) {
-                areasOfInterestAdapter.submitList(features)
                 binding.apply {
                     areasList.visibility = View.VISIBLE
                     addInterestAreasButton.visibility = View.GONE
                 }
-
             } else {
                 binding.apply {
                     areasList.visibility = View.GONE
                     addInterestAreasButton.visibility = View.VISIBLE
                 }
-
             }
         }
     }
