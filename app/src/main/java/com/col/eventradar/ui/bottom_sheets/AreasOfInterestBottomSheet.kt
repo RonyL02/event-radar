@@ -60,15 +60,16 @@ class AreasOfInterestBottomSheet(
                         ).removeAreaOfInterest(
                             currentUser!!.id,
                             AreaOfInterest(
-                                area.placeId,
+                                area.osmId,
+                                area.osmType,
                                 area.name,
                                 area.country,
                             ),
                         )
                         userViewModel.refreshUser()
                         onFinish()
-                        areasViewModel.removeArea(area.placeId)
-                        AreasOfInterestRepository(requireContext()).deleteFeature(area.placeId)
+                        areasViewModel.removeArea(area.osmId)
+                        AreasOfInterestRepository(requireContext()).deleteFeature(area.osmId)
                     }
                 }
             },

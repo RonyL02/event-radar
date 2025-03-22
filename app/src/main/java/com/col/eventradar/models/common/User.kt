@@ -23,9 +23,11 @@ data class User(
 }
 
 data class AreaOfInterest(
-    val placeId: String = "",
+    val osmId: String = "",
+    val osmType: String = "",
     val name: String = "",
     val country: String = "",
 )
 
-fun AreaOfInterest.toAreaEntity(geojson: String): AreaEntity = AreaEntity(this.placeId, this.name, this.country, geojson)
+fun AreaOfInterest.toAreaEntity(geojson: String): AreaEntity =
+    AreaEntity(this.osmId, this.osmType, this.name, this.country, geojson)

@@ -20,7 +20,8 @@ interface LocationApi {
 
     @GET("details")
     suspend fun getLocationDetails(
-        @Query("place_id") placeId: Long,
+        @Query("osmid") osmId: Long,
+        @Query("osmtype") osmType: String,
         @Query("polygon_geojson") polygonGeoJson: Int = 1,
         @Query("format") format: String = "json",
         @Query("accept-language") lang: String = "en",

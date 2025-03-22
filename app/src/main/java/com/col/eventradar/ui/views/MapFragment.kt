@@ -125,7 +125,7 @@ class MapFragment :
                 val areas =
                     currentUser
                         ?.areasOfInterest
-                        ?.map { areaOfInterest -> areaOfInterest.placeId } ?: emptyList()
+                        ?.map { areaOfInterest -> areaOfInterest.osmId } ?: emptyList()
 
                 MapUtils.handleLocationSelection(
                     map,

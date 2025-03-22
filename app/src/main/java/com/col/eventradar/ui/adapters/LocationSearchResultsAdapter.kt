@@ -50,7 +50,7 @@ class LocationSearchResultsAdapter(
         fun bind(result: LocationSearchResult) {
             binding.apply {
                 Log.d("SearchResultViewHolder", "bind: $result")
-                val isExist = countries.contains(result.placeId)
+                val isExist = countries.contains(result.osmId)
                 resultName.text = result.name
                 resultCountry.text = result.country
                 if (!isExist) {

@@ -6,7 +6,8 @@ import org.maplibre.geojson.Feature
 
 @Entity(tableName = "areas")
 data class AreaEntity(
-    @PrimaryKey val placeId: String,
+    @PrimaryKey val osmId: String,
+    val osmType: String,
     val name: String,
     val country: String,
     val geojson: String,

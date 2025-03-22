@@ -224,7 +224,8 @@ class LocationSearchFragment : Fragment() {
                     ).removeAreaOfInterest(
                         user.id,
                         AreaOfInterest(
-                            result.placeId.toString(),
+                            result.osmId.toString(),
+                            result.osmType.first().uppercase(),
                             result.name,
                             result.name,
                         ),

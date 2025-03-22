@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class LocationDetailsResultDTO(
     @SerializedName("place_id") val placeId: Long,
     @SerializedName("parent_place_id") val parentPlaceId: Long,
-    val osmType: String,
+    @SerializedName("osm_type") val osmType: String,
     @SerializedName("osm_id") val osmId: Long,
     val category: String,
     val type: String,
