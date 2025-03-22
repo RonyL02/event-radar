@@ -15,7 +15,7 @@ interface AreasOfInterestDao {
     @Query("SELECT * FROM areas")
     fun getAllFeatures(): Flow<List<AreaEntity>>
 
-    @Query("DELETE FROM areas WHERE placeId = :placeId")
+    @Query("DELETE FROM areas WHERE osmId = :placeId")
     suspend fun deleteFeature(placeId: String)
 
     @Query("SELECT * FROM areas")

@@ -43,6 +43,6 @@ class UserAreaManager(
 
         eventRepository.deleteAreaEvents(area)
 
-        areaOfInterestRepository.deleteFeature(area.placeId)
+        areaOfInterestRepository.deleteFeature(area.osmId)
     }
 }

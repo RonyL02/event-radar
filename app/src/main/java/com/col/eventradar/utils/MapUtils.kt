@@ -219,10 +219,10 @@ object MapUtils {
                     locationName = feature.getStringProperty("locationName"),
                     description = feature.getStringProperty("description"),
                     time =
-                        LocalDateTime.parse(
-                            feature.getStringProperty("time"),
-                            DateTimeFormatter.ISO_DATE_TIME,
-                        ),
+                    LocalDateTime.parse(
+                        feature.getStringProperty("time"),
+                        DateTimeFormatter.ISO_DATE_TIME,
+                    ),
                     type = EventType.valueOf(feature.getStringProperty("type")),
                     id = feature.getStringProperty("id"),
                     location = location,
@@ -280,7 +280,8 @@ object MapUtils {
 
         feature.apply {
             id()
-            addStringProperty("placeId", result.placeId.toString())
+            addStringProperty("placeId", result.osmId.toString())
+            addStringProperty("osmType", result.osmType)
             addStringProperty("localname", result.localname)
             addStringProperty("category", result.category)
             addStringProperty("type", result.type)
@@ -299,7 +300,10 @@ object MapUtils {
         countries: List<String>,
     ) {
         try {
-            val result = OpenStreetMapService.api.getLocationDetails(placeId = searchResult.placeId)
+            val result = OpenStreetMapService.api.getLocationDetails(
+                osmId = searchResult.osmId,
+                osmType = searchResult.osmType.first().uppercase()
+            )
             val feature = toMapLibreFeature(result)
 
             binding.apply {
@@ -335,16 +339,17 @@ object MapUtils {
                         coroutineScope.launch {
                             if (userId != null) {
                                 if (userAreaManager.getUser(userId)?.areasOfInterest?.all {
-                                        it.placeId !=
-                                            feature.getStringProperty(
-                                                "placeId",
-                                            )
+                                        it.osmId !=
+                                                feature.getStringProperty(
+                                                    "placeId",
+                                                )
                                     } != false
                                 ) {
                                     userAreaManager.addAreaOfInterest(
                                         userId,
                                         AreaOfInterest(
                                             feature.getStringProperty("placeId"),
+                                            feature.getStringProperty("osmType"),
                                             feature.getStringProperty("localname"),
                                             feature.getStringProperty("localname"),
                                         ),
@@ -359,6 +364,8 @@ object MapUtils {
                 }
             }
         } catch (e: HttpException) {
+            Log.e(TAG, "Error body: ${searchResult.osmId} ${searchResult.osmType}")
+
             val errorBody = e.response()?.errorBody()?.string()
             Log.e(TAG, "Error body: $errorBody")
             toastFragment("Error fetching location: ${e.message}")

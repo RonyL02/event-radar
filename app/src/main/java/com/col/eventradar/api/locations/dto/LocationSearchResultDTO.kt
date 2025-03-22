@@ -12,6 +12,8 @@ data class LocationSearchResultDTO(
     @SerializedName("class") val className: String?,
     @SerializedName("type") val type: String?,
     @SerializedName("extratags") val extraTags: Map<String, String>?,
+    @SerializedName("osm_type") val osmType: String,
+    @SerializedName("osm_id") val osmId: Long,
 )
 
 data class Address(
@@ -35,5 +37,7 @@ fun LocationSearchResultDTO.toModel(): LocationSearchResult {
         northLat = northLat,
         westLon = westLon,
         eastLon = eastLon,
+        osmType = osmType,
+        osmId = osmId
     )
 }

@@ -18,6 +18,7 @@ class AreasOfInterestRepository(
         areasDao.insertFeature(
             AreaEntity(
                 feature.getStringProperty("placeId"),
+                feature.getStringProperty("osmType"),
                 feature.getStringProperty("localname"),
                 feature.getStringProperty("localname"),
                 geojson,

@@ -200,10 +200,10 @@ class UserViewModel(
                     Log.d("UserViewModel", "User or areas changed: ${newUser.username}")
                     lastUser = newUser
 
-                    val storedCountries = areasRepository.getStoredFeatures().map { it.placeId }
+                    val storedCountries = areasRepository.getStoredFeatures().map { it.osmId }
 
                     val missing =
-                        newUser.areasOfInterest.filterNot { it.placeId in storedCountries }
+                        newUser.areasOfInterest.filterNot { it.osmId in storedCountries }
                     Log.d("UserViewModel", "Missing countries: ${missing.map { it.name }}")
 
                     if (missing.isNotEmpty()) {
@@ -211,16 +211,17 @@ class UserViewModel(
                             val deferred =
                                 missing.map { area ->
                                     async {
-                                        area.placeId.toLongOrNull()?.let { placeIdLong ->
+                                        area.osmId.toLongOrNull()?.let { osmIdLong ->
                                             try {
                                                 val result =
                                                     OpenStreetMapService.api.getLocationDetails(
-                                                        placeIdLong,
+                                                        osmId = osmIdLong,
+                                                        osmType = area.osmType
                                                     )
 
                                                 Log.d(
                                                     "OpenStreetMapService",
-                                                    "$placeIdLong result: $result",
+                                                    "$osmIdLong result: $result",
                                                 )
 
                                                 val feature = MapUtils.toMapLibreFeature(result)

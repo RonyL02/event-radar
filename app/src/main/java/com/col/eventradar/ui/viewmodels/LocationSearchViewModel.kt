@@ -55,7 +55,7 @@ class LocationSearchViewModel : ViewModel() {
                     "searchCountryLocations",
                     "searchCountryLocations: ${
                         results.map {
-                            "(${it.type}, ${it.className}, ${it.name}, ${it.placeId})"
+                            "(${it.type}, ${it.className}, ${it.name}, ${it.osmId}, ${it.osmType})"
                         }
                     }",
                 )
