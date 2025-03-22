@@ -69,6 +69,7 @@ class SettingsFragment : Fragment() {
             }
         }
     }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -80,12 +81,25 @@ class SettingsFragment : Fragment() {
     private fun setupUI() =
         with(binding) {
             logoutButton.setOnClickListener {
-                userViewModel.logout()
-                Toast
-                    .makeText(binding.root.context, "Logged Out Successfully", Toast.LENGTH_SHORT)
-                    .show()
-                findNavController().navigate(NavGraphDirections.actionGlobalNavigationLogin())
+                binding.logoutButton.visibility = View.GONE
+                binding.logoutLoader.visibility = View.VISIBLE
+
+                lifecycleScope.launch {
+                    userViewModel.logout()
+
+                    Toast
+                        .makeText(requireContext(), "Logged Out Successfully", Toast.LENGTH_SHORT)
+                        .show()
+
+                    findNavController().navigate(
+                        NavGraphDirections.actionGlobalNavigationLogin(),
+                    )
+
+                    binding.logoutLoader.visibility = View.GONE
+                    binding.logoutButton.visibility = View.VISIBLE
+                }
             }
+
             editButton.setOnClickListener {
                 val editProfileModal =
                     EditProfileBottomSheetFragment {
@@ -96,10 +110,11 @@ class SettingsFragment : Fragment() {
                 editProfileModal.show(parentFragmentManager, EditProfileBottomSheetFragment.TAG)
             }
             editAreas.setOnClickListener {
-                val areasModal = AreasOfInterestBottomSheet{
-                    observeViewModel()
-                    userViewModel.checkUserStatus()
-                }
+                val areasModal =
+                    AreasOfInterestBottomSheet {
+                        observeViewModel()
+                        userViewModel.checkUserStatus()
+                    }
                 areasModal.show(parentFragmentManager, AreasOfInterestBottomSheet.TAG)
             }
         }

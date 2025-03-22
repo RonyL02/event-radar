@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(NavGraphDirections.actionGlobalNavigationHome())
                 }
             } else {
-                binding.bottomNavigationView.visibility = View.GONE
+                hideBottomNav()
 
                 if (savedInstanceState == null) {
                     navController.navigate(NavGraphDirections.actionGlobalNavigationLogin())
@@ -76,5 +76,9 @@ class MainActivity : AppCompatActivity() {
 
             true
         }
+    }
+
+    fun hideBottomNav() {
+        binding.bottomNavigationView.visibility = View.GONE
     }
 }
