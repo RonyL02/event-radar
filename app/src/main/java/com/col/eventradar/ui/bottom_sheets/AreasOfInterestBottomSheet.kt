@@ -10,10 +10,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
-import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.AreasOfInterestBottomSheetBinding
 import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.User
@@ -28,7 +28,7 @@ import com.col.eventradar.utils.UserAreaManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
-class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
+class AreasOfInterestBottomSheet(onFinish: () -> Unit) : BottomSheetDialogFragment() {
     private var bindingInternal: AreasOfInterestBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
 
@@ -62,6 +62,8 @@ class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
                                 area.country,
                             ),
                         )
+                        userViewModel.refreshUser()
+                        onFinish()
                         areasViewModel.removeArea(area.placeId)
                         AreasOfInterestRepository(requireContext()).deleteFeature(area.placeId)
                     }
