@@ -1,10 +1,12 @@
 package com.col.eventradar.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.api.locations.dto.toModel
+import com.col.eventradar.constants.LocationFilterConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -43,16 +45,28 @@ class LocationSearchViewModel : ViewModel() {
                 val results =
                     OpenStreetMapService.api.searchLocation(
                         query = query,
-                        limit = 10,
+                        limit = 50,
                         extraTags = 1,
+                        type = LocationFilterConstants.TYPE_ADMINISTRATIVE,
+                        classType = LocationFilterConstants.CLASS_BOUNDARY,
                     )
+
+                Log.d(
+                    "searchCountryLocations",
+                    "searchCountryLocations: ${
+                        results.map {
+                            "(${it.type}, ${it.className}, ${it.name}, ${it.placeId})"
+                        }
+                    }",
+                )
 
                 val countriesOnly =
                     results
                         .filter {
-                            it.className == "boundary" &&
-                                it.type == "administrative" &&
-                                it.extraTags?.get("admin_level") == "2"
+                            it.className == LocationFilterConstants.CLASS_BOUNDARY &&
+                                it.type == LocationFilterConstants.TYPE_ADMINISTRATIVE &&
+                                it.extraTags?.get(LocationFilterConstants.FIELD_LINKED_PLACE) ==
+                                LocationFilterConstants.COUNTRY_LINKED_PLACE
                         }.map { it.toModel() }
 
                 _searchResults.value = countriesOnly

@@ -9,6 +9,9 @@ data class LocationSearchResultDTO(
     @SerializedName("address") val address: Address?,
     @SerializedName("name") val name: String?,
     @SerializedName("boundingbox") val boundingBox: List<String>?,
+    @SerializedName("class") val className: String?,
+    @SerializedName("type") val type: String?,
+    @SerializedName("extratags") val extraTags: Map<String, String>?,
 )
 
 data class Address(

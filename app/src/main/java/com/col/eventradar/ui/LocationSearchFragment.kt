@@ -18,10 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.col.eventradar.R
 import com.col.eventradar.api.locations.dto.LocationSearchResult
-import com.col.eventradar.data.EventRepository
 import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
+import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentSearchBinding
 import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.User
@@ -117,7 +117,7 @@ class LocationSearchFragment : Fragment() {
                             Runnable {
                                 val query = searchValue.toString()
                                 if (query.isNotEmpty()) {
-                                    viewModel.searchLocation(query)
+                                    viewModel.searchCountryLocations(query)
                                 }
                             }
                         searchRunnable?.let {

@@ -3,6 +3,7 @@ package com.col.eventradar.ui.views
 import MapUtils
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -242,6 +243,7 @@ class MapFragment :
         events: List<Event>,
         style: Style,
     ) {
+        Log.d("updateMapWithEvents", "updateMapWithEvents: ${events.size}")
         val geoJson = MapUtils.convertEventsToGeoJson(events)
         style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
     }
@@ -255,7 +257,9 @@ class MapFragment :
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+        deleteLocalEventsLeftovers()
         syncAllComments()
+        fetchEvents()
     }
 
     override fun onPause() {
@@ -294,6 +298,12 @@ class MapFragment :
                     .target(LatLng(it.latitude, it.longitude))
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        }
+    }
+
+    private fun deleteLocalEventsLeftovers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            eventViewModel.deleteLocalEventsLeftovers()
         }
     }
 
