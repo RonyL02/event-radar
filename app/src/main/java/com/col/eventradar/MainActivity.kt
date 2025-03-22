@@ -44,13 +44,27 @@ class MainActivity : AppCompatActivity() {
                 binding.bottomNavigationView.visibility = View.VISIBLE
 
                 if (savedInstanceState == null) {
-                    navController.navigate(NavGraphDirections.actionGlobalNavigationHome())
+                    navController.navigate(
+                        NavGraphDirections.actionGlobalNavigationHome(),
+                        NavOptions
+                            .Builder()
+                            .setPopUpTo(R.id.navigation_splash, true)
+                            .setLaunchSingleTop(true)
+                            .build(),
+                    )
                 }
             } else {
                 hideBottomNav()
 
                 if (savedInstanceState == null) {
-                    navController.navigate(NavGraphDirections.actionGlobalNavigationLogin())
+                    navController.navigate(
+                        NavGraphDirections.actionGlobalNavigationLogin(),
+                        NavOptions
+                            .Builder()
+                            .setPopUpTo(R.id.navigation_splash, true)
+                            .setLaunchSingleTop(true)
+                            .build(),
+                    )
                 }
             }
         }
