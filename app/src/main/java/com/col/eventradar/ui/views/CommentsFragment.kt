@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentCommentsBinding
@@ -22,9 +23,10 @@ class CommentsFragment : Fragment() {
     private lateinit var toastFragment: ToastFragment
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val commentRepository = CommentsRepository(requireContext())
         val userRepository = UserRepository(requireContext())
-        UserViewModelFactory(commentRepository, userRepository)
+        val commentRepository = CommentsRepository(requireContext())
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     private lateinit var commentsAdapter: UserCommentsRecyclerViewAdapter

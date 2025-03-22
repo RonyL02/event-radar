@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.col.eventradar.NavGraphDirections
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.databinding.FragmentSettingsBinding
@@ -31,9 +32,10 @@ class SettingsFragment : Fragment() {
     private var currentUser: User? = null
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val commentRepository = CommentsRepository(requireContext())
         val userRepository = UserRepository(requireContext())
-        UserViewModelFactory(commentRepository, userRepository)
+        val commentRepository = CommentsRepository(requireContext())
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     override fun onCreateView(
@@ -56,6 +58,9 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
+
+        userViewModel.observeAndSyncUserAreas()
+
         userViewModel.loggedInUser.observe(viewLifecycleOwner) { user ->
             user?.let {
                 with(binding) {

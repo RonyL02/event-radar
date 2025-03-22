@@ -21,6 +21,9 @@ interface AreasOfInterestDao {
     @Query("SELECT * FROM areas")
     suspend fun getAllFeaturesNow(): List<AreaEntity>
 
+    @Query("SELECT * FROM areas WHERE country = :country")
+    suspend fun getFeaturesByCountry(country: String): List<AreaEntity>
+
     @Query("DELETE FROM areas")
     suspend fun clearAllFeatures()
 }

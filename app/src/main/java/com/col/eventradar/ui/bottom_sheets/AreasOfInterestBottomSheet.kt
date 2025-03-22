@@ -28,7 +28,9 @@ import com.col.eventradar.utils.UserAreaManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
-class AreasOfInterestBottomSheet(onFinish: () -> Unit) : BottomSheetDialogFragment() {
+class AreasOfInterestBottomSheet(
+    onFinish: () -> Unit,
+) : BottomSheetDialogFragment() {
     private var bindingInternal: AreasOfInterestBottomSheetBinding? = null
     private val binding get() = bindingInternal!!
 
@@ -40,9 +42,10 @@ class AreasOfInterestBottomSheet(onFinish: () -> Unit) : BottomSheetDialogFragme
     }
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val repository = UserRepository(requireContext())
+        val userRepository = UserRepository(requireContext())
         val commentRepository = CommentsRepository(requireContext())
-        UserViewModelFactory(commentRepository, repository)
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     private val areasOfInterestAdapter =
@@ -70,7 +73,6 @@ class AreasOfInterestBottomSheet(onFinish: () -> Unit) : BottomSheetDialogFragme
                 }
             },
         )
-
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -10,10 +10,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.col.eventradar.api.locations.OpenStreetMapService
 import com.col.eventradar.api.locations.dto.LocationSearchResult
 import com.col.eventradar.data.local.AreasOfInterestRepository
-import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
@@ -27,15 +25,8 @@ import com.col.eventradar.ui.viewmodels.AreasViewModel
 import com.col.eventradar.ui.viewmodels.AreasViewModelFactory
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
-import com.col.eventradar.ui.viewmodels.UserViewModel
-import com.col.eventradar.ui.viewmodels.UserViewModelFactory
-import com.col.eventradar.utils.GeoJsonParser
 import com.col.eventradar.utils.addEventIconsToMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -67,12 +58,6 @@ class MapFragment :
     private val areasViewModel: AreasViewModel by activityViewModels {
         val repository = AreasOfInterestRepository(requireContext())
         AreasViewModelFactory(repository)
-    }
-
-    private val userViewModel: UserViewModel by activityViewModels {
-        val repository = UserRepository(requireContext())
-        val commentRepository = CommentsRepository(requireContext())
-        UserViewModelFactory(commentRepository, repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,44 +159,6 @@ class MapFragment :
                     features,
                 )
                 fetchEvents()
-            }
-        }
-
-        lifecycleScope.launch {
-            userViewModel.user.collect { user ->
-                if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
-                    currentUser = user
-
-                    val areasRepo = AreasOfInterestRepository(requireContext())
-                    val countries = areasRepo.getStoredFeatures().map { it.placeId }
-
-                    val missingCountries =
-                        user?.areasOfInterest?.filterNot { it.placeId in countries } ?: emptyList()
-
-                    if (missingCountries.isNotEmpty()) {
-                        withContext(Dispatchers.IO) {
-                            val deferredRequests =
-                                missingCountries.map { area ->
-                                    async {
-                                        area.placeId.toLongOrNull()?.let { placeIdLong ->
-                                            try {
-                                                val result =
-                                                    OpenStreetMapService.api.getLocationDetails(
-                                                        placeIdLong,
-                                                    )
-                                                val feature = MapUtils.toMapLibreFeature(result)
-                                                val jsonData = GeoJsonParser.gson.toJson(feature)
-                                                areasRepo.saveFeature(feature, jsonData)
-                                            } catch (e: Exception) {
-                                                e.printStackTrace()
-                                            }
-                                        }
-                                    }
-                                }
-                            deferredRequests.awaitAll()
-                        }
-                    }
-                }
             }
         }
     }

@@ -35,6 +35,8 @@ class AreasOfInterestRepository(
         areasDao.clearAllFeatures()
     }
 
+    suspend fun getFeaturesByCountry(country: String) = areasDao.getFeaturesByCountry(country)
+
     companion object {
         private const val TAG = "AreasOfInterestRepository"
     }
