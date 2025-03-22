@@ -1,5 +1,6 @@
 package com.col.eventradar.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -12,14 +13,14 @@ class LocationSearchResultsAdapter(
     private val onRemove: (LocationSearchResult) -> Unit,
 ) : RecyclerView.Adapter<LocationSearchResultsAdapter.SearchResultViewHolder>() {
     private var searchResults: List<LocationSearchResult> = emptyList()
-    private var countries: List<String> = emptyList();
+    private var countries: List<Long> = emptyList()
 
     fun submitList(results: List<LocationSearchResult>) {
         searchResults = results
         notifyDataSetChanged()
     }
 
-    fun updateCountries(newCountries: List<String>) {
+    fun updateCountries(newCountries: List<Long>) {
         countries = newCountries
         notifyDataSetChanged()
     }
@@ -48,16 +49,21 @@ class LocationSearchResultsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(result: LocationSearchResult) {
             binding.apply {
-                val isExist = countries.contains(result.country)
+                Log.d("SearchResultViewHolder", "bind: $result")
+                val isExist = countries.contains(result.placeId)
                 resultName.text = result.name
                 resultCountry.text = result.country
-                root.setOnClickListener {
-                    onClick(result)
+                if (!isExist) {
+                    root.setOnClickListener {
+                        onClick(result)
+                    }
                 }
+
                 addButton.isVisible = !isExist
                 removeButton.isVisible = isExist
 
                 removeButton.setOnClickListener {
+                    Log.d("SearchResultViewHolder", "removedClick: $result")
                     onRemove(result)
                 }
             }

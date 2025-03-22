@@ -73,35 +73,6 @@ class EventViewModel(
         }
     }
 
-    fun fetchEventsByCountry(
-        fromDate: LocalDateTime? = null,
-        toDate: LocalDateTime? = null,
-        alertLevels: List<AlertLevel>? = null,
-        eventTypes: List<EventType>? = null,
-        country: String,
-    ) {
-        viewModelScope.launch {
-            try {
-                val eventsList =
-                    eventRepository.fetchAndStoreEvents(
-                        fromDate,
-                        toDate,
-                        alertLevels,
-                        eventTypes,
-                    )
-
-                _events.postValue(eventsList.takeIf { it.isNotEmpty() } ?: emptyList())
-                if (eventsList.isEmpty()) {
-                    _errorMessage.postValue("No events found.")
-                }
-            } catch (e: Exception) {
-                _errorMessage.postValue("Error fetching events: ${e.localizedMessage}")
-            } finally {
-                _isLoading.postValue(false)
-            }
-        }
-    }
-
     fun fetchCommentsForEvent(eventId: String) {
         viewModelScope.launch {
             _comments.postValue(
@@ -162,4 +133,10 @@ class EventViewModel(
                 .groupingBy { it.type }
                 .eachCount()
         }
+
+    fun deleteLocalEventsLeftovers() {
+        viewModelScope.launch {
+            eventRepository.deleteLocalEventsLeftovers()
+        }
+    }
 }

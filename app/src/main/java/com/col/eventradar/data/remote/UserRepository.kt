@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.col.eventradar.api.cloudinary.CloudinaryService
+import com.col.eventradar.auth.GoogleAuthClient
 import com.col.eventradar.models.common.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -156,8 +157,8 @@ class UserRepository(
     /**
      * 🔥 **Log out the current user**
      */
-    fun logoutUser() {
-        auth.signOut()
+    suspend fun logoutUser() {
+        GoogleAuthClient(context).signOut()
         Log.d(TAG, "User logged out successfully")
     }
 

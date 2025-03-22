@@ -3,6 +3,7 @@ package com.col.eventradar.ui.views
 import MapUtils
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -130,27 +131,32 @@ class MapFragment :
         eventViewModel.syncAllComments()
     }
 
+    override fun onAreaOfInterestChanged() {
+        areasViewModel.refresh()
+        eventViewModel.fetchFilteredEvents()
+    }
+
     override fun onLocationSelected(
         searchResult: LocationSearchResult,
         onFinish: () -> Unit,
     ) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
-                currentUser
+                val areas = currentUser
                     ?.areasOfInterest
-                    ?.map { areaOfInterest -> areaOfInterest.placeId }
-                    ?.let {
+                    ?.map { areaOfInterest -> areaOfInterest.placeId } ?: emptyList()
+
                         MapUtils.handleLocationSelection(
                             map,
                             searchResult,
                             toastFragment,
                             binding,
                             onFinish = onFinish,
-                            countries = it,
+                            countries = areas,
                         )
                     }
             }
-        }
+
     }
 
     private fun observeViewModel(style: Style) {
@@ -181,18 +187,11 @@ class MapFragment :
                 if ((user != currentUser && user != null) || user?.areasOfInterest?.toSet() != currentUser?.areasOfInterest?.toSet()) {
                     currentUser = user
 
-                    val countries =
-                        areasOfInterest?.features()?.map {
-                            AreaOfInterest(
-                                it.getStringProperty("placeId"),
-                                it.getStringProperty("localname"),
-                                it.getStringProperty("localname"),
-                            )
-                        } ?: emptyList()
-
                     val areasRepo = AreasOfInterestRepository(requireContext())
+                    val countries = areasRepo.getStoredFeatures().map { it.placeId }
+
                     val missingCountries =
-                        user?.areasOfInterest?.filterNot { it in countries } ?: emptyList()
+                        user?.areasOfInterest?.filterNot { it.placeId in countries } ?: emptyList()
 
                     if (missingCountries.isNotEmpty()) {
                         withContext(Dispatchers.IO) {
@@ -217,13 +216,6 @@ class MapFragment :
                             deferredRequests.awaitAll()
                         }
                     }
-
-                    val missingCountriesFromUser =
-                        countries.filterNot { it in (user?.areasOfInterest ?: emptyList()) }
-
-                    missingCountriesFromUser.filter { it.name.isNotEmpty() }.forEach {
-                        areasRepo.deleteFeature(it.placeId)
-                    }
                 }
             }
         }
@@ -237,6 +229,7 @@ class MapFragment :
         events: List<Event>,
         style: Style,
     ) {
+        Log.d("updateMapWithEvents", "updateMapWithEvents: ${events.size}")
         val geoJson = MapUtils.convertEventsToGeoJson(events)
         style.getSourceAs<GeoJsonSource>(MapUtils.EVENT_SOURCE_NAME)?.setGeoJson(geoJson)
     }
@@ -250,7 +243,10 @@ class MapFragment :
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+        deleteLocalEventsLeftovers()
         syncAllComments()
+        fetchEvents()
+        areasViewModel.refresh()
     }
 
     override fun onPause() {
@@ -289,6 +285,12 @@ class MapFragment :
                     .target(LatLng(it.latitude, it.longitude))
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        }
+    }
+
+    private fun deleteLocalEventsLeftovers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            eventViewModel.deleteLocalEventsLeftovers()
         }
     }
 

@@ -25,6 +25,8 @@ class AreasOfInterestRepository(
         )
     }
 
+    suspend fun getStoredFeatures(): List<AreaEntity> = areasDao.getAllFeaturesNow()
+
     suspend fun deleteFeature(placeId: String) {
         areasDao.deleteFeature(placeId)
     }
