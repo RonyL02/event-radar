@@ -106,7 +106,7 @@ class GoogleAuthClient(
     suspend fun signOut() {
         try {
             AreasOfInterestRepository(context).clearAll()
-            EventRepository(context).deleteLocalEventsLeftovers()
+            EventRepository(context).clearAllEvents()
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
             auth.signOut()
             Log.d(TAG, "Successfully signed out")
