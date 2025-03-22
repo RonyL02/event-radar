@@ -30,4 +30,8 @@ class AreasViewModel(
             }
         }
     }
+
+    fun removeArea(placeId: String) {
+        _areasLiveData.postValue(_areasLiveData.value?.filter { it.placeId != placeId })
+    }
 }

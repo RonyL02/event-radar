@@ -34,6 +34,17 @@ class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
 
     private var currentUser: User? = null
 
+    private val areasViewModel: AreasViewModel by activityViewModels {
+        val repository = AreasOfInterestRepository(requireContext())
+        AreasViewModelFactory(repository)
+    }
+
+    private val userViewModel: UserViewModel by activityViewModels {
+        val repository = UserRepository(requireContext())
+        val commentRepository = CommentsRepository(requireContext())
+        UserViewModelFactory(commentRepository, repository)
+    }
+
     private val areasOfInterestAdapter =
         AreasOfInterestAdapter(
             onRemove = { area ->
@@ -51,22 +62,14 @@ class AreasOfInterestBottomSheet : BottomSheetDialogFragment() {
                                 area.country,
                             ),
                         )
+                        areasViewModel.removeArea(area.placeId)
                         AreasOfInterestRepository(requireContext()).deleteFeature(area.placeId)
                     }
                 }
             },
         )
 
-    private val areasViewModel: AreasViewModel by activityViewModels {
-        val repository = AreasOfInterestRepository(requireContext())
-        AreasViewModelFactory(repository)
-    }
 
-    private val userViewModel: UserViewModel by activityViewModels {
-        val repository = UserRepository(requireContext())
-        val commentRepository = CommentsRepository(requireContext())
-        UserViewModelFactory(commentRepository, repository)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
