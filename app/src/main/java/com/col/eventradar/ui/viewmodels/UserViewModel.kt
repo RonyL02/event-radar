@@ -1,25 +1,34 @@
 package com.col.eventradar.ui.viewmodels
 
+import MapUtils
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.col.eventradar.api.locations.OpenStreetMapService
+import com.col.eventradar.data.local.AreasOfInterestRepository
 import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.models.common.PopulatedComment
 import com.col.eventradar.models.common.User
+import com.col.eventradar.utils.GeoJsonParser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserViewModel(
     private val commentsRepository: CommentsRepository,
     private val userRepository: UserRepository,
+    private val areasRepository: AreasOfInterestRepository,
 ) : ViewModel() {
     private val _loggedInUser = MutableLiveData<User?>()
     val loggedInUser: LiveData<User?> get() = _loggedInUser
@@ -31,9 +40,11 @@ class UserViewModel(
     val userComments: LiveData<List<PopulatedComment>> get() = _userComments
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
+    private var startedObserving = false
 
     init {
         observeAuthState()
+        observeAndSyncUserAreas()
     }
 
     private fun observeAuthState() {
@@ -167,14 +178,74 @@ class UserViewModel(
     /**
      * **Log out the user**
      */
-    fun logout() {
-        viewModelScope.launch {
-            userRepository.logoutUser()
-        }
+    suspend fun logout() {
+        userRepository.logoutUser()
+
         _loggedInUser.postValue(null)
         _authState.postValue(false)
         _userComments.postValue(emptyList())
+
         Log.d(TAG, "User logged out")
+    }
+
+    fun observeAndSyncUserAreas() {
+        if (startedObserving) return
+        startedObserving = true
+
+        viewModelScope.launch {
+            var lastUser: User? = null
+
+            user.collect { newUser ->
+                if (newUser != null && (newUser != lastUser || newUser.areasOfInterest.toSet() != lastUser?.areasOfInterest?.toSet())) {
+                    Log.d("UserViewModel", "User or areas changed: ${newUser.username}")
+                    lastUser = newUser
+
+                    val storedCountries = areasRepository.getStoredFeatures().map { it.placeId }
+
+                    val missing =
+                        newUser.areasOfInterest.filterNot { it.placeId in storedCountries }
+                    Log.d("UserViewModel", "Missing countries: ${missing.map { it.name }}")
+
+                    if (missing.isNotEmpty()) {
+                        withContext(Dispatchers.IO) {
+                            val deferred =
+                                missing.map { area ->
+                                    async {
+                                        area.placeId.toLongOrNull()?.let { placeIdLong ->
+                                            try {
+                                                val result =
+                                                    OpenStreetMapService.api.getLocationDetails(
+                                                        placeIdLong,
+                                                    )
+
+                                                Log.d(
+                                                    "OpenStreetMapService",
+                                                    "$placeIdLong result: $result",
+                                                )
+
+                                                val feature = MapUtils.toMapLibreFeature(result)
+                                                val jsonData = GeoJsonParser.gson.toJson(feature)
+                                                areasRepository.saveFeature(feature, jsonData)
+                                                Log.d(
+                                                    "UserViewModel",
+                                                    "Saved feature for: ${area.name}",
+                                                )
+                                            } catch (e: Exception) {
+                                                Log.e(
+                                                    "UserViewModel",
+                                                    "Error loading area ${area.name}",
+                                                    e,
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            deferred.awaitAll()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     companion object {

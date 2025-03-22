@@ -58,9 +58,10 @@ class LocationSearchFragment : Fragment() {
     }
 
     private val userViewModel: UserViewModel by activityViewModels {
-        val repository = UserRepository(requireContext())
+        val userRepository = UserRepository(requireContext())
         val commentRepository = CommentsRepository(requireContext())
-        UserViewModelFactory(commentRepository, repository)
+        val areasRepository = AreasOfInterestRepository(requireContext())
+        UserViewModelFactory(commentRepository, userRepository, areasRepository)
     }
 
     private val searchResultsAdapter =

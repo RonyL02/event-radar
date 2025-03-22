@@ -17,8 +17,21 @@
         android:clipToPadding="false"
         android:paddingHorizontal="8dp"
         android:paddingBottom="70dp"
+        android:visibility="gone"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.views.EventCardListFragment"
         tools:listitem="@layout/fragment_event_card" />
+
+
+    <TextView
+        android:id="@+id/empty_placeholder"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/no_comments"
+        android:textColor="@color/grey_darkest"
+        android:textSize="16sp"
+        android:visibility="visible" />
 
 </FrameLayout>
