@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +17,6 @@ import com.col.eventradar.databinding.FragmentEventCardListBinding
 import com.col.eventradar.ui.bottom_sheets.EventDetailsBottomSheet
 import com.col.eventradar.ui.viewmodels.EventViewModel
 import com.col.eventradar.ui.viewmodels.EventViewModelFactory
-import kotlinx.coroutines.launch
 
 /**
  * A fragment representing a list of Items.
@@ -52,27 +50,16 @@ class EventCardListFragment : Fragment() {
 
         setupRecyclerView()
         observeViewModel()
-        deleteLocalEventsLeftovers()
-        fetchEvents()
+
+        eventViewModel.refreshEvents()
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        deleteLocalEventsLeftovers()
-        syncAllComments()
+        eventViewModel.refreshEvents()
         fetchEvents()
-    }
-
-    private fun syncAllComments() {
-        eventViewModel.syncAllComments()
-    }
-
-    private fun deleteLocalEventsLeftovers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            eventViewModel.deleteLocalEventsLeftovers()
-        }
     }
 
     private fun setupRecyclerView() {

@@ -17,7 +17,6 @@ import com.col.eventradar.data.remote.UserRepository
 import com.col.eventradar.data.repository.CommentsRepository
 import com.col.eventradar.data.repository.EventRepository
 import com.col.eventradar.databinding.FragmentMapBinding
-import com.col.eventradar.models.common.AreaOfInterest
 import com.col.eventradar.models.common.Event
 import com.col.eventradar.models.common.User
 import com.col.eventradar.ui.LocationSearchFragment
@@ -127,10 +126,6 @@ class MapFragment :
         }
     }
 
-    private fun syncAllComments() {
-        eventViewModel.syncAllComments()
-    }
-
     override fun onAreaOfInterestChanged() {
         areasViewModel.refresh()
         eventViewModel.fetchFilteredEvents()
@@ -142,21 +137,21 @@ class MapFragment :
     ) {
         binding.mapView.getMapAsync { map ->
             lifecycleScope.launch {
-                val areas = currentUser
-                    ?.areasOfInterest
-                    ?.map { areaOfInterest -> areaOfInterest.placeId } ?: emptyList()
+                val areas =
+                    currentUser
+                        ?.areasOfInterest
+                        ?.map { areaOfInterest -> areaOfInterest.placeId } ?: emptyList()
 
-                        MapUtils.handleLocationSelection(
-                            map,
-                            searchResult,
-                            toastFragment,
-                            binding,
-                            onFinish = onFinish,
-                            countries = areas,
-                        )
-                    }
+                MapUtils.handleLocationSelection(
+                    map,
+                    searchResult,
+                    toastFragment,
+                    binding,
+                    onFinish = onFinish,
+                    countries = areas,
+                )
             }
-
+        }
     }
 
     private fun observeViewModel(style: Style) {
@@ -237,15 +232,13 @@ class MapFragment :
     override fun onStart() {
         super.onStart()
         binding.mapView.onStart()
-        syncAllComments()
+        eventViewModel.refreshEvents()
     }
 
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
-        deleteLocalEventsLeftovers()
-        syncAllComments()
-        fetchEvents()
+        eventViewModel.refreshEvents()
         areasViewModel.refresh()
     }
 
